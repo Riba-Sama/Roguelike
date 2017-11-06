@@ -12,6 +12,8 @@ Armor_icon=']'
 Food_icon='%'
 Player_icon='@'
 Magic_icon='*'
+Boss_icon='&'
+Wall_icon='#'
 Effects_list=('healing potion','magic potion','poison potion','energetic potion','experience potion')
 Titles_list=[]
 RL_Potions=(6,3,5,4,2)
@@ -34,3 +36,5 @@ XP=0
 XP_base=500
 familiar=[1,1,1]
 lvl=1
+def xp_fun(self):
+    return (2*((self.type%3==2)+2)*self.str**3+2*((self.type%3==1)+2)*self.dex**3+2*((self.type%2==1)+2)*self.int**3+(self.str+self.dex+self.int+2*self.AC)*self.str*self.dex*self.int)//200*(self.VIT+self.AC+self.str+self.dex+self.int)

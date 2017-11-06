@@ -3,7 +3,12 @@ from msvcrt import getwch as w
 from random import random as r
 from copy import deepcopy
 from os import system as s
+from os import path
 from settings import *
+try:
+	from map import Map
+except ModuleNotFoundError :
+	Map='.'*262144
 Know_list=[0]*len(Effects_list)
 def d(nii):
 	return int(r()*nii+1)
@@ -47,7 +52,7 @@ class Food(Entity):
 		self.icon=icon
 		self.name=name
 class Mob(Entity):
-	def __init__(self,ab,wear=Armor(0,Armor_icon,'rags',0),wield=Weapon(1,1,1,Weapon_icon,'dagger'),l=1):
+	def __init__(self,ab,wear=Armor(0,Armor_icon,'rags',0),wield=Weapon(1,1,1,Weapon_icon,'dagger'),inventory=[],l=1):
 		self.hp=ab[0]
 		self.str=ab[1]
 		self.dex=ab[2]
@@ -59,13 +64,13 @@ class Mob(Entity):
 		self.type=ab[8]
 		self.icon=ab[9]
 		self.name=ab[10]
-		self.inventory=[]
+		self.inventory=inventory
 		self.wear=wear
 		self.wield=wield
 		self.lvl=l
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.wear.ER)
 		self.VIT=self.hp
-		self.xp=(((self.type%3==2)+3)*self.str**3+((self.type%3==1)+3)*self.dex**3+((self.type%2==1)+3)*self.int**3+self.AC**4+3*max(self.str,self.dex,self.int)*self.str*self.dex*self.int)//10*(self.hp//10+1)*ab[11]
+		self.xp=xp_fun(self)*ab[11]
 class Me(Entity):
 	def __init__(self,ab):
 		self.hp=ab[0]
@@ -86,6 +91,10 @@ class Me(Entity):
 		self.wield=Weapon(1,1,1,Weapon_icon,'dagger')
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.wear.ER)
 		self.VIT=self.hp
+try:
+	from boss import Boss
+except ImportError:
+	pass
 def un(x,y):
 	return not (x,y) in Total_list
 def disx(x):
@@ -101,9 +110,6 @@ def sig(x):
 		return -1
 	else:
 		return 0
-Map=[]
-for i in range(512):
-	Map+=[['.']*512]
 def lvlup(x):
 	x.lvl+=1
 	if(d(3)==1):
@@ -112,21 +118,26 @@ def lvlup(x):
 		x.dex+=1
 	else:
 		x.int+=1
-	if(x.lvl%5==0 and x.name=='Player'):
-		qyu=''
-		for i in (Ability - x.abilities):
-			qyu+='If you want to become '+i[0].upper()+i[1:]+', type in '+i+'.\n'
-		qyu+='If you want to become stronger, type in anything else.'
-		screen(0,0,qyu)
-		a=input('')
-		global Messages
-		if(a in Ability):
-			x.abilities=x.abilities | {a}
-			a=Cool_dict[a]
-			Messages+=[a[0]]
-			x.str+=a[1]
-			x.dex+=a[2]
-			x.int+=a[3]
+	if(x.lvl%5==0):
+		if(x.name=='Player'):
+			qyu=''
+			for i in (Ability - x.abilities):
+				qyu+='If you want to become '+i[0].upper()+i[1:]+', type in '+i+'.\n'
+			qyu+='If you want to become stronger, type in anything else.'
+			screen(0,0,qyu)
+			a=input('')
+			global Messages
+			if(a in Ability):
+				x.abilities=x.abilities | {a}
+				a=Cool_dict[a]
+				Messages+=[a[0]]
+				x.str+=a[1]
+				x.dex+=a[2]
+				x.int+=a[3]
+			else:
+				x.str+=Coolness
+				x.dex+=Coolness
+				x.int+=Coolness
 		else:
 			x.str+=Coolness
 			x.dex+=Coolness
@@ -169,24 +180,48 @@ def generate():
 	Total_list=[]
 	for i in range(512):
 		for l in range(512):
-			if(i==511 or i==0 or l==511 or l==0):
-				Total_list+=[(i,l),Mob(Mob_list[0])]
-			elif(250<i and i<262 and 250<l and l<262):
-				pass
-			elif(d(200)==1):
-				Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
-			elif(d(1000)==1):
-				usl=rl(RL_Potions)
-				Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
-			elif(d(1000)==1):
-				usl=rl(RL_Food)
-				Total_list+=[(i,l,0),Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])]
-			elif(d(5000)==1):
-				usl=rl(RL_Weapons)
-				Total_list+=[(i,l,0),Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
-			elif(d(5000)==1):
-				usl=rl(RL_Armor)
-				Total_list+=[(i,l,0),Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
+			if(Map[i+l*512]=='.'):
+				if(i==511 or i==0 or l==511 or l==0):
+					Total_list+=[(i,l),Mob(Mob_list[0])]
+				elif(250<i and i<262 and 250<l and l<262):
+					pass
+				elif(d(200)==1):
+					Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
+				elif(d(1000)==1):
+					usl=rl(RL_Potions)
+					Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
+				elif(d(1000)==1):
+					usl=rl(RL_Food)
+					Total_list+=[(i,l,0),Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])]
+				elif(d(5000)==1):
+					usl=rl(RL_Weapons)
+					Total_list+=[(i,l,0),Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
+				elif(d(5000)==1):
+					usl=rl(RL_Armor)
+					Total_list+=[(i,l,0),Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
+			else:
+				a=Map[i+l*512]
+				if(a is Wall_icon):
+					Total_list+=[(i,l),Mob(Mob_list[0])]
+				elif(a is Boss_icon):
+					try:
+						Total_list+=[(i,l),Boss()]
+					except NameError:
+						Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
+				elif(97<=ord(a.lower())<=122):
+					Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
+				elif(a is Potion_icon):
+					usl=rl(RL_Potions)
+					Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
+				elif(a is Food_icon):
+					usl=rl(RL_Food)
+					Total_list+=[(i,l,0),Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])]
+				elif(a is Weapon_icon):
+					usl=rl(RL_Weapons)
+					Total_list+=[(i,l,0),Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
+				elif(a is Armor_icon):
+					usl=rl(RL_Armor)
+					Total_list+=[(i,l,0),Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
 #####################
 #######setting#######
 #####################
@@ -346,7 +381,8 @@ def icons():
 	Messages+=[Weapon_icon+' '*6+'weapon.']
 	Messages+=[Armor_icon+' '*6+'armor.']
 	Messages+=[Food_icon+' '*6+'food.']
-	Messages+=[Mob_list[0][9]+' '*6+'wall.']
+	Messages+=[Wall_icon+' '*6+'wall.']
+	Messages+=[Boss_icon+' '*6+'boss.']
 	Messages+=['Letters represent enemies.']
 ##!#test#!##
 def xp():

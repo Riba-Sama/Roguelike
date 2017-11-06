@@ -135,6 +135,34 @@ def levelup():
 				player.str+=Coolness
 				player.dex+=Coolness
 				player.int+=Coolness
+#####################
+#######setting#######
+#####################
+def consume(ent,what):
+	if(what==0):
+		ent.hp=VIT
+		ent.bp=0
+		ent.fp=ent.fp//2
+		ent.sp+=2
+	elif(what==1):
+		ent.mp=(ent.int*ent.wield.intm*ER_divide)//(ER_divide+ent.wear.ER)
+		ent.fp=ent.fp//2
+		ent.bp=ent.bp//2
+		ent.sp+=2
+	elif(what==2):
+		ent.hp=ent.hp//3
+		ent.fp+=10
+		ent.sp-=2
+	elif(what==3):
+		ent.fp=-(ent.dex+10)**2//25
+		ent.bp=ent.bp*3
+		ent.sp+=4
+	elif(what==4):
+		ent=lvlup(ent)
+	return ent
+#####################
+#setting#####potions#
+#####################
 def generate():
 	global Total_list
 	Total_list=[]
@@ -192,10 +220,7 @@ def rushattack(enA,enD):
 		enD.fp+=atk*d(enA.str*enA.wield.strm)//d(enD.AC)
 		Messages+=[enA.name+' crushes '+enD.name+' mightily.']
 	else:
-		if(atk>enD.AC):
-			Messages+=[enA.name+' crushes floor near '+enD.name+"'s feet."]
-		else:
-			Messages+=[enD.name+' barely blocks '+enA.name+"'s hit."]
+		Messages+=[enA.name+' crushes floor near '+enD.name+"'s feet."] if atk>enD.AC else [enD.name+' barely blocks '+enA.name+"'s hit."]
 	enA.fp+=8
 	return enA,enD
 def magicattack(enA,enD):
@@ -335,10 +360,7 @@ def story():
 def controls(fatigue):
 	global player,Total_list,Messages,familiar
 	retry=0
-	if(player.fp>=fatigue):
-		a=b'.'
-	else:
-		a=g()
+	a=b'.' if player.fp>=fatigue else g()
 	if(a==b'?'):
 		help()
 		retry=1
@@ -573,32 +595,7 @@ def controls(fatigue):
 					Messages+=['Player eats '+player.inventory[a].name+'.']
 				else:
 					what=player.inventory[a].number
-#####################
-#######setting#######
-#####################
-					if(what==0):
-						player.hp=VIT
-						player.bp=0
-						player.fp=player.fp//2
-						player.sp+=2
-					elif(what==1):
-						player.mp=(player.int*player.wield.intm*ER_divide)//(ER_divide+player.wear.ER)
-						player.fp=player.fp//2
-						player.bp=player.bp//2
-						player.sp+=2
-					elif(what==2):
-						player.hp=player.hp//3
-						player.fp+=10
-						player.sp-=2
-					elif(what==3):
-						player.fp=-(player.dex+10)**2//25
-						player.bp=player.bp*3
-						player.sp+=4
-					elif(what==4):
-						player=lvlup(player)
-#####################
-#setting#####potions#
-#####################
+					player=consume(player,what)
 					global Know_list
 					if(Know_list[what]==0):
 						Know_list[what]=Titles_list[what]

@@ -305,7 +305,7 @@ def move(n):
 				zz,player=farattack(zz,player)
 			elif(zz.type%2==1 and zz.mp>=Magic_value and dis(xx,yy)<=Magic_distance):
 				zz,player=magicattack(zz,player)
-			elif(dis(xx,yy)==1 and zz.type%3==2 and zz.fp==0):
+			elif(dis(xx,yy)==1 and zz.type%3==2):
 				zz,player=rushattack(zz,player)
 			elif(dis(xx,yy)==1):
 				zz,player=attack(zz,player)

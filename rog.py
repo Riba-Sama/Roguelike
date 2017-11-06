@@ -85,6 +85,7 @@ class Me(Entity):
 		self.wear=Armor(0,Armor_icon,'rags',0)
 		self.wield=Weapon(1,1,1,Weapon_icon,'dagger')
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.wear.ER)
+		self.VIT=self.hp
 def un(x,y):
 	return not (x,y) in Total_list
 def disx(x):
@@ -111,36 +112,36 @@ def lvlup(x):
 		x.dex+=1
 	else:
 		x.int+=1
+	if(x.lvl%5==0 and x.name=='Player'):
+		qyu=''
+		for i in (Ability - x.abilities):
+			qyu+='If you want to become '+i[0].upper()+i[1:]+', type in '+i+'.\n'
+		qyu+='If you want to become stronger, type in anything else.'
+		screen(0,0,qyu)
+		a=input('')
+		global Messages
+		if(a in Ability):
+			x.abilities=x.abilities | {a}
+			a=Cool_dict[a]
+			Messages+=[a[0]]
+			x.str+=a[1]
+			x.dex+=a[2]
+			x.int+=a[3]
+		else:
+			x.str+=Coolness
+			x.dex+=Coolness
+			x.int+=Coolness
 	return x
 def levelup():
 	global player
 	while(XP>=XP_base*2**player.lvl):
 		player=lvlup(player)
-		if(player.lvl%5==0):
-			qyu=''
-			for i in (Ability - player.abilities):
-				qyu+='If you want to become '+i[0].upper()+i[1:]+', type in '+i+'.\n'
-			qyu+='If you want to become stronger, type in anything else.'
-			screen(0,0,qyu)
-			a=input('')
-			global Messages
-			if(a in Ability):
-				player.abilities=player.abilities | {a}
-				a=Cool_dict[a]
-				Messages+=[a[0]]
-				player.str+=a[1]
-				player.dex+=a[2]
-				player.int+=a[3]
-			else:
-				player.str+=Coolness
-				player.dex+=Coolness
-				player.int+=Coolness
 #####################
 #######setting#######
 #####################
 def consume(ent,what):
 	if(what==0):
-		ent.hp=VIT
+		ent.hp=ent.VIT
 		ent.bp=0
 		ent.fp=ent.fp//2
 		ent.sp+=2
@@ -371,7 +372,7 @@ def controls(fatigue):
 		icons()
 		retry=1
 	elif(a==b'.'):
-		player.fp=max(player.fp-player.dex*(50-VIT+player.sp)//50,0)
+		player.fp=max(player.fp-player.dex*(50-player.VIT+player.sp)//50,0)
 	elif(a==b'r'):
 		if(un(player.x-1,player.y+1)):
 			player.x-=1
@@ -480,36 +481,28 @@ def controls(fatigue):
 	elif(a==b'l' and 'lancer' in player.abilities):
 		a=b''
 		dx=0
-		dy=2
+		dy=0
 		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
 			if(a==b'r'):
 				dx-=1
 				dy+=1
 			elif(a==b't'):
 				dy+=1
-				if(dx==0):
-					dy=2
 			elif(a==b'y'):
 				dx+=1
 				dy+=1
 			elif(a==b'h'):
 				dx+=1
-				if(dy==0):
-					dx=2
 			elif(a==b'n'):
 				dx+=1
 				dy-=1
 			elif(a==b'b'):
 				dy-=1
-				if(dx==0):
-					dy=-2
 			elif(a==b'v'):
 				dx-=1
 				dy-=1
 			elif(a==b'f'):
 				dx-=1
-				if(dy==0):
-					dx=-2
 			if(abs(dx)>2):
 				dx=sig(dx)*2
 			if(abs(dy)>2):
@@ -591,7 +584,7 @@ def controls(fatigue):
 					player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.wear.ER))
 					Messages+=['Player equips '+player.wear.name+'.']
 				elif(player.inventory[a].name in Food_types_list):
-					player.sp=min(VIT,player.sp+player.inventory[a].nutrition)
+					player.sp=min(player.VIT,player.sp+player.inventory[a].nutrition)
 					Messages+=['Player eats '+player.inventory[a].name+'.']
 				else:
 					what=player.inventory[a].number
@@ -671,23 +664,23 @@ def controls(fatigue):
 			familiar[2]=1
 		player.hp-=player.bp
 		if(bonus!=1):
-			if(player.bp*3>VIT):
+			if(player.bp*3>player.VIT):
 				Messages+=['Player bleeds heavily.']
-			elif(player.bp*5>VIT):
+			elif(player.bp*5>player.VIT):
 				Messages+=['Player bleeds severally.']
-			elif(player.bp*9>VIT):
+			elif(player.bp*9>player.VIT):
 				Messages+=['Player bleeds mildly.']
 			elif(player.bp>0):
 				Messages+=['Player bleeds lightly.']
-			player.sp=min(player.sp,VIT)
+			player.sp=min(player.sp,player.VIT)
 #####################
 #######setting#######
 #####################
-		player.bp=player.bp*VIT//(player.sp//2+VIT+player.str+player.wield.strm)
-		player.sp-=d(VIT-player.hp)//5
-		if(d(VIT-player.bp)>max(VIT//2,VIT-player.sp) and player.hp<player.sp):
+		player.bp=player.bp*player.VIT//(player.sp//2+player.VIT+player.str+player.wield.strm)
+		player.sp-=d(player.VIT-player.hp)//5
+		if(d(player.VIT-player.bp)>max(player.VIT//2,player.VIT-player.sp) and player.hp<player.sp):
 			player.hp+=1
-		if(d(VIT+player.int*player.wield.intm-player.mp)>VIT-player.int*player.wield.intm and player.mp<(player.int*player.wield.intm*ER_divide)//(ER_divide+player.wear.ER)):
+		if(d(player.VIT+player.int*player.wield.intm-player.mp)>player.VIT-player.int*player.wield.intm and player.mp<(player.int*player.wield.intm*ER_divide)//(ER_divide+player.wear.ER)):
 			player.mp+=1
 		if(player.sp<0):
 			player.hp+=player.sp

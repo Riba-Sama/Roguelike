@@ -159,9 +159,9 @@ def generate():
 					usl3=rl(RL_Mobs)
 					auto=()
 					for r in Presets:
-						if(r[0]==a):
+						if(r[0][9] is a):
 							auto=r
-					Total_list+=[(i,l),Mob(auto[0],Weapon(auto[1]),Armor(auto[2]),auto[3],auto[4])] if auto!=() else [(i,l),Mob(Mob_list[usl3],Weapon(d(Weapon_m_list[usl1][0]),d(Weapon_m_list[usl1][1]),d(Weapon_m_list[usl1][2]),Weapon_icon,Weapon_types_list[usl1]),Armor(Armor_AC_ER_list[usl2][0],Armor_icon,Armor_types_list[usl2],Armor_AC_ER_list[usl2][1]))]
+					Total_list+=[(i,l),Mob(*auto)] if auto!=() else [(i,l),Mob(Mob_list[usl3],Weapon(d(Weapon_m_list[usl1][0]),d(Weapon_m_list[usl1][1]),d(Weapon_m_list[usl1][2]),Weapon_icon,Weapon_types_list[usl1]),Armor(Armor_AC_ER_list[usl2][0],Armor_icon,Armor_types_list[usl2],Armor_AC_ER_list[usl2][1]))]
 				elif(a is Potion_icon):
 					usl=rl(RL_Potions)
 					Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]

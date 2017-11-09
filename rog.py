@@ -5,10 +5,17 @@ from copy import deepcopy
 from os import system as s
 from os import path
 from settings import *
+from entities import *
 try:
 	from map import Map
-except ModuleNotFoundError :
+except ModuleNotFoundError as err :
+	Messages+=['Failed to import map file, '+str(err)]
 	Map='.'*262144
+try:
+	from presets import *
+except ModuleNotFoundError as err:
+	Presets=()
+	Messages+=['Failed to import presets file, '+str(err)]
 Know_list=[0]*len(Effects_list)
 def d(nii):
 	return int(r()*nii+1)
@@ -25,76 +32,12 @@ def rl(li):
 		t-=li[n]
 		n+=1
 	return n
-class Entity:
-	def __init__(self,name):
-		self.name=name
-class Item(Entity):
-	def __init__(self,icon,number,name):
-		self.name=name
-		self.icon=icon
-		self.number=number
-class Weapon(Entity):
-	def __init__(self,strm,dexm,intm,icon,name):
-		self.strm=strm
-		self.dexm=dexm
-		self.intm=intm
-		self.icon=icon
-		self.name=name
-class Armor(Entity):
-	def __init__(self,AC,icon,name,ER):
-		self.AC=AC
-		self.icon=icon
-		self.name=name
-		self.ER=ER
-class Food(Entity):
-	def __init__(self,nutrition,icon,name):
-		self.nutrition=nutrition
-		self.icon=icon
-		self.name=name
-class Mob(Entity):
-	def __init__(self,ab,wear=Armor(0,Armor_icon,'rags',0),wield=Weapon(1,1,1,Weapon_icon,'dagger'),inventory=[],l=1):
-		self.hp=ab[0]
-		self.str=ab[1]
-		self.dex=ab[2]
-		self.int=ab[3]
-		self.AC=ab[4]
-		self.bp=ab[5]
-		self.fp=ab[6]
-		self.aware=ab[7]
-		self.type=ab[8]
-		self.icon=ab[9]
-		self.name=ab[10]
-		self.inventory=inventory
-		self.wear=wear
-		self.wield=wield
-		self.lvl=l
-		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.wear.ER)
-		self.VIT=self.hp
-		self.xp=xp_fun(self)*ab[11]
-class Me(Entity):
-	def __init__(self,ab):
-		self.hp=ab[0]
-		self.str=ab[1]
-		self.dex=ab[2]
-		self.int=ab[3]
-		self.AC=ab[4]
-		self.bp=ab[5]
-		self.fp=ab[6]
-		self.x=ab[7]
-		self.y=ab[8]
-		self.lvl=lvl
-		self.sp=self.hp
-		self.name='Player'
-		self.inventory=[]
-		self.abilities=set()
-		self.wear=Armor(0,Armor_icon,'rags',0)
-		self.wield=Weapon(1,1,1,Weapon_icon,'dagger')
-		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.wear.ER)
-		self.VIT=self.hp
 try:
-	from boss import Boss
-except ImportError:
-	pass
+	from boss import *
+except ImportError as err:
+	Messages+=['Failed to import boss file, '+str(err)]
+except NameError as err:
+	Messages+=['Failed to import boss file, '+str(err)]
 def un(x,y):
 	return not (x,y) in Total_list
 def disx(x):
@@ -206,10 +149,19 @@ def generate():
 				elif(a is Boss_icon):
 					try:
 						Total_list+=[(i,l),Boss()]
-					except NameError:
+					except NameError as err:
 						Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
+						global Messages
+						Messages+=['Failed to import boss, '+str(err)]
 				elif(97<=ord(a.lower())<=122):
-					Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
+					usl1=rl(RL_Weapons)
+					usl2=rl(RL_Armor)
+					usl3=rl(RL_Mobs)
+					auto=()
+					for r in Presets:
+						if(r[0]==a):
+							auto=r
+					Total_list+=[(i,l),Mob(auto[0],Weapon(auto[1]),Armor(auto[2]),auto[3],auto[4])] if auto!=() else [(i,l),Mob(Mob_list[usl3],Weapon(d(Weapon_m_list[usl1][0]),d(Weapon_m_list[usl1][1]),d(Weapon_m_list[usl1][2]),Weapon_icon,Weapon_types_list[usl1]),Armor(Armor_AC_ER_list[usl2][0],Armor_icon,Armor_types_list[usl2],Armor_AC_ER_list[usl2][1]))]
 				elif(a is Potion_icon):
 					usl=rl(RL_Potions)
 					Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
@@ -771,22 +723,25 @@ while(True):
 	for i in Pop_list:
 		q=Total_list[i+1]
 		Total_list[i]=Total_list[i]+tuple([0])
+		try:
+			Total_list[i+1]=q.drop
 #####################
 #######setting#######
 #####################
-		zp=d(20)
-		if(q.xp<2**zp or bonus==1):
-			usl=rl((zp,)+RL_Food[1:])
-			Total_list[i+1]=Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])
-		elif(d(2)==1):
-			usl=rl(RL_Potions)
-			Total_list[i+1]=Item(Potion_icon,usl,Titles_list[usl])
-		elif(d(2)==1):
-			usl=rl((q.str,q.dex,q.int,zp))
-			Total_list[i+1]=Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])
-		else:
-			usl=rl((zp,(q.type==0)*4+6,(q.type%3==2)*20,(q.type%3==1)*20,(q.type%2==1)*30))
-			Total_list[i+1]=Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])
+		except:
+			zp=d(20)
+			if(q.xp<2**zp or bonus==1):
+				usl=rl((zp,)+RL_Food[1:])
+				Total_list[i+1]=Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])
+			elif(d(2)==1):
+				usl=rl(RL_Potions)
+				Total_list[i+1]=Item(Potion_icon,usl,Titles_list[usl])
+			elif(d(2)==1):
+				usl=rl((q.str,q.dex,q.int,zp))
+				Total_list[i+1]=Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])
+			else:
+				usl=rl((zp,(q.type==0)*4+6,(q.type%3==2)*20,(q.type%3==1)*20,(q.type%2==1)*30))
+				Total_list[i+1]=Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])
 #####################
 #setting########drop#
 #####################

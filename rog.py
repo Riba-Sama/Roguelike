@@ -235,7 +235,7 @@ def move(n):
 	zz=Total_list[n*2+1]
 	if(len(Total_list[n*2])==2):
 		if(zz.hp<=0):
-			Messages+=['Player kills '+zz.name+'.']
+			Messages+=[player.name+' kills '+zz.name+'.']
 			XP+=zz.xp
 			levelup()
 			Pop_list+=[n*2]
@@ -243,7 +243,7 @@ def move(n):
 			xx=Total_list[n*2][0]
 			yy=Total_list[n*2][1]
 			if(zz.bp>=zz.hp):
-				Messages+=['Player kills '+zz.name+'.']
+				Messages+=[player.name+' kills '+zz.name+'.']
 				XP+=zz.xp
 				levelup()
 				Pop_list+=[n*2]
@@ -344,7 +344,8 @@ def xp():
 		Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)+(8-len(str(zoo.xp)))*' '+str(i)]
 def story():
 	s('cls')
-	print(*Messages[-transcript*3:],'Press any key to continue.',sep='\n')
+	print(*Messages[-transcript*3:],sep='\n')
+	print('Press any key to continue.')
 ##!#test#!##
 def controls(fatigue):
 	global player,Total_list,Messages,familiar
@@ -453,7 +454,7 @@ def controls(fatigue):
 						player.x+=dx
 						player.y+=dy
 						player.mp-=max(abs(dx),abs(dy))*2
-						Messages+=['Player teleports.']
+						Messages+=[player.name+' teleports.']
 					else:
 						Messages+=['Not enough MP.']
 						retry=1
@@ -556,24 +557,24 @@ def controls(fatigue):
 			if(0<=a<=len(player.inventory)-1):
 				if(player.inventory[a].name in Weapon_types_list):
 					if(not player.wield.name=='-'):
-						Messages+=['Player unwields '+player.wield.name+'.']
+						Messages+=[player.name+' unwields '+player.wield.name+'.']
 						player.inventory+=[player.wield]
 					player.wield=player.inventory[a]
 					player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.wear.ER))
 					familiar=[0,0,0]
-					Messages+=['Player wields '+player.wield.name+'.']
+					Messages+=[player.name+' wields '+player.wield.name+'.']
 				elif(player.inventory[a].name in Armor_types_list):
 					player.AC-=player.wear.AC
 					if(not player.wear.name=='-'):
-						Messages+=['Player unequips '+player.wear.name+'.']
+						Messages+=[player.name+' unequips '+player.wear.name+'.']
 						player.inventory+=[player.wear]
 					player.wear=player.inventory[a]
 					player.AC+=player.wear.AC
 					player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.wear.ER))
-					Messages+=['Player equips '+player.wear.name+'.']
+					Messages+=[player.name+' equips '+player.wear.name+'.']
 				elif(player.inventory[a].name in Food_types_list):
 					player.sp=min(player.VIT,player.sp+player.inventory[a].nutrition)
-					Messages+=['Player eats '+player.inventory[a].name+'.']
+					Messages+=[player.name+' eats '+player.inventory[a].name+'.']
 				else:
 					what=player.inventory[a].number
 					player=consume(player,what)
@@ -583,14 +584,14 @@ def controls(fatigue):
 						for i in player.inventory:
 							if(i.name is Titles_list[what]):
 								i.name=Effects_list[what]
-					Messages+=['Player drinks '+Effects_list[what]+'.']
+					Messages+=[player.name+' drinks '+Effects_list[what]+'.']
 				player.inventory.pop(a)
 			else:
 				if(a!=-70):
 					Messages+=['No such item.']
 				retry=1
 		else:
-			Messages+=["Player's inventory is empty."]
+			Messages+=[player.name+"'s inventory is empty."]
 			retry=1
 	elif(a==b'g'):
 		if(len(player.inventory)<26):
@@ -602,12 +603,12 @@ def controls(fatigue):
 				Total_list.pop(mur)
 				if(player.inventory[-1].name in Know_list):
 					player.inventory[-1].name=Effects_list[player.inventory[-1].number]
-				Messages+=['Player picks up '+player.inventory[-1].name+'.']
+				Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
 			else:
 				Messages+=['There is nothing here.']
 				retry=1
 		else:
-			Messages+=["Player's inventory is already full."]
+			Messages+=[player.name+"'s inventory is already full."]
 			retry=1
 	elif(a==b'\x1b'):
 		exit()
@@ -618,14 +619,14 @@ def controls(fatigue):
 				print(chr(i+97)+'- '+str(player.inventory[i].name))
 			a=ord(w())-97
 			if(0<=a<=len(player.inventory)-1):
-				Messages+=['Player destroys '+player.inventory[a].name+'.']
+				Messages+=[player.name+' destroys '+player.inventory[a].name+'.']
 				player.inventory.pop(a)
 			else:
 				if(a!=-70):
 					Messages+=['No such item.']
 				retry=1
 		else:
-			Messages+=["Player's inventory is empty."]
+			Messages+=[player.name+"'s inventory is empty."]
 			retry=1
 	elif(a==b'\x18'):
 		xp()
@@ -642,24 +643,24 @@ def controls(fatigue):
 		controls(fatigue)
 	else:
 		if(player.lvl>=player.wield.strm and familiar[0]==0):
-			Messages+=['Player feels more familiar with their weapon.']
+			Messages+=[player.name+' feels more familiar with their weapon.']
 			familiar[0]=1
 		if(player.lvl>=player.wield.dexm and familiar[1]==0):
-			Messages+=['Player feels more familiar with their weapon.']
+			Messages+=[player.name+' feels more familiar with their weapon.']
 			familiar[1]=1
 		if(player.lvl>=player.wield.intm and familiar[2]==0):
-			Messages+=['Player feels more familiar with their weapon.']
+			Messages+=[player.name+' feels more familiar with their weapon.']
 			familiar[2]=1
 		player.hp-=player.bp
 		if(bonus!=1):
 			if(player.bp*3>player.VIT):
-				Messages+=['Player bleeds heavily.']
+				Messages+=[player.name+' bleeds heavily.']
 			elif(player.bp*5>player.VIT):
-				Messages+=['Player bleeds severally.']
+				Messages+=[player.name+' bleeds severally.']
 			elif(player.bp*9>player.VIT):
-				Messages+=['Player bleeds mildly.']
+				Messages+=[player.name+' bleeds mildly.']
 			elif(player.bp>0):
-				Messages+=['Player bleeds lightly.']
+				Messages+=[player.name+' bleeds lightly.']
 			player.sp=min(player.sp,player.VIT)
 #####################
 #######setting#######
@@ -673,7 +674,7 @@ def controls(fatigue):
 		if(player.sp<0):
 			player.hp+=player.sp
 			player.sp=0
-			Messages+=['Player starves.']
+			Messages+=[player.name+' starves.']
 #####################
 #setting######points#
 #####################
@@ -706,7 +707,8 @@ def screen(x=0,y=0,extra=''):
 	if(ab==''):
 		ab='-'
 	s('cls')
-	print('\nSTR:'+str(player.str)+' '*(10-len(str(player.str)))+'HP:'+str(player.hp),'DEX:'+str(player.dex)+' '*(10-len(str(player.dex)))+'MP:'+str(player.mp),'INT:'+str(player.int)+' '*(10-len(str(player.int)))+'FP:'+str(player.fp),'SP:'+str(player.sp)+' '*(11-len(str(player.sp)))+'BP:'+str(player.bp),'Wield:'+player.wield.name+' '*(8-len(player.wield.name))+'SM:'+familiar[0]*str(player.wield.strm)+(1-familiar[0])*'?'+','+familiar[1]*str(player.wield.dexm)+(1-familiar[1])*'?'+','+familiar[2]*str(player.wield.intm)+(1-familiar[2])*'?','Wear:'+player.wear.name+' '*(9-len(player.wear.name))+'Abilities:'+ab,'ER:'+str(player.wear.ER)+' '*(11-len(str(player.wear.ER)))+'AC:'+str(player.AC),'XP:'+str(XP)+' '*(11-len(str(XP)))+'Level:'+str(player.lvl),zzzz,*Messages[-transcript:],extra,sep='\n')
+	print('\nSTR:'+str(player.str)+' '*(10-len(str(player.str)))+'HP:'+str(player.hp),'DEX:'+str(player.dex)+' '*(10-len(str(player.dex)))+'MP:'+str(player.mp),'INT:'+str(player.int)+' '*(10-len(str(player.int)))+'FP:'+str(player.fp),'SP:'+str(player.sp)+' '*(11-len(str(player.sp)))+'BP:'+str(player.bp),'Wield:'+player.wield.name+' '*(8-len(player.wield.name))+'SM:'+familiar[0]*str(player.wield.strm)+(1-familiar[0])*'?'+','+familiar[1]*str(player.wield.dexm)+(1-familiar[1])*'?'+','+familiar[2]*str(player.wield.intm)+(1-familiar[2])*'?','Wear:'+player.wear.name+' '*(9-len(player.wear.name))+'Abilities:'+ab,'ER:'+str(player.wear.ER)+' '*(11-len(str(player.wear.ER)))+'AC:'+str(player.AC),'XP:'+str(XP)+' '*(11-len(str(XP)))+'Level:'+str(player.lvl),zzzz,*Messages[-transcript:],sep='\n')
+	print(extra)
 player=generate()
 while(True):
 	Pop_list=[]

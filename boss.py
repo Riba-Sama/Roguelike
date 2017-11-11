@@ -15,9 +15,12 @@ class Boss(Mob):
         self.name='World Ender'
         self.inventory=[]
         self.wear=Armor(3,Armor_icon,'leather',2)
-        self.wield=Weapon(4,0,4,Weapon_icon,'Excalibolg')
+        self.wield=Weapon(5,0,5,Weapon_icon,'Excalibolg',3,6,6,6)
+        self.shield=self.wield
+        self.ER=self.wield.ER+self.wear.ER
+        self.MR=self.wield.MR
         self.lvl=99
-        self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.wear.ER)
+        self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
         self.VIT=self.hp
         self.xp=xp_fun(self)*10
-        self.drop=Weapon(4,0,4,Weapon_icon,'Excalibolg')
+        self.drop=[Weapon((5,6),(0,6),(5,6),Weapon_icon,'Excalibolg',3)]

@@ -1,6 +1,5 @@
 from msvcrt import getch as g
 from msvcrt import getwch as w
-from random import random as r
 from copy import deepcopy
 from os import system as s
 from os import path
@@ -17,21 +16,11 @@ except ModuleNotFoundError as err:
 	Presets=()
 	Messages+=['Failed to import presets file, '+str(err)]
 Know_list=[0]*len(Effects_list)
-def d(nii):
-	return int(r()*nii+1)
 for i in range(len(Effects_list)):
 	Title=''
 	for l in range(d(4)*d(2)+d(4)):
 		Title+=chr(64+d(26))
 	Titles_list+=[Title]
-def rl(li):
-	q=sum(li)
-	t=d(q)
-	n=0
-	while(t>li[n]):
-		t-=li[n]
-		n+=1
-	return n
 try:
 	from boss import *
 except ImportError as err:
@@ -39,7 +28,7 @@ except ImportError as err:
 except NameError as err:
 	Messages+=['Failed to import boss file, '+str(err)]
 def un(x,y):
-	return not (x,y) in Total_list
+	return not (x,y) in Total_list[::2]
 def disx(x):
 	return abs(player.x-x)
 def disy(y):
@@ -62,7 +51,7 @@ def lvlup(x):
 	else:
 		x.int+=1
 	if(x.lvl%5==0):
-		if(x.name=='Player'):
+		if(x.name=='Player' and not x.abilities is Ability):
 			qyu=''
 			for i in (Ability - x.abilities):
 				qyu+='If you want to become '+i[0].upper()+i[1:]+', type in '+i+'.\n'
@@ -100,7 +89,7 @@ def consume(ent,what):
 		ent.fp=ent.fp//2
 		ent.sp+=2
 	elif(what==1):
-		ent.mp=(ent.int*ent.wield.intm*ER_divide)//(ER_divide+ent.wear.ER)
+		ent.mp=(ent.int*ent.wield.intm*ER_divide)//(ER_divide+ent.ER)
 		ent.fp=ent.fp//2
 		ent.bp=ent.bp//2
 		ent.sp+=2
@@ -129,7 +118,8 @@ def generate():
 				elif(250<i and i<262 and 250<l and l<262):
 					pass
 				elif(d(200)==1):
-					Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
+					usl=rl(RL_Mobs)
+					Total_list+=[(i,l),Mob(Mob_list[usl])]
 				elif(d(1000)==1):
 					usl=rl(RL_Potions)
 					Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
@@ -159,9 +149,9 @@ def generate():
 					usl3=rl(RL_Mobs)
 					auto=()
 					for r in Presets:
-						if(r[0][9] is a):
+						if(r[9] is a):
 							auto=r
-					Total_list+=[(i,l),Mob(*auto)] if auto!=() else [(i,l),Mob(Mob_list[usl3],Weapon(d(Weapon_m_list[usl1][0]),d(Weapon_m_list[usl1][1]),d(Weapon_m_list[usl1][2]),Weapon_icon,Weapon_types_list[usl1]),Armor(Armor_AC_ER_list[usl2][0],Armor_icon,Armor_types_list[usl2],Armor_AC_ER_list[usl2][1]))]
+					Total_list+=[(i,l),Mob(auto)] if auto!=() else [(i,l),Mob(Mob_list[usl3])]
 				elif(a is Potion_icon):
 					usl=rl(RL_Potions)
 					Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
@@ -213,7 +203,7 @@ def rushattack(enA,enD):
 	return enA,enD
 def magicattack(enA,enD):
 	global Messages
-	atk=d(enA.int*enA.wield.intm+d(enA.int*enA.wield.intm*d(2)))//2
+	atk=d(enA.int*enA.wield.intm+d(enA.int*enA.wield.intm*d(2)))*MR_divide//(MR_divide+enD.ER)//2
 	if(atk>enD.AC//3+enD.mp):
 		enD.hp+=enD.AC//3+enD.mp-atk
 		enD.fp+=d(atk)
@@ -235,7 +225,7 @@ def move(n):
 	zz=Total_list[n*2+1]
 	if(len(Total_list[n*2])==2):
 		if(zz.hp<=0):
-			Messages+=['Player kills '+zz.name+'.']
+			Messages+=[player.name+' kills '+zz.name+'.']
 			XP+=zz.xp
 			levelup()
 			Pop_list+=[n*2]
@@ -243,13 +233,13 @@ def move(n):
 			xx=Total_list[n*2][0]
 			yy=Total_list[n*2][1]
 			if(zz.bp>=zz.hp):
-				Messages+=['Player kills '+zz.name+'.']
+				Messages+=[player.name+' kills '+zz.name+'.']
 				XP+=zz.xp
 				levelup()
 				Pop_list+=[n*2]
 			elif(zz.aware==0 or dis(xx,yy)>=6+zz.aware*d(zz.int)//3):
 				zz.aware=1 if dis(xx,yy)<6+rl((9,3,1))+zz.aware*d(zz.int)//3 else 0
-			elif(zz.fp>d(20+zz.dex) or (zz.fp>=zz.dex and zz.type%2==1) or (zz.fp>=d(zz.dex) and zz.type%3==2)):
+			elif(zz.fp>d(20+zz.dex-zz.ER*SR_divide//(SR_divide+zz.str)) or (zz.fp>=zz.dex and zz.type%2==1) or (zz.fp>=d(zz.dex) and zz.type%3==2)):
 				zz.fp-=zz.dex
 				if(zz.fp<0):
 					zz.fp=0
@@ -289,10 +279,10 @@ def move(n):
 				if(zz.fp<0):
 					zz.fp=0
 			zz.hp-=zz.bp
-			zz.bp=zz.bp*2//(3+zz.str+zz.wield.strm)
+			zz.bp=zz.bp*3//2
 			if(d(zz.VIT-zz.bp)>0 and zz.hp<zz.VIT):
 				zz.hp+=1
-			if(d(zz.VIT+zz.int*zz.wield.intm-zz.mp)>zz.VIT-zz.int*zz.wield.intm and zz.mp<(zz.int*zz.wield.intm*ER_divide)//(ER_divide+zz.wear.ER)):
+			if(d(zz.VIT+zz.int*zz.wield.intm-zz.mp)>zz.VIT-zz.int*zz.wield.intm and zz.mp<(zz.int*zz.wield.intm*ER_divide)//(ER_divide+zz.ER)):
 				zz.mp+=1
 			Total_list[n*2+1]=zz
 def help():
@@ -320,7 +310,7 @@ def abbs():
 	Messages+=['MP     magic points.']
 	Messages+=['BP     bleed points.']
 	Messages+=['FP     fatigue points.']
-	Messages+=['SP     starvation points.']
+	Messages+=['SP     saturation points.']
 	Messages+=['XP     experience points.']
 	Messages+=['SM     stats multiplier from wielded weapon.']
 	Messages+=['AC     summary armor count.']
@@ -344,12 +334,13 @@ def xp():
 		Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)+(8-len(str(zoo.xp)))*' '+str(i)]
 def story():
 	s('cls')
-	print(*Messages[-transcript*3:],'Press any key to continue.',sep='\n')
+	print(*Messages[-transcript*3:],sep='\n')
+	print('Press any key to continue.')
 ##!#test#!##
-def controls(fatigue):
+def controls():
 	global player,Total_list,Messages,familiar
 	retry=0
-	a=b'.' if player.fp>=fatigue else g()
+	a=g()
 	if(a==b'?'):
 		help()
 		retry=1
@@ -417,6 +408,7 @@ def controls(fatigue):
 		a=b''
 		dx=0
 		dy=0
+		dt=-1
 		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
 			if(a==b'r'):
 				dx-=1
@@ -438,11 +430,17 @@ def controls(fatigue):
 				dy-=1
 			elif(a==b'f'):
 				dx-=1
+			elif(a==b'a' and len(Targets)>0):
+				dt+=1
+				if(dt==len(Targets)):
+					dt=0
+				dx=Targets[dt][0]
+				dy=Targets[dt][1]
 			if(abs(dx)>Magic_distance):
 				dx=sig(dx)*Magic_distance
 			if(abs(dy)>Magic_distance):
 				dy=sig(dy)*Magic_distance
-			screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n')
+			screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n\na to auto-target.')
 			a=g()
 		if(a==b'\x1b'):
 			retry=1
@@ -466,7 +464,7 @@ def controls(fatigue):
 				else:
 					Messages+=['Not enough MP.']
 					retry=1
-	elif(a==b'l' and 'lancer' in player.abilities):
+	elif(a==b'x' and 'lancer' in player.abilities):
 		a=b''
 		dx=0
 		dy=0
@@ -555,25 +553,39 @@ def controls(fatigue):
 			a=ord(w())-97
 			if(0<=a<=len(player.inventory)-1):
 				if(player.inventory[a].name in Weapon_types_list):
-					if(not player.wield.name=='-'):
-						Messages+=['Player unwields '+player.wield.name+'.']
+					if(player.inventory[a].dual%2==1):
 						player.inventory+=[player.wield]
-					player.wield=player.inventory[a]
-					player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.wear.ER))
-					familiar=[0,0,0]
-					Messages+=['Player wields '+player.wield.name+'.']
+						Messages+=[player.name+' unwields '+player.wield.name+'.']
+						player.wield=player.inventory[a]
+						Messages+=[player.name+' wields '+player.wield.name+'.']
+						familiar=[0,0,0]
+					else:
+						player.inventory+=[player.shield]
+						Messages+=[player.name+' unwields '+player.shield.name+'.']
+						player.shield=player.inventory[a]
+						Messages+=[player.name+' wields '+player.shield.name+'.']
+					if(player.wield.dual==3):
+						player.AC=player.BAC+player.wear.AC+player.wield.AC
+						player.ER=player.wear.ER+player.wield.ER
+						player.MR=player.wield.MR
+					else:
+						player.AC=player.BAC+player.wear.AC+player.shield.AC
+						player.ER=player.wear.ER+player.shield.ER
+						player.MR=player.shield.MR
+					player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
 				elif(player.inventory[a].name in Armor_types_list):
 					player.AC-=player.wear.AC
-					if(not player.wear.name=='-'):
-						Messages+=['Player unequips '+player.wear.name+'.']
-						player.inventory+=[player.wear]
+					player.ER-=player.wear.ER
+					Messages+=[player.name+' unequips '+player.wear.name+'.']
+					player.inventory+=[player.wear]
 					player.wear=player.inventory[a]
 					player.AC+=player.wear.AC
-					player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.wear.ER))
-					Messages+=['Player equips '+player.wear.name+'.']
+					player.ER+=player.wear.ER
+					player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
+					Messages+=[player.name+' equips '+player.wear.name+'.']
 				elif(player.inventory[a].name in Food_types_list):
 					player.sp=min(player.VIT,player.sp+player.inventory[a].nutrition)
-					Messages+=['Player eats '+player.inventory[a].name+'.']
+					Messages+=[player.name+' eats '+player.inventory[a].name+'.']
 				else:
 					what=player.inventory[a].number
 					player=consume(player,what)
@@ -583,15 +595,18 @@ def controls(fatigue):
 						for i in player.inventory:
 							if(i.name is Titles_list[what]):
 								i.name=Effects_list[what]
-					Messages+=['Player drinks '+Effects_list[what]+'.']
+					Messages+=[player.name+' drinks '+Effects_list[what]+'.']
 				player.inventory.pop(a)
 			else:
 				if(a!=-70):
 					Messages+=['No such item.']
 				retry=1
 		else:
-			Messages+=["Player's inventory is empty."]
+			Messages+=[player.name+"'s inventory is empty."]
 			retry=1
+	elif(a==b's'):
+		player.inventory.sort(key=lambda x : x.fn)
+		Messages+=[player.name+' sorts their inventory.']
 	elif(a==b'g'):
 		if(len(player.inventory)<26):
 			ko=(player.x,player.y,0)
@@ -602,12 +617,12 @@ def controls(fatigue):
 				Total_list.pop(mur)
 				if(player.inventory[-1].name in Know_list):
 					player.inventory[-1].name=Effects_list[player.inventory[-1].number]
-				Messages+=['Player picks up '+player.inventory[-1].name+'.']
+				Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
 			else:
 				Messages+=['There is nothing here.']
 				retry=1
 		else:
-			Messages+=["Player's inventory is already full."]
+			Messages+=[player.name+"'s inventory is already full."]
 			retry=1
 	elif(a==b'\x1b'):
 		exit()
@@ -625,7 +640,7 @@ def controls(fatigue):
 					Messages+=['No such item.']
 				retry=1
 		else:
-			Messages+=["Player's inventory is empty."]
+			Messages+=[player.name+"'s inventory is empty."]
 			retry=1
 	elif(a==b'\x18'):
 		xp()
@@ -639,55 +654,66 @@ def controls(fatigue):
 		retry=1
 	if(retry==1):
 		screen()
-		controls(fatigue)
+		controls()
 	else:
 		if(player.lvl>=player.wield.strm and familiar[0]==0):
-			Messages+=['Player feels more familiar with their weapon.']
+			Messages+=[player.name+' feels more familiar with their weapon.']
 			familiar[0]=1
 		if(player.lvl>=player.wield.dexm and familiar[1]==0):
-			Messages+=['Player feels more familiar with their weapon.']
+			Messages+=[player.name+' feels more familiar with their weapon.']
 			familiar[1]=1
 		if(player.lvl>=player.wield.intm and familiar[2]==0):
-			Messages+=['Player feels more familiar with their weapon.']
+			Messages+=[player.name+' feels more familiar with their weapon.']
 			familiar[2]=1
 		player.hp-=player.bp
 		if(bonus!=1):
 			if(player.bp*3>player.VIT):
-				Messages+=['Player bleeds heavily.']
+				Messages+=[player.name+' bleeds heavily.']
 			elif(player.bp*5>player.VIT):
-				Messages+=['Player bleeds severally.']
+				Messages+=[player.name+' bleeds severally.']
 			elif(player.bp*9>player.VIT):
-				Messages+=['Player bleeds mildly.']
+				Messages+=[player.name+' bleeds mildly.']
 			elif(player.bp>0):
-				Messages+=['Player bleeds lightly.']
-			player.sp=min(player.sp,player.VIT)
+				Messages+=[player.name+' bleeds lightly.']
+			if(player.sp*5<player.VIT):
+				Messages+=[player.name+' is almost starving.']
+			elif(player.sp*3<player.VIT):
+				Messages+=[player.name+' is very hungry.']
+			elif(player.sp*2<player.VIT):
+				Messages+=[player.name+' is hungry.']
+		player.sp=min(player.sp,player.VIT)
 #####################
 #######setting#######
 #####################
-		player.bp=player.bp*player.VIT//(player.sp//2+player.VIT+player.str+player.wield.strm)
+		player.bp=player.bp*player.VIT//(player.sp//2+player.VIT)
 		player.sp-=d(player.VIT-player.hp)//5
 		if(d(player.VIT-player.bp)>max(player.VIT//2,player.VIT-player.sp) and player.hp<player.sp):
 			player.hp+=1
-		if(d(player.VIT+player.int*player.wield.intm-player.mp)>player.VIT-player.int*player.wield.intm and player.mp<(player.int*player.wield.intm*ER_divide)//(ER_divide+player.wear.ER)):
+		if(d(player.VIT+player.int*player.wield.intm-player.mp)>player.VIT-player.int*player.wield.intm and player.mp<(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER)):
 			player.mp+=1
 		if(player.sp<0):
 			player.hp+=player.sp
 			player.sp=0
-			Messages+=['Player starves.']
+			Messages+=[player.name+' starves.']
 #####################
 #setting######points#
 #####################
 def check(xx,yy):
 	if((xx,yy) in Total_list[::2]):
+		if(max(abs(player.x-xx),abs(player.y-yy))<=Magic_distance):
+			global Targets
+			Targets+=[(xx-player.x,yy-player.y)]
 		return Total_list[Total_list.index((xx,yy))+1].icon
 	elif((xx,yy,0) in Total_list[::2]):
 		return Total_list[Total_list.index((xx,yy,0))+1].icon
 	else:
 		return '.'
 def screen(x=0,y=0,extra=''):
+	global Targets
 	show=[]
 	for i in range(17):
 		show+=[[',']*17]
+	Targets=[]
 	for i in range(17):
 		for l in range(17):
 			show[16-l][i]=check(player.x+i-8,player.y+l-8)
@@ -706,12 +732,18 @@ def screen(x=0,y=0,extra=''):
 	if(ab==''):
 		ab='-'
 	s('cls')
-	print('\nSTR:'+str(player.str)+' '*(10-len(str(player.str)))+'HP:'+str(player.hp),'DEX:'+str(player.dex)+' '*(10-len(str(player.dex)))+'MP:'+str(player.mp),'INT:'+str(player.int)+' '*(10-len(str(player.int)))+'FP:'+str(player.fp),'SP:'+str(player.sp)+' '*(11-len(str(player.sp)))+'BP:'+str(player.bp),'Wield:'+player.wield.name+' '*(8-len(player.wield.name))+'SM:'+familiar[0]*str(player.wield.strm)+(1-familiar[0])*'?'+','+familiar[1]*str(player.wield.dexm)+(1-familiar[1])*'?'+','+familiar[2]*str(player.wield.intm)+(1-familiar[2])*'?','Wear:'+player.wear.name+' '*(9-len(player.wear.name))+'Abilities:'+ab,'ER:'+str(player.wear.ER)+' '*(11-len(str(player.wear.ER)))+'AC:'+str(player.AC),'XP:'+str(XP)+' '*(11-len(str(XP)))+'Level:'+str(player.lvl),zzzz,*Messages[-transcript:],extra,sep='\n')
+	print('\nSTR:'+str(player.str)+' '*(10-len(str(player.str)))+'HP:'+str(player.hp),'DEX:'+str(player.dex)+' '*(10-len(str(player.dex)))+'MP:'+str(player.mp),'INT:'+str(player.int)+' '*(10-len(str(player.int)))+'FP:'+str(player.fp),'SP:'+str(player.sp)+' '*(11-len(str(player.sp)))+'BP:'+str(player.bp),sep='\n')
+	print('Wield:'+player.wield.name,'Wear:'+player.wear.name,'Shield:'+(str(player.shield.name) if player.wield.dual==1 else '-'),'Abilities:'+ab,sep='\n')
+	print('MR:'+str(player.MR)+' '*(11-len(str(player.MR)))+'SM:'+(str(player.wield.strm) if familiar[0]==1 else '?')+','+(str(player.wield.dexm) if familiar[1]==1 else '?')+','+(str(player.wield.intm) if familiar[2]==1 else '?'),'ER:'+str(player.ER)+' '*(11-len(str(player.ER)))+'AC:'+str(player.AC),'XP:'+str(XP)+' '*(11-len(str(XP)))+'Level:'+str(player.lvl),zzzz,*Messages[-transcript:],sep='\n')
+	print(extra)
 player=generate()
 while(True):
 	Pop_list=[]
 	screen()
-	controls(d(20+player.dex))
+	if(player.fp<d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str))):
+		controls()
+	else:
+		player.fp=0 if player.fp<=player.dex else player.fp-player.dex
 	for i in range(len(Total_list)//2):
 		move(i)
 	if(player.hp<=0):
@@ -722,26 +754,8 @@ while(True):
 		exit()
 	for i in Pop_list:
 		q=Total_list[i+1]
-		Total_list[i]=Total_list[i]+tuple([0])
-		try:
-			Total_list[i+1]=q.drop
-#####################
-#######setting#######
-#####################
-		except:
-			zp=d(20)
-			if(q.xp<2**zp or bonus==1):
-				usl=rl((zp,)+RL_Food[1:])
-				Total_list[i+1]=Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])
-			elif(d(2)==1):
-				usl=rl(RL_Potions)
-				Total_list[i+1]=Item(Potion_icon,usl,Titles_list[usl])
-			elif(d(2)==1):
-				usl=rl((q.str,q.dex,q.int,zp))
-				Total_list[i+1]=Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])
-			else:
-				usl=rl((zp,(q.type==0)*4+6,(q.type%3==2)*20,(q.type%3==1)*20,(q.type%2==1)*30))
-				Total_list[i+1]=Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])
-#####################
-#setting########drop#
-#####################
+		for k in q.drop:
+			Total_list+=[Total_list[i]+tuple([0])]
+			Total_list+=[k]
+		Total_list.pop(i)
+		Total_list.pop(i)

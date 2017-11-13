@@ -731,12 +731,13 @@ def alarms():
 		Messages+=[player.name+' bleeds mildly.']
 	elif(player.bp>0):
 		Messages+=[player.name+' bleeds lightly.']
-	if(player.sp*5<player.VIT):
-		Messages+=[player.name+' is almost starving.']
-	elif(player.sp*3<player.VIT):
-		Messages+=[player.name+' is very hungry.']
-	elif(player.sp*2<player.VIT):
-		Messages+=[player.name+' is hungry.']
+	if(player.sp>0):
+		if(player.sp*5<player.VIT):
+			Messages+=[player.name+' is almost starving.']
+		elif(player.sp*3<player.VIT):
+			Messages+=[player.name+' is very hungry.']
+		elif(player.sp*2<player.VIT):
+			Messages+=[player.name+' is hungry.']
 def check(xx,yy):
 	if((xx,yy) in X_Y_list):
 		if(max(abs(player.x-xx),abs(player.y-yy))<=Magic_distance):

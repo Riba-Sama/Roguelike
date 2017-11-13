@@ -71,17 +71,18 @@ class Mob(Entity):
 		self.wear=Armor(*ab[13])
 		if(self.wield.dual==3):
 			self.shield=self.wield
-		elif(len(ab)>15):
-			self.shield=Weapon(*ab[15])
+		elif(len(ab)>14):
+			self.shield=Weapon(*ab[14])
 		else:
-			self.shield=Weapon(2,0,0,Shield_icon,'buckler',2)
+			self.shield=Weapon(0,0,0,Shield_icon,'',2)
 		self.MR=self.shield.MR
 		self.ER=self.shield.ER+self.wear.ER
-		self.lvl=ab[14]
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
 		self.VIT=self.hp
+		self.BAC=self.AC-self.wear.AC-self.shield.AC
 		self.xp=xp_fun(self)*ab[11]
-		self.drop=[Food(2,Food_icon,'chunk of meat')]*rl([self.lvl,4])+[self.shield]*rl([4,self.lvl])*(len(ab)>15)+[self.wield]*rl([4,self.lvl])+[self.wear]*rl([4,self.lvl])
+		self.lvl=self.xp//500
+		self.drop=[Food(2,Food_icon,'chunk of meat')]*rl([self.lvl,4])+[self.shield]*rl([4,self.lvl])*(len(ab)>14)+[self.wield]*rl([4,self.lvl])+[self.wear]*rl([4,self.lvl])
 class Me(Entity):
 	def __init__(self,ab):
 		self.hp=ab[0]

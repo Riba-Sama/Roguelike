@@ -3,8 +3,16 @@ from msvcrt import getwch as w
 from copy import deepcopy
 from os import system as s
 from os import path
-from settings import *
-from entities import *
+try:
+	from settings import *
+except ModuleNotFoundError as err:
+	print('Failed to import settings file,',err,"\nCan't proceed executing programm.")
+	g()
+try:
+	from entities import *
+except ModuleNotFoundError as err:
+	print('Failed to import entities file,',err,"\nCan't proceed executing programm.")
+	g()
 try:
 	from map import Map
 except ModuleNotFoundError as err :
@@ -23,12 +31,10 @@ for i in range(len(Effects_list)):
 	Titles_list+=[Title]
 try:
 	from boss import *
-except ImportError as err:
-	Messages+=['Failed to import boss file, '+str(err)]
-except NameError as err:
+except ModuleNotFoundError as err:
 	Messages+=['Failed to import boss file, '+str(err)]
 def un(x,y):
-	return not (x,y) in Total_list[::2]
+	return not (x,y) in X_Y_list
 def disx(x):
 	return abs(player.x-x)
 def disy(y):
@@ -79,6 +85,14 @@ def levelup():
 	global player
 	while(XP>=XP_base*2**player.lvl):
 		player=lvlup(player)
+def death(n):
+	global Total_list,X_Y_list
+	q=Total_list[n]
+	for k in q.drop:
+		X_Y_list+=[X_Y_list[n]+tuple([0])]
+		Total_list+=[k]
+	Total_list.pop(n)
+	X_Y_list.pop(n)
 #####################
 #######setting#######
 #####################
@@ -108,41 +122,48 @@ def consume(ent,what):
 #setting#####potions#
 #####################
 def generate():
-	global Total_list
+	global Total_list,X_Y_list
 	Total_list=[]
+	X_Y_list=[]
 	for i in range(512):
 		for l in range(512):
 			if(Map[i+l*512]=='.'):
 				if(i==511 or i==0 or l==511 or l==0):
-					Total_list+=[(i,l),Mob(Mob_list[0])]
+					Total_list+=[Mob(Mob_list[0])]
+					X_Y_list+=[(i,l)]
 				elif(250<i and i<262 and 250<l and l<262):
 					pass
 				elif(d(200)==1):
 					usl=rl(RL_Mobs)
-					Total_list+=[(i,l),Mob(Mob_list[usl])]
+					Total_list+=[Mob(Mob_list[usl])]
+					X_Y_list+=[(i,l)]
 				elif(d(1000)==1):
 					usl=rl(RL_Potions)
-					Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
+					Total_list+=[Item(Potion_icon,usl,Titles_list[usl])]
+					X_Y_list+=[(i,l,0)]
 				elif(d(1000)==1):
 					usl=rl(RL_Food)
-					Total_list+=[(i,l,0),Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])]
+					Total_list+=[Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])]
+					X_Y_list+=[(i,l,0)]
 				elif(d(5000)==1):
 					usl=rl(RL_Weapons)
-					Total_list+=[(i,l,0),Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
+					Total_list+=[Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
+					X_Y_list+=[(i,l,0)]
 				elif(d(5000)==1):
 					usl=rl(RL_Armor)
-					Total_list+=[(i,l,0),Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
+					Total_list+=[Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
+					X_Y_list+=[(i,l,0)]
 			else:
 				a=Map[i+l*512]
 				if(a is Wall_icon):
-					Total_list+=[(i,l),Mob(Mob_list[0])]
+					Total_list+=[Mob(Mob_list[0])]
+					X_Y_list+=[(i,l)]
 				elif(a is Boss_icon):
 					try:
-						Total_list+=[(i,l),Boss()]
-					except NameError as err:
-						Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
-						global Messages
-						Messages+=['Failed to import boss, '+str(err)]
+						Total_list+=[Boss()]
+						X_Y_list+=[(i,l)]
+					except:
+						pass
 				elif(97<=ord(a.lower())<=122):
 					usl1=rl(RL_Weapons)
 					usl2=rl(RL_Armor)
@@ -151,19 +172,24 @@ def generate():
 					for r in Presets:
 						if(r[9] is a):
 							auto=r
-					Total_list+=[(i,l),Mob(auto)] if auto!=() else [(i,l),Mob(Mob_list[usl3])]
+					Total_list+=[Mob(auto)] if auto!=() else [Mob(Mob_list[usl3])]
+					X_Y_list+=[(i,l)]
 				elif(a is Potion_icon):
 					usl=rl(RL_Potions)
-					Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
+					Total_list+=[Item(Potion_icon,usl,Titles_list[usl])]
+					X_Y_list+=[(i,l,0)]
 				elif(a is Food_icon):
 					usl=rl(RL_Food)
-					Total_list+=[(i,l,0),Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])]
+					Total_list+=[Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])]
+					X_Y_list+=[(i,l,0)]
 				elif(a is Weapon_icon):
 					usl=rl(RL_Weapons)
-					Total_list+=[(i,l,0),Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
+					Total_list+=[Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
+					X_Y_list+=[(i,l,0)]
 				elif(a is Armor_icon):
 					usl=rl(RL_Armor)
-					Total_list+=[(i,l,0),Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
+					Total_list+=[Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
+					X_Y_list+=[(i,l,0)]
 #####################
 #######setting#######
 #####################
@@ -221,22 +247,24 @@ def magicattack(enA,enD):
 #setting#####attacks#
 #####################
 def move(n):
-	global Total_list,Messages,Pop_list,XP,player
-	zz=Total_list[n*2+1]
-	if(len(Total_list[n*2])==2):
+	global Total_list,X_Y_list,Messages,XP,player
+	zz=Total_list[n]
+	if(len(X_Y_list[n])==2):
 		if(zz.hp<=0):
 			Messages+=[player.name+' kills '+zz.name+'.']
 			XP+=zz.xp
 			levelup()
-			Pop_list+=[n*2]
+			death(n)
+			return
 		elif(zz.type>=0):
-			xx=Total_list[n*2][0]
-			yy=Total_list[n*2][1]
+			xx=X_Y_list[n][0]
+			yy=X_Y_list[n][1]
 			if(zz.bp>=zz.hp):
 				Messages+=[player.name+' kills '+zz.name+'.']
 				XP+=zz.xp
 				levelup()
-				Pop_list+=[n*2]
+				death(n)
+				return
 			elif(zz.aware==0 or dis(xx,yy)>=6+zz.aware*d(zz.int)//3):
 				zz.aware=1 if dis(xx,yy)<6+rl((9,3,1))+zz.aware*d(zz.int)//3 else 0
 			elif(zz.fp>d(20+zz.dex-zz.ER*SR_divide//(SR_divide+zz.str)) or (zz.fp>=zz.dex and zz.type%2==1) or (zz.fp>=d(zz.dex) and zz.type%3==2)):
@@ -253,26 +281,26 @@ def move(n):
 				zz,player=attack(zz,player)
 			elif((zz.type%2==1 and dis(xx,yy)<=4) or (zz.type%3==1 and dis(xx,yy)==1 and d(zz.int)>=4)):
 				if(un(xx-sig(player.x-xx),yy-sig(player.y-yy))):
-					Total_list[n*2]=(xx-sig(player.x-xx),yy-sig(player.y-yy))
+					X_Y_list[n]=(xx-sig(player.x-xx),yy-sig(player.y-yy))
 					zz.fp+=1
 				elif(disx(xx)>disy(yy) and un(xx-sig(player.x-xx),yy)):
-					Total_list[n*2]=(xx-sig(player.x-xx),yy)
+					X_Y_list[n]=(xx-sig(player.x-xx),yy)
 					zz.fp+=1
 				elif(un(xx,yy-sig(player.y-yy))):
-					Total_list[n*2]=(xx,yy-sig(player.y-yy))
+					X_Y_list[n]=(xx,yy-sig(player.y-yy))
 					zz.fp+=1
 				else:
 					zz.fp-=zz.dex
 					if(zz.fp<0):
 						zz.fp=0
 			elif(un(xx+sig(player.x-xx),yy+sig(player.y-yy))):
-				Total_list[n*2]=(xx+sig(player.x-xx),yy+sig(player.y-yy))
+				X_Y_list[n]=(xx+sig(player.x-xx),yy+sig(player.y-yy))
 				zz.fp+=1
 			elif(disx(xx)>disy(yy) and un(xx+sig(player.x-xx),yy)):
-				Total_list[n*2]=(xx+sig(player.x-xx),yy)
+				X_Y_list[n]=(xx+sig(player.x-xx),yy)
 				zz.fp+=1
 			elif(un(xx,yy+sig(player.y-yy))):
-				Total_list[n*2]=(xx,yy+sig(player.y-yy))
+				X_Y_list[n]=(xx,yy+sig(player.y-yy))
 				zz.fp+=1
 			else:
 				zz.fp-=zz.dex
@@ -284,7 +312,7 @@ def move(n):
 				zz.hp+=1
 			if(d(zz.VIT+zz.int*zz.wield.intm-zz.mp)>zz.VIT-zz.int*zz.wield.intm and zz.mp<(zz.int*zz.wield.intm*ER_divide)//(ER_divide+zz.ER)):
 				zz.mp+=1
-			Total_list[n*2+1]=zz
+			Total_list[n]=zz
 def help():
 	global Messages
 	Messages+=['']
@@ -315,12 +343,14 @@ def abbs():
 	Messages+=['SM     stats multiplier from wielded weapon.']
 	Messages+=['AC     summary armor count.']
 	Messages+=['ER     armor encumbrance rating.']
+	Messages+=['MR     magical resistance from wielded shield.']
 def icons():
 	global Messages
 	Messages+=['']
 	Messages+=[Player_icon+' '*6+'player.']
 	Messages+=[Potion_icon+' '*6+'potion.']
 	Messages+=[Weapon_icon+' '*6+'weapon.']
+	Messages+=[Shield_icon+' '*6+'shield.']
 	Messages+=[Armor_icon+' '*6+'armor.']
 	Messages+=[Food_icon+' '*6+'food.']
 	Messages+=[Wall_icon+' '*6+'wall.']
@@ -332,15 +362,17 @@ def xp():
 	for i in Mob_list:
 		zoo=Mob(i)
 		Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)+(8-len(str(zoo.xp)))*' '+str(i)]
+	zoo=Boss()
+	Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)]
 def story():
 	s('cls')
 	print(*Messages[-transcript*3:],sep='\n')
 	print('Press any key to continue.')
 ##!#test#!##
-def controls():
+def controls(fatigue):
 	global player,Total_list,Messages,familiar
 	retry=0
-	a=g()
+	a=g() if player.fp<=fatigue else b'.'
 	if(a==b'?'):
 		help()
 		retry=1
@@ -358,52 +390,52 @@ def controls():
 			player.y+=1
 			player.fp+=1
 		else:
-			player,Total_list[Total_list.index((player.x-1,player.y+1))+1]=attack(player,Total_list[Total_list.index((player.x-1,player.y+1))+1])
+			player,Total_list[X_Y_list.index((player.x-1,player.y+1))]=attack(player,Total_list[X_Y_list.index((player.x-1,player.y+1))])
 	elif(a==b't'):
 		if(un(player.x,player.y+1)):
 			player.y+=1
 			player.fp+=1
 		else:
-			player,Total_list[Total_list.index((player.x,player.y+1))+1]=attack(player,Total_list[Total_list.index((player.x,player.y+1))+1])
+			player,Total_list[X_Y_list.index((player.x,player.y+1))]=attack(player,Total_list[X_Y_list.index((player.x,player.y+1))])
 	elif(a==b'y'):
 		if(un(player.x+1,player.y+1)):
 			player.x+=1
 			player.y+=1
 			player.fp+=1
 		else:
-			player,Total_list[Total_list.index((player.x+1,player.y+1))+1]=attack(player,Total_list[Total_list.index((player.x+1,player.y+1))+1])
+			player,Total_list[X_Y_list.index((player.x+1,player.y+1))]=attack(player,Total_list[X_Y_list.index((player.x+1,player.y+1))])
 	elif(a==b'h'):
 		if(un(player.x+1,player.y)):
 			player.x+=1
 			player.fp+=1
 		else:
-			player,Total_list[Total_list.index((player.x+1,player.y))+1]=attack(player,Total_list[Total_list.index((player.x+1,player.y))+1])
+			player,Total_list[X_Y_list.index((player.x+1,player.y))]=attack(player,Total_list[X_Y_list.index((player.x+1,player.y))])
 	elif(a==b'n'):
 		if(un(player.x+1,player.y-1)):
 			player.x+=1
 			player.y-=1
 			player.fp+=1
 		else:
-			player,Total_list[Total_list.index((player.x+1,player.y-1))+1]=attack(player,Total_list[Total_list.index((player.x+1,player.y-1))+1])
+			player,Total_list[X_Y_list.index((player.x+1,player.y-1))]=attack(player,Total_list[X_Y_list.index((player.x+1,player.y-1))])
 	elif(a==b'b'):
 		if(un(player.x,player.y-1)):
 			player.y-=1
 			player.fp+=1
 		else:
-			player,Total_list[Total_list.index((player.x,player.y-1))+1]=attack(player,Total_list[Total_list.index((player.x,player.y-1))+1])
+			player,Total_list[X_Y_list.index((player.x,player.y-1))]=attack(player,Total_list[X_Y_list.index((player.x,player.y-1))])
 	elif(a==b'v'):
 		if(un(player.x-1,player.y-1)):
 			player.x-=1
 			player.y-=1
 			player.fp+=1
 		else:
-			player,Total_list[Total_list.index((player.x-1,player.y-1))+1]=attack(player,Total_list[Total_list.index((player.x-1,player.y-1))+1])
+			player,Total_list[X_Y_list.index((player.x-1,player.y-1))]=attack(player,Total_list[X_Y_list.index((player.x-1,player.y-1))])
 	elif(a==b'f'):
 		if(un(player.x-1,player.y)):
 			player.x-=1
 			player.fp+=1
 		else:
-			player,Total_list[Total_list.index((player.x-1,player.y))+1]=attack(player,Total_list[Total_list.index((player.x-1,player.y))+1])
+			player,Total_list[X_Y_list.index((player.x-1,player.y))]=attack(player,Total_list[X_Y_list.index((player.x-1,player.y))])
 	elif(a==b'z' and 'caster' in player.abilities):
 		a=b''
 		dx=0
@@ -460,7 +492,7 @@ def controls():
 					retry=1
 			else:
 				if(player.mp>=Magic_value):
-					player,Total_list[Total_list.index((player.x+dx,player.y+dy))+1]=magicattack(player,Total_list[Total_list.index((player.x+dx,player.y+dy))+1])
+					player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))]=magicattack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
 				else:
 					Messages+=['Not enough MP.']
 					retry=1
@@ -505,7 +537,7 @@ def controls():
 				Messages+=['Invalid target.']
 				retry=1
 			else:
-				player,Total_list[Total_list.index((player.x+dx,player.y+dy))+1]=farattack(player,Total_list[Total_list.index((player.x+dx,player.y+dy))+1])
+				player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))]=farattack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
 	elif(a==b'c' and 'berserker' in player.abilities):
 		a=b''
 		dx=0
@@ -544,7 +576,7 @@ def controls():
 				Messages+=['Invalid target.']
 				retry=1
 			else:
-				player,Total_list[Total_list.index((player.x+dx,player.y+dy))+1]=rushattack(player,Total_list[Total_list.index((player.x+dx,player.y+dy))+1])
+				player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))]=rushattack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
 	elif(a==b'i'):
 		if(len(player.inventory)>0):
 			s('cls')
@@ -608,24 +640,28 @@ def controls():
 		player.inventory.sort(key=lambda x : x.fn)
 		Messages+=[player.name+' sorts their inventory.']
 	elif(a==b'g'):
-		if(len(player.inventory)<26):
-			ko=(player.x,player.y,0)
-			if(ko in Total_list):
-				mur=Total_list.index(ko)
-				player.inventory+=[Total_list[mur+1]]
+		ko=(player.x,player.y,0)
+		if(ko in X_Y_list):
+			if(len(player.inventory)<26):
+				mur=X_Y_list.index(ko)
+				player.inventory+=[Total_list[mur]]
 				Total_list.pop(mur)
-				Total_list.pop(mur)
+				X_Y_list.pop(mur)
 				if(player.inventory[-1].name in Know_list):
 					player.inventory[-1].name=Effects_list[player.inventory[-1].number]
 				Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
 			else:
-				Messages+=['There is nothing here.']
+				Messages+=[player.name+"'s inventory is already full."]
 				retry=1
 		else:
-			Messages+=[player.name+"'s inventory is already full."]
+			Messages+=['There is nothing here.']
 			retry=1
 	elif(a==b'\x1b'):
-		exit()
+		print('Press Esc again if you are sure, or press anything else.')
+		if(g()==b'\x1b'):
+			exit()
+		else:
+			retry=1
 	elif(a==b'd'):
 		if(len(player.inventory)>0):
 			s('cls')
@@ -654,7 +690,7 @@ def controls():
 		retry=1
 	if(retry==1):
 		screen()
-		controls()
+		controls(fatigue)
 	else:
 		if(player.lvl>=player.wield.strm and familiar[0]==0):
 			Messages+=[player.name+' feels more familiar with their weapon.']
@@ -666,21 +702,6 @@ def controls():
 			Messages+=[player.name+' feels more familiar with their weapon.']
 			familiar[2]=1
 		player.hp-=player.bp
-		if(bonus!=1):
-			if(player.bp*3>player.VIT):
-				Messages+=[player.name+' bleeds heavily.']
-			elif(player.bp*5>player.VIT):
-				Messages+=[player.name+' bleeds severally.']
-			elif(player.bp*9>player.VIT):
-				Messages+=[player.name+' bleeds mildly.']
-			elif(player.bp>0):
-				Messages+=[player.name+' bleeds lightly.']
-			if(player.sp*5<player.VIT):
-				Messages+=[player.name+' is almost starving.']
-			elif(player.sp*3<player.VIT):
-				Messages+=[player.name+' is very hungry.']
-			elif(player.sp*2<player.VIT):
-				Messages+=[player.name+' is hungry.']
 		player.sp=min(player.sp,player.VIT)
 #####################
 #######setting#######
@@ -698,14 +719,32 @@ def controls():
 #####################
 #setting######points#
 #####################
+def alarms():
+	global Messages
+	if(player.bp>player.VIT):
+		Messages+=[player.name+' will die.']
+	elif(player.bp*3>player.VIT):
+		Messages+=[player.name+' bleeds severally.']
+	elif(player.bp*5>player.VIT):
+		Messages+=[player.name+' bleeds heavily.']
+	elif(player.bp*9>player.VIT):
+		Messages+=[player.name+' bleeds mildly.']
+	elif(player.bp>0):
+		Messages+=[player.name+' bleeds lightly.']
+	if(player.sp*5<player.VIT):
+		Messages+=[player.name+' is almost starving.']
+	elif(player.sp*3<player.VIT):
+		Messages+=[player.name+' is very hungry.']
+	elif(player.sp*2<player.VIT):
+		Messages+=[player.name+' is hungry.']
 def check(xx,yy):
-	if((xx,yy) in Total_list[::2]):
+	if((xx,yy) in X_Y_list):
 		if(max(abs(player.x-xx),abs(player.y-yy))<=Magic_distance):
 			global Targets
 			Targets+=[(xx-player.x,yy-player.y)]
-		return Total_list[Total_list.index((xx,yy))+1].icon
-	elif((xx,yy,0) in Total_list[::2]):
-		return Total_list[Total_list.index((xx,yy,0))+1].icon
+		return Total_list[X_Y_list.index((xx,yy))].icon
+	elif((xx,yy,0) in X_Y_list):
+		return Total_list[X_Y_list.index((xx,yy,0))].icon
 	else:
 		return '.'
 def screen(x=0,y=0,extra=''):
@@ -736,26 +775,23 @@ def screen(x=0,y=0,extra=''):
 	print('Wield:'+player.wield.name,'Wear:'+player.wear.name,'Shield:'+(str(player.shield.name) if player.wield.dual==1 else '-'),'Abilities:'+ab,sep='\n')
 	print('MR:'+str(player.MR)+' '*(11-len(str(player.MR)))+'SM:'+(str(player.wield.strm) if familiar[0]==1 else '?')+','+(str(player.wield.dexm) if familiar[1]==1 else '?')+','+(str(player.wield.intm) if familiar[2]==1 else '?'),'ER:'+str(player.ER)+' '*(11-len(str(player.ER)))+'AC:'+str(player.AC),'XP:'+str(XP)+' '*(11-len(str(XP)))+'Level:'+str(player.lvl),zzzz,*Messages[-transcript:],sep='\n')
 	print(extra)
-player=generate()
 while(True):
-	Pop_list=[]
-	screen()
-	if(player.fp<d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str))):
-		controls()
-	else:
-		player.fp=0 if player.fp<=player.dex else player.fp-player.dex
-	for i in range(len(Total_list)//2):
-		move(i)
-	if(player.hp<=0):
-		s('cls')
-		print('\n   ***'+Messages[-3]+'***   \n   ***'+Messages[-2]+'***   \n   ***'+Messages[-1]+'***   \n   ***Player dies.***   \n')
-		while(g()!=b'\x1b'):
-			print('Press Esc to exit.')
-		exit()
-	for i in Pop_list:
-		q=Total_list[i+1]
-		for k in q.drop:
-			Total_list+=[Total_list[i]+tuple([0])]
-			Total_list+=[k]
-		Total_list.pop(i)
-		Total_list.pop(i)
+	player=generate()
+	while(True):
+		alarms()
+		screen()
+		controls(d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
+		for i in range(len(Total_list)-1,-1,-1):
+			move(i)
+		if(player.hp<=0):
+			s('cls')
+			Messages+=[player.name+' dies.']
+			print('\n   ***'+Messages[-3]+'***   \n   ***'+Messages[-2]+'***   \n   ***'+Messages[-1]+'***\n')
+			a=b''
+			while(a!=b'\r' and a!=b'\x1b'):
+				print('Press Enter to continue, or Esc to exit.')
+				a=g()
+			if(a==b'\x1b'):
+				exit()
+			break
+	Messages+=[player.name+' rejoins the land of living.']

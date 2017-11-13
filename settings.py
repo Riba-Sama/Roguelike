@@ -1,11 +1,12 @@
 bonus=0
-transcript=12
+transcript=13
 ER_divide=2
 MR_divide=8
 SR_divide=12
 Messages=['']*transcript*3
 Messages+=['Press ? to get info about controls.']
 Total_list=[]
+X_Y_list=[]
 Potion_icon='?'
 Weapon_icon='!'
 Armor_icon=']'
@@ -15,12 +16,12 @@ Player_icon='@'
 Magic_icon='*'
 Boss_icon='&'
 Wall_icon='#'
-Mob_list=((200,0,0,0,1000,0,0,0,-3,Wall_icon,'Wall',0,(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0),1),(10,4,6,2,3,0,0,0,0,'g','Goblin',1,(2,2,2,Weapon_icon,'dagger'),(1,Armor_icon,'robe',0),1),(20,6,3,2,3,0,0,0,0,'k','Kobold',1,(2,2,2,Weapon_icon,'dagger'),(3,Armor_icon,'leather armor',2),1),(30,2,8,4,4,0,0,0,6,'G','Gnoll',1,(2,4,1,Weapon_icon,'spear'),(3,Armor_icon,'leather armor',2),3),(20,8,4,1,15,0,0,0,2,'o','Orc',1,(5,1,1,Weapon_icon,'mace'),(5,Armor_icon,'ringmail',10),3,(6,10,6,Shield_icon,'ceremonial shield',2)),(10,2,4,8,4,0,0,0,3,'i','Lesser Imp',1,(2,1,4,Weapon_icon,'wand'),(0,Armor_icon,'rags',0),3),(60,20,8,4,20,0,0,0,2,'O','Ogre',1,(8,1,0,Weapon_icon,'cudgel',3,4,10,3),(9,Armor_icon,'shellmail',100),7),(20,8,12,30,4,0,0,0,3,'D','Crimson Demon',1,(0,2,7,Weapon_icon,'rod',3,2,0,12),(0,Armor_icon,'archmage robe',-1),15),(30,12,16,16,9,0,0,0,1,'I','Greater Imp',1,(2,4,3,Weapon_icon,'trident',3,2,4,6),(0,Armor_icon,'rags',0),15))
-RL_Mobs=(0,24,24,12,12,20,2,1,1)
+Mob_list=((200,0,0,0,1000,0,0,0,-3,Wall_icon,'Wall',0,(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0)),(10,6,6,4,2,0,0,0,0,'g','Goblin',1,(2,2,2,Weapon_icon,'dagger'),(1,Armor_icon,'robe',0)),(20,8,2,3,8,0,0,0,0,'k','Kobold',1,(3,2,2,Weapon_icon,'sword'),(3,Armor_icon,'leather armor',2),(2,0,0,Shield_icon,'buckler',2)),(30,4,8,4,7,0,0,0,4,'G','Gnoll',1,(2,4,1,Weapon_icon,'spear'),(3,Armor_icon,'leather armor',2)),(20,9,4,2,20,0,0,0,2,'o','Orc',1,(5,1,1,Weapon_icon,'mace'),(5,Armor_icon,'ringmail',10),(6,10,6,Shield_icon,'ceremonial shield',2)),(10,3,6,10,1,0,0,0,3,'i','Lesser Imp',1,(2,1,4,Weapon_icon,'wand'),(0,Armor_icon,'rags',0)),(60,20,8,4,20,0,0,0,2,'O','Ogre',1,(8,1,0,Weapon_icon,'cudgel',3,4,10,3),(9,Armor_icon,'shellmail',100)),(20,8,12,30,4,0,0,0,3,'D','Crimson Demon',1,(0,2,7,Weapon_icon,'rod',3,2,0,12),(0,Armor_icon,'archmage robe',-1)),(30,12,16,16,9,0,0,0,1,'I','Greater Imp',1,(2,4,3,Weapon_icon,'trident',3,2,4,6),(0,Armor_icon,'rags',0)))
+RL_Mobs=(0,24,24,12,12,12,6,3,3)
 Effects_list=('healing potion','magic potion','poison potion','energetic potion','experience potion')
 Titles_list=[]
 RL_Potions=(6,3,5,4,2)
-Weapon_types_list=('dagger','sword','mace','spear','wand','cudgel','rod','trident','buckler','ceremonial shield')
+Weapon_types_list=('dagger','sword','mace','spear','wand','cudgel','rod','trident','buckler','ceremonial shield','')
 Weapon_m_list=((2,2,2),(3,2,2),(5,1,1),(2,4,1),(2,1,4))
 RL_Weapons=(2,8,6,3,3)
 Armor_types_list=('ringmail','leather armor','robe','rags','shellmail','archmage robe')
@@ -41,4 +42,17 @@ familiar=[1,1,1]
 lvl=1
 Targets=[]
 def xp_fun(self):
-    return (2*((self.type%3==2)+2)*self.str**3+2*((self.type%3==1)+2)*self.dex**3+2*((self.type%2==1)+2)*self.int**3+(self.str+self.dex+self.int+2*(self.AC-self.wear.AC-self.shield.AC))*self.str*self.dex*self.int)//100*(self.VIT+self.AC-self.wear.AC-self.shield.AC+self.str+self.dex+self.int)
+    if(self.type==0):
+        return (self.str**2+self.dex**2+self.str*self.dex+self.int+int(self.hp*1.13**self.BAC))**2//25
+    elif(self.type==1):
+        return (int((self.int+self.dex)*(1.13**self.int+1.13**self.dex))+self.int**2+self.dex**2+self.int*self.dex++int(self.hp*self.BAC/1.13))**2//25
+    elif(self.type==2):
+        return (int(self.dex*1.13**self.str)+self.str**2+self.str*self.dex+int(self.int**.13)+int(self.hp*self.BAC**1.13))**2//60
+    elif(self.type==3):
+        return (int(self.int*1.13**self.int)+self.int**2+self.int*self.dex+self.str+int(self.hp**.19*self.BAC))**2//25
+    elif(self.type==4):
+        return (int(self.dex*1.13**self.dex)+self.dex**2+self.int+self.str+int(self.hp*self.BAC**1.13/1.13))**2//30
+    elif(self.type==5):
+        return (int((self.int+self.str+self.dex)*(1.13**self.int+1.13**self.str))+self.int**2+self.str**2+(self.int+self.str)*self.dex++int(self.hp*self.BAC**1.13))**2//60
+    else:
+        return (2*((self.type%3==2)+2)*self.str**3+2*((self.type%3==1)+2)*self.dex**3+2*((self.type%2==1)+2)*self.int**3+(self.str+self.dex+self.int+2*(self.AC-self.wear.AC-self.shield.AC))*self.str*self.dex*self.int)//100*(self.VIT+self.AC-self.wear.AC-self.shield.AC+self.str+self.dex+self.int)

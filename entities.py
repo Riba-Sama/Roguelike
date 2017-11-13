@@ -1,4 +1,4 @@
-from settings import Armor_icon,Weapon_icon,Food_icon,Shield_icon,ER_divide,xp_fun,lvl
+from settings import Armor_icon,Weapon_icon,Food_icon,Shield_icon,ER_divide,xp_fun,lvl,XP
 from random import randrange as r
 def d(nii):
 	return r(nii>0,max(0,nii)+1)
@@ -107,3 +107,4 @@ class Me(Entity):
 		self.AC=self.BAC+self.shield.AC+self.wear.AC
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
 		self.VIT=self.hp
+		XP=0

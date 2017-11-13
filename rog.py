@@ -795,3 +795,10 @@ while(True):
 				exit()
 			break
 	Messages+=[player.name+' rejoins the land of living.']
+	Know_list=[0]*len(Effects_list)
+	Titles_list=[]
+	for i in range(len(Effects_list)):
+		Title=''
+		for l in range(d(4)*d(2)+d(4)):
+			Title+=chr(64+d(26))
+		Titles_list+=[Title]

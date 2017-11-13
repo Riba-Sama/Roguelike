@@ -3,19 +3,8 @@ from msvcrt import getwch as w
 from random import random as r
 from copy import deepcopy
 from os import system as s
-from os import path
 from settings import *
 from entities import *
-try:
-	from map import Map
-except ModuleNotFoundError as err :
-	Messages+=['Failed to import map file, '+str(err)]
-	Map='.'*262144
-try:
-	from presets import *
-except ModuleNotFoundError as err:
-	Presets=()
-	Messages+=['Failed to import presets file, '+str(err)]
 Know_list=[0]*len(Effects_list)
 def d(nii):
 	return int(r()*nii+1)
@@ -32,12 +21,6 @@ def rl(li):
 		t-=li[n]
 		n+=1
 	return n
-try:
-	from boss import *
-except ImportError as err:
-	Messages+=['Failed to import boss file, '+str(err)]
-except NameError as err:
-	Messages+=['Failed to import boss file, '+str(err)]
 def un(x,y):
 	return not (x,y) in Total_list
 def disx(x):
@@ -123,57 +106,24 @@ def generate():
 	Total_list=[]
 	for i in range(512):
 		for l in range(512):
-			if(Map[i+l*512]=='.'):
-				if(i==511 or i==0 or l==511 or l==0):
-					Total_list+=[(i,l),Mob(Mob_list[0])]
-				elif(250<i and i<262 and 250<l and l<262):
-					pass
-				elif(d(200)==1):
-					Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
-				elif(d(1000)==1):
-					usl=rl(RL_Potions)
-					Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
-				elif(d(1000)==1):
-					usl=rl(RL_Food)
-					Total_list+=[(i,l,0),Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])]
-				elif(d(5000)==1):
-					usl=rl(RL_Weapons)
-					Total_list+=[(i,l,0),Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
-				elif(d(5000)==1):
-					usl=rl(RL_Armor)
-					Total_list+=[(i,l,0),Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
-			else:
-				a=Map[i+l*512]
-				if(a is Wall_icon):
-					Total_list+=[(i,l),Mob(Mob_list[0])]
-				elif(a is Boss_icon):
-					try:
-						Total_list+=[(i,l),Boss()]
-					except NameError as err:
-						Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
-						global Messages
-						Messages+=['Failed to import boss, '+str(err)]
-				elif(97<=ord(a.lower())<=122):
-					usl1=rl(RL_Weapons)
-					usl2=rl(RL_Armor)
-					usl3=rl(RL_Mobs)
-					auto=()
-					for r in Presets:
-						if(r[0][9] is a):
-							auto=r
-					Total_list+=[(i,l),Mob(*auto)] if auto!=() else [(i,l),Mob(Mob_list[usl3],Weapon(d(Weapon_m_list[usl1][0]),d(Weapon_m_list[usl1][1]),d(Weapon_m_list[usl1][2]),Weapon_icon,Weapon_types_list[usl1]),Armor(Armor_AC_ER_list[usl2][0],Armor_icon,Armor_types_list[usl2],Armor_AC_ER_list[usl2][1]))]
-				elif(a is Potion_icon):
-					usl=rl(RL_Potions)
-					Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
-				elif(a is Food_icon):
-					usl=rl(RL_Food)
-					Total_list+=[(i,l,0),Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])]
-				elif(a is Weapon_icon):
-					usl=rl(RL_Weapons)
-					Total_list+=[(i,l,0),Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
-				elif(a is Armor_icon):
-					usl=rl(RL_Armor)
-					Total_list+=[(i,l,0),Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
+			if(i==511 or i==0 or l==511 or l==0):
+				Total_list+=[(i,l),Mob(Mob_list[0])]
+			elif(250<i and i<262 and 250<l and l<262):
+				pass
+			elif(d(200)==1):
+				Total_list+=[(i,l),Mob(Mob_list[rl(RL_Mobs)])]
+			elif(d(1000)==1):
+				usl=rl(RL_Potions)
+				Total_list+=[(i,l,0),Item(Potion_icon,usl,Titles_list[usl])]
+			elif(d(1000)==1):
+				usl=rl(RL_Food)
+				Total_list+=[(i,l,0),Food(Food_nutrition_list[usl],Food_icon,Food_types_list[usl])]
+			elif(d(5000)==1):
+				usl=rl(RL_Weapons)
+				Total_list+=[(i,l,0),Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
+			elif(d(5000)==1):
+				usl=rl(RL_Armor)
+				Total_list+=[(i,l,0),Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
 #####################
 #######setting#######
 #####################
@@ -334,7 +284,6 @@ def icons():
 	Messages+=[Armor_icon+' '*6+'armor.']
 	Messages+=[Food_icon+' '*6+'food.']
 	Messages+=[Wall_icon+' '*6+'wall.']
-	Messages+=[Boss_icon+' '*6+'boss.']
 	Messages+=['Letters represent enemies.']
 ##!#test#!##
 def xp():
@@ -654,9 +603,9 @@ def controls(fatigue):
 		player.hp-=player.bp
 		if(bonus!=1):
 			if(player.bp*3>player.VIT):
-				Messages+=[player.name+' bleeds heavily.']
-			elif(player.bp*5>player.VIT):
 				Messages+=[player.name+' bleeds severally.']
+			elif(player.bp*5>player.VIT):
+				Messages+=[player.name+' bleeds heavily.']
 			elif(player.bp*9>player.VIT):
 				Messages+=[player.name+' bleeds mildly.']
 			elif(player.bp>0):

@@ -1,8 +1,42 @@
-from msvcrt import getch as g
-from msvcrt import getwch as w
 from random import random as r
-from copy import deepcopy
-from os import system as s
+import sys, os
+
+def s():
+	os.system('cls' if os.name == 'nt' else 'clear')
+
+def w():
+    result = None
+    if os.name == 'nt':
+        import msvcrt
+        result = msvcrt.getwch()
+    else:
+        import termios
+        fd = sys.stdin.fileno()
+        oldterm = termios.tcgetattr(fd)
+        newattr = termios.tcgetattr(fd)
+        newattr[3] = newattr[3] & ~termios.ICANON & ~termios.ECHO
+        termios.tcsetattr(fd, termios.TCSANOW, newattr)
+        try:
+            result = sys.stdin.read(1)
+        except IOError:
+            pass
+        finally:
+            termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
+    return result
+
+def g():
+	result = None
+	if os.name == 'nt':
+		import msvcrt
+		result = msvcrt.getch()
+	else:
+		try:
+			result = w().encode()
+		except:
+			result = b''
+	return result
+	familiar=[1,1,1]
+
 from settings import *
 from entities import *
 Know_list=[0]*len(Effects_list)
@@ -292,7 +326,7 @@ def xp():
 		zoo=Mob(i)
 		Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)+(8-len(str(zoo.xp)))*' '+str(i)]
 def story():
-	s('cls')
+	s()
 	print(*Messages[-transcript*3:],sep='\n')
 	print('Press any key to continue.')
 ##!#test#!##
@@ -499,7 +533,7 @@ def controls(fatigue):
 				player,Total_list[Total_list.index((player.x+dx,player.y+dy))+1]=rushattack(player,Total_list[Total_list.index((player.x+dx,player.y+dy))+1])
 	elif(a==b'i'):
 		if(len(player.inventory)>0):
-			s('cls')
+			s()
 			for i in range(len(player.inventory)):
 				print(chr(i+97)+'- '+str(player.inventory[i].name))
 			a=ord(w())-97
@@ -563,7 +597,7 @@ def controls(fatigue):
 		exit()
 	elif(a==b'd'):
 		if(len(player.inventory)>0):
-			s('cls')
+			s()
 			for i in range(len(player.inventory)):
 				print(chr(i+97)+'- '+str(player.inventory[i].name))
 			a=ord(w())-97
@@ -655,7 +689,7 @@ def screen(x=0,y=0,extra=''):
 		ab+=i+' '
 	if(ab==''):
 		ab='-'
-	s('cls')
+	s()
 	print('\nSTR:'+str(player.str)+' '*(10-len(str(player.str)))+'HP:'+str(player.hp),'DEX:'+str(player.dex)+' '*(10-len(str(player.dex)))+'MP:'+str(player.mp),'INT:'+str(player.int)+' '*(10-len(str(player.int)))+'FP:'+str(player.fp),'SP:'+str(player.sp)+' '*(11-len(str(player.sp)))+'BP:'+str(player.bp),'Wield:'+player.wield.name+' '*(8-len(player.wield.name))+'SM:'+familiar[0]*str(player.wield.strm)+(1-familiar[0])*'?'+','+familiar[1]*str(player.wield.dexm)+(1-familiar[1])*'?'+','+familiar[2]*str(player.wield.intm)+(1-familiar[2])*'?','Wear:'+player.wear.name+' '*(9-len(player.wear.name))+'Abilities:'+ab,'ER:'+str(player.wear.ER)+' '*(11-len(str(player.wear.ER)))+'AC:'+str(player.AC),'XP:'+str(XP)+' '*(11-len(str(XP)))+'Level:'+str(player.lvl),zzzz,*Messages[-transcript:],sep='\n')
 	print(extra)
 player=generate()
@@ -666,7 +700,7 @@ while(True):
 	for i in range(len(Total_list)//2):
 		move(i)
 	if(player.hp<=0):
-		s('cls')
+		s()
 		print('\n   ***'+Messages[-3]+'***   \n   ***'+Messages[-2]+'***   \n   ***'+Messages[-1]+'***   \n   ***Player dies.***   \n')
 		while(g()!=b'\x1b'):
 			print('Press Esc to exit.')

@@ -16,7 +16,15 @@ Player_icon='@'
 Magic_icon='*'
 Boss_icon='&'
 Wall_icon='#'
-Mob_list=((200,0,0,0,1000,0,0,0,-3,Wall_icon,'Wall',0,(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0)),(10,6,6,4,2,0,0,0,0,'g','Goblin',1,(2,2,2,Weapon_icon,'dagger'),(1,Armor_icon,'robe',0)),(20,8,2,3,8,0,0,0,0,'k','Kobold',1,(3,2,2,Weapon_icon,'sword'),(3,Armor_icon,'leather armor',2),(2,0,0,Shield_icon,'buckler',2)),(30,4,8,4,7,0,0,0,4,'G','Gnoll',1,(2,4,1,Weapon_icon,'spear'),(3,Armor_icon,'leather armor',2)),(20,9,4,2,20,0,0,0,2,'o','Orc',1,(5,1,1,Weapon_icon,'mace'),(5,Armor_icon,'ringmail',10),(6,10,6,Shield_icon,'ceremonial shield',2)),(10,3,6,10,1,0,0,0,3,'i','Lesser Imp',1,(2,1,4,Weapon_icon,'wand'),(0,Armor_icon,'rags',0)),(60,20,8,4,20,0,0,0,2,'O','Ogre',1,(8,1,0,Weapon_icon,'cudgel',3,4,10,3),(9,Armor_icon,'shellmail',100)),(20,8,12,30,4,0,0,0,3,'D','Crimson Demon',1,(0,2,7,Weapon_icon,'rod',3,2,0,12),(0,Armor_icon,'archmage robe',-1)),(30,12,16,16,9,0,0,0,1,'I','Greater Imp',1,(2,4,3,Weapon_icon,'trident',3,2,4,6),(0,Armor_icon,'rags',0)))
+Mob_list=((200,0,0,0,1000,0,0,0,-3,Wall_icon,'Wall',0,(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0)),
+(10,6,6,4,2,0,0,0,0,'g','Goblin',1,(2,2,2,Weapon_icon,'dagger'),(1,Armor_icon,'robe',0)),
+(20,8,2,3,8,0,0,0,0,'k','Kobold',1,(3,2,2,Weapon_icon,'sword'),(3,Armor_icon,'leather armor',2),(2,0,0,Shield_icon,'buckler',2)),
+(30,4,8,4,7,0,0,0,4,'G','Gnoll',1,(2,4,1,Weapon_icon,'spear'),(3,Armor_icon,'leather armor',2)),
+(20,9,4,2,20,0,0,0,2,'o','Orc',1,(5,1,1,Weapon_icon,'mace'),(5,Armor_icon,'ringmail',10),(6,10,8,Shield_icon,'ceremonial shield',2)),
+(10,3,6,10,1,0,0,0,3,'i','Lesser Imp',1,(2,1,4,Weapon_icon,'wand'),(0,Armor_icon,'rags',0)),
+(60,20,8,4,20,0,0,0,2,'O','Ogre',1,(8,1,0,Weapon_icon,'cudgel',3,4,10,4),(9,Armor_icon,'shellmail',100)),
+(20,8,12,30,4,0,0,0,3,'D','Crimson Demon',1,(0,2,7,Weapon_icon,'rod',3,2,0,12),(0,Armor_icon,'archmage robe',-1)),
+(30,12,16,16,9,0,0,0,1,'I','Greater Imp',1,(2,4,3,Weapon_icon,'trident',3,4,0,4),(0,Armor_icon,'rags',0)))
 RL_Mobs=(0,24,24,12,12,12,6,3,3)
 Effects_list=('healing potion','magic potion','poison potion','energetic potion','experience potion')
 Titles_list=[]

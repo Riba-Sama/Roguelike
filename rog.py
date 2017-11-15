@@ -770,7 +770,7 @@ def screen(x=0,y=0,extra=''):
 	print(extra)
 
 while(True):
-    
+
 	print('Please wait while the world is being generated...')
 
 	player=generate()

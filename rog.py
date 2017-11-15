@@ -2,8 +2,12 @@ from random import random as r
 import sys, os
 
 def s():
-	os.system('cls' if os.name == 'nt' else 'clear')
-
+  if os.name == "posix":
+    os.system('clear')
+  elif os.name in ("nt", "dos", "ce"):
+    os.system('CLS')
+  else:
+    print('\n' * 100)
 def w():
     result = None
     if os.name == 'nt':

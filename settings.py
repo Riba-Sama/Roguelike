@@ -3,7 +3,6 @@ EASINESS=8
 
 bonus=0
 awares=0
-T_awares=0
 PT_awares=0
 transcript=13
 ER_divide=2

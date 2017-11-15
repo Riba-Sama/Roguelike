@@ -849,9 +849,8 @@ while(True):
         hey=floor(log(awares+1))
         for i in range(len(Total_list)-1,-1,-1):
             move(i)
-        awares=awares+PT_awares-T_awares
-        T_awares=PT_awares
-        PT_awares=0
+        awares=awares+PT_awares
+        PT_awares=-PT_awares
         if(player.hp<=0):
             s()
             Messages+=[player.name+' dies.']
@@ -872,7 +871,6 @@ while(True):
     Know_list=[0]*len(Effects_list)
     Titles_list=[]
     awares=0
-    T_awares=0
     PT_awares=0
     for i in range(len(Effects_list)):
         Title=''

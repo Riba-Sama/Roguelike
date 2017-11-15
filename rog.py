@@ -347,7 +347,7 @@ def move(n):
             elif dis(xx,yy) > 5 + awares + zz.VIT-zz.hp:
                 awares-=1
                 zz.aware=0
-            elif dis(xx,yy) < 15 - zz.lvl - awares and dis(xx,yy) > (1 if zz.type%2==0 and zz.type%3!=1 else (2 if zz.type%3==1 else 6)):
+            elif dis(xx,yy) < safe - zz.lvl - awares - (zz.VIT-zz.hp) and dis(xx,yy) > (1 if zz.type%2==0 and zz.type%3!=1 else (6 if zz.type%2==1 else 2)):
                 PT_awares+=zz.int
                 Messages+=[zz.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
             elif(zz.fp>d(20+zz.dex-zz.ER*SR_divide//(SR_divide+zz.str)) or (zz.fp>=zz.dex and zz.type%2==1) or (zz.fp>=d(zz.dex) and zz.type%3==2)):
@@ -360,9 +360,9 @@ def move(n):
                 zz,player=magicattack(zz,player)
             elif(dis(xx,yy)==1 and zz.type%3==2):
                 zz,player=rushattack(zz,player)
-            elif(dis(xx,yy)==1 and d(3)==1):
+            elif(dis(xx,yy)==1 and zz.type==0):
                 zz,player=attack(zz,player)
-            elif((zz.type==3 and dis(xx,yy)<=4) or (zz.type%3==1 and dis(xx,yy)==1)):
+            elif (zz.type==3 and dis(xx,yy)<=4) or (zz.type%3==1 and dis(xx,yy)==1):
                 if(un(xx-sig(player.x-xx),yy-sig(player.y-yy))):
                     X_Y_list[n]=(xx-sig(player.x-xx),yy-sig(player.y-yy))
                     zz.fp+=1
@@ -469,6 +469,11 @@ def icons():
 	Messages+=[Boss_icon+' '*6+'boss.']
 	Messages+=['Letters represent enemies.']
 
+def story():
+	s()
+	print(*Messages[-transcript*3:],sep='\n')
+	print('Press any key to continue.')
+
 def xp():
 	global Messages
 	for i in Mob_list:
@@ -477,10 +482,22 @@ def xp():
 	zoo=Boss()
 	Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)]
 
-def story():
-	s()
-	print(*Messages[-transcript*3:],sep='\n')
-	print('Press any key to continue.')
+def options():
+    try:
+        global bonus,transcript,ER_divide,MR_divide,SR_divide,Mob_appear,Noob_Confetti,Mob_ungroup,Mob_group
+        bonus=int(input('bonus='))
+        transcript=int(input('transcript='))
+        ER_divide=int(input('ER_divide='))
+        MR_divide=int(input('MR_divide='))
+        SR_divide=int(input('SR_divide='))
+        Mob_appear=int(input('Mob_appear='))
+        Noob_Confetti=int(input('Noob_Confetti='))
+        Mob_ungroup=int(input('Mob_ungroup='))
+        Mob_group=int(input('Mob_group='))
+        safe+int(input('safe='))
+    except:
+        print('Invalid options given.')
+    g()
 
 def direction(a):
 	if a==b'r':
@@ -840,11 +857,13 @@ while(True):
             Messages+=[player.name+' dies.']
             print('\n   ***'+Messages[-3]+'***   \n   ***'+Messages[-2]+'***   \n   ***'+Messages[-1]+'***\n')
             a=b''
-            while(a!=b'\r' and a!=b'\x1b'):
+            while(a!=b'\r' and a!=b'\x1b' and a!=b'\x0f'):
                 print('Press Enter to continue, or Esc to exit.')
                 a=g()
             if(a==b'\x1b'):
                 exit()
+            elif(a==b'\x0f'):
+                options()
             break
 
     Messages+=[player.name+' rejoins the land of living.']

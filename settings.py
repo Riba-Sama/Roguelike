@@ -13,6 +13,7 @@ Mob_appear=50*EASINESS
 Noob_Confetti=50*EASINESS
 Mob_ungroup=EASINESS
 Mob_group=4
+safe=13
 Messages=['']*transcript*3
 Messages+=['Press ? to get info about controls.']
 Total_list=[]

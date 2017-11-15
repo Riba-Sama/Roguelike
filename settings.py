@@ -1,5 +1,5 @@
 
-EASINESS=8
+EASINESS=10
 
 bonus=0
 awares=0

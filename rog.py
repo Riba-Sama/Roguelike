@@ -341,14 +341,14 @@ def move(n):
                 death(n)
                 return
             elif(zz.aware==0):
-                if dis(xx,yy) < 6 + hey + zz.VIT-zz.hp:
+                if dis(xx,yy) < 7 + hey + zz.VIT-zz.hp:
                     zz.aware=1
                     awares+=1
-            elif dis(xx,yy) > 5 + awares + zz.VIT-zz.hp:
+            elif dis(xx,yy) > 7 + hey + zz.VIT-zz.hp:
                 awares-=1
                 zz.aware=0
-            elif dis(xx,yy) < safe - zz.lvl - awares - (zz.VIT-zz.hp) and dis(xx,yy) > (1 if zz.type%2==0 and zz.type%3!=1 else (6 if zz.type%2==1 else 2)):
-                PT_awares+=zz.int
+            elif dis(xx,yy) < safe - zz.lvl - shuu - (zz.VIT-zz.hp) and dis(xx,yy) > (1 if zz.type%2==0 and zz.type%3!=1 else (6 if zz.type%2==1 else 2)):
+                PT_awares+=zz.lvl
                 Messages+=[zz.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
             elif(zz.fp>d(20+zz.dex-zz.ER*SR_divide//(SR_divide+zz.str)) or (zz.fp>=zz.dex and zz.type%2==1) or (zz.fp>=d(zz.dex) and zz.type%3==2)):
                 zz.fp-=zz.dex
@@ -484,7 +484,7 @@ def xp():
 
 def options():
     try:
-        global bonus,transcript,ER_divide,MR_divide,SR_divide,Mob_appear,Noob_Confetti,Mob_ungroup,Mob_group
+        global bonus,transcript,ER_divide,MR_divide,SR_divide,Mob_appear,Noob_Confetti,Mob_ungroup,Mob_group,safe
         bonus=int(input('bonus='))
         transcript=int(input('transcript='))
         ER_divide=int(input('ER_divide='))
@@ -494,7 +494,7 @@ def options():
         Noob_Confetti=int(input('Noob_Confetti='))
         Mob_ungroup=int(input('Mob_ungroup='))
         Mob_group=int(input('Mob_group='))
-        safe+int(input('safe='))
+        safe=int(input('safe='))
     except:
         print('Invalid options given.')
     g()
@@ -846,11 +846,11 @@ while(True):
         alarms()
         screen()
         controls(d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
-        hey=floor(log(awares+1))
+        hey=floor(log(awares+PT_awares+1.0,2.0))
+        shuu=ceil(log(8.0,1.0+1.0/(awares+PT_awares+1.0)))
+        PT_awares=0
         for i in range(len(Total_list)-1,-1,-1):
             move(i)
-        awares=awares+PT_awares
-        PT_awares=-PT_awares
         if(player.hp<=0):
             s()
             Messages+=[player.name+' dies.']

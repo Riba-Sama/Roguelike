@@ -1,6 +1,6 @@
 import sys, os
 
-def s():
+def clearchat():
   if os.name == "posix":
     os.system('clear')
   elif os.name in ("nt", "dos", "ce"):
@@ -8,7 +8,7 @@ def s():
   else:
     print('\n' * 100)
 
-def w():
+def getcharkey():
     result = None
     if os.name == 'nt':
         import msvcrt
@@ -28,14 +28,14 @@ def w():
             termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
     return result
 
-def g():
+def getkey():
 	result = None
 	if os.name == 'nt':
 		import msvcrt
 		result = msvcrt.getch()
 	else:
 		try:
-			result = w().encode()
+			result = getcharkey().encode()
 		except:
 			result = b''
 	return result
@@ -45,7 +45,7 @@ try:
 except ModuleNotFoundError as err:
     print('Failed to import settings file,',err,
     "\nCan't proceed executing programm.")
-    g()
+    getkey()
     exit()
 
 try:
@@ -53,7 +53,7 @@ try:
 except ModuleNotFoundError as err:
     print('Failed to import entities file,',err,
     "\nCan't proceed executing programm.")
-    g()
+    getkey()
     exit()
 
 try:
@@ -71,10 +71,13 @@ except NameError as err:
 spawn_x,spawn_y=x_size//2,y_size//2
 
 try:
-	from presets import *
+	from map import Presets
 except ModuleNotFoundError as err:
-	Presets=()
-	Messages+=['Failed to import presets file, '+str(err)]
+    Presets=()
+    Messages+=['Failed to import presets file, '+str(err)]
+except NameError as err:
+    Presets=()
+    Messages+=['Failed to import presets, '+str(err)]
 
 try:
     from boss import *
@@ -105,53 +108,43 @@ def sig(x):
 		return 0
 
 def lvlup(x):
-	x.lvl+=1
-	if d(3) == 1:
-		x.str+=1
-	elif d(2) == 1:
-		x.dex+=1
-	else:
-		x.int+=1
-	if x.lvl%5 == 0:
-		if x.name == 'Player' and not x.abilities is Ability:
-			qyu=''
-			for i in Ability - x.abilities:
-				qyu+='If you want to become '+i[0].upper()+i[1:]+', type in '+i+'.\n'
-			qyu+='If you want to become stronger, type in anything else.'
-			screen(0,0,qyu)
-			a=input('')
-			global Messages
-			if a in Ability:
-				x.abilities=x.abilities | {a}
-				a=Cool_dict[a]
-				Messages+=[a[0]]
-				x.str+=a[1]
-				x.dex+=a[2]
-				x.int+=a[3]
-			else:
-				x.str+=Coolness
-				x.dex+=Coolness
-				x.int+=Coolness
-		else:
-			x.str+=Coolness
-			x.dex+=Coolness
-			x.int+=Coolness
-	return x
+    x.lvl+=1
+    if d(3) == 1:
+    	x.str+=1
+    elif d(2) == 1:
+    	x.dex+=1
+    else:
+    	x.int+=1
+    if x.lvl%5 == 0:
+    	if x.__class__.__name__ == 'Me' and x.abilities != Ability:
+            qyu=''
+            for i in Ability - x.abilities:
+            	qyu+='If you want to become '+i[0].upper()+i[1:]+', type in '+i+'.\n'
+            qyu+='If you want to become stronger, type in anything else.'
+            screen(0,0,qyu)
+            a=input('')
+            global Messages
+            if a in Ability:
+            	x.abilities=x.abilities | {a}
+            	a=Cool_dict[a]
+            	Messages+=[a[0]]
+            	x.str+=a[1]
+            	x.dex+=a[2]
+            	x.int+=a[3]
+            else:
+            	x.str+=Coolness
+            	x.dex+=Coolness
+            	x.int+=Coolness
+    	else:
+    		x.str+=Coolness
+    		x.dex+=Coolness
+    		x.int+=Coolness
+    return x
 
 def levelup():
 	global player
 	while XP >= XP_base*2**player.lvl:
 		player=lvlup(player)
-
-def death(n):
-    global Total_list,X_Y_list,awares
-    q=Total_list[n]
-    awares-=q.aware
-    for k in q.drop:
-        X_Y_list+=[X_Y_list[n]+tuple([0])]
-        Total_list+=[k]
-    Total_list.pop(n)
-    X_Y_list.pop(n)
 #####################
 #######setting#######
 #####################
@@ -176,7 +169,6 @@ def consume(ent,what):
 		ent.sp+=4
 	elif what == 4:
 		ent=lvlup(ent)
-	return ent
 #####################
 #setting#####potions#
 #####################
@@ -240,7 +232,7 @@ def generate():
         l=d(y_size)-1
         a=Map[i+l*(x_size)]
         b=rl(RL_Mobs)
-        birth(i,l,Mob_list[b],d(RL_Mobs[b]*Mob_group//Mob_ungroup))
+        birth(i,l,Mob_list[b],d(Mob_list[b][5]//Mob_ungroup))
     for umlaut in range(Noob_Confetti):
         i=d(x_size)-1
         l=d(y_size)-1
@@ -262,7 +254,6 @@ def generate():
                 usl=rl(RL_Armor)
                 Total_list+=[Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
                 X_Y_list+=[(i,l,0)]
-    return Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y])
 #####################
 #######setting#######
 #####################
@@ -276,7 +267,6 @@ def attack(enA,enD):
 	else:
 		Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
 	enA.fp+=2
-	return enA,enD
 
 def farattack(enA,enD):
 	global Messages
@@ -288,7 +278,6 @@ def farattack(enA,enD):
 	else:
 		Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
 	enA.fp+=4
-	return enA,enD
 
 def rushattack(enA,enD):
 	global Messages
@@ -300,7 +289,6 @@ def rushattack(enA,enD):
 	else:
 		Messages+=[enA.name+' crushes floor near '+enD.name+"'s feet."] if atk > enD.AC else [enD.name+' barely blocks '+enA.name+"'s hit."]
 	enA.fp+=8
-	return enA,enD
 
 def magicattack(enA,enD):
 	global Messages
@@ -317,111 +305,126 @@ def magicattack(enA,enD):
 		Messages+=[enA.name+' gestures at '+enD.name+'.']
 	enA.fp+=4
 	enA.mp-=Magic_value
-	return enA,enD
+
+def stepaway(mob,n):
+    global X_Y_list
+    xx,yy=X_Y_list[n]
+    if(un(xx-sig(player.x-xx),yy-sig(player.y-yy))):
+        X_Y_list[n]=xx-sig(player.x-xx),yy-sig(player.y-yy)
+        mob.fp+=1
+    elif(disx(xx)>disy(yy) and un(xx-sig(player.x-xx),yy)):
+        X_Y_list[n]=xx-sig(player.x-xx),yy
+        mob.fp+=1
+    elif(disy(yy)>disx(xx) and un(xx,yy-sig(player.y-yy))):
+        X_Y_list[n]=xx,yy-sig(player.y-yy)
+        mob.fp+=1
+    elif(disx(xx)==0 and un(xx+1,yy-sig(player.y-yy))):
+        X_Y_list[n]=xx+1,yy-sig(player.y-yy)
+        mob.fp+=1
+    elif(disx(xx)==0 and un(xx-1,yy-sig(player.y-yy))):
+        X_Y_list[n]=xx-1,yy-sig(player.y-yy)
+        mob.fp+=1
+    elif(disy(yy)==0 and un(xx-sig(player.x-xx),yy+1)):
+        X_Y_list[n]=xx-sig(player.x-xx),yy+1
+        mob.fp+=1
+    elif(disy(yy)==0 and un(xx-sig(player.x-xx),yy-1)):
+        X_Y_list[n]=xx-sig(player.x-xx),yy-1
+        mob.fp+=1
+    else:
+        mob.fp=max(mob.fp-mob.dex,0)
+
+def stepahead(mob,n):
+    global X_Y_list
+    xx,yy=X_Y_list[n]
+    if(un(xx+sig(player.x-xx),yy+sig(player.y-yy))):
+        X_Y_list[n]=xx+sig(player.x-xx),yy+sig(player.y-yy)
+        mob.fp+=1
+    elif(disx(xx)>disy(yy) and un(xx+sig(player.x-xx),yy)):
+        X_Y_list[n]=xx+sig(player.x-xx),yy
+        mob.fp+=1
+    elif(disy(yy)>disx(xx) and un(xx,yy+sig(player.y-yy))):
+        X_Y_list[n]=xx,yy+sig(player.y-yy)
+        mob.fp+=1
+    elif(disx(xx)==0 and un(xx+1,yy+sig(player.y-yy))):
+        X_Y_list[n]=xx+1,yy+sig(player.y-yy)
+        mob.fp+=1
+    elif(disx(xx)==0 and un(xx-1,yy+sig(player.y-yy))):
+        X_Y_list[n]=xx-1,yy+sig(player.y-yy)
+        mob.fp+=1
+    elif(disy(yy)==0 and un(xx+sig(player.x-xx),yy+1)):
+        X_Y_list[n]=xx+sig(player.x-xx),yy+1
+        mob.fp+=1
+    elif(disy(yy)==0 and un(xx+sig(player.x-xx),yy-1)):
+        X_Y_list[n]=xx+sig(player.x-xx),yy-1
+        mob.fp+=1
+    else:
+        mob.fp=max(mob.fp-mob.dex,0)
+
+def death(n):
+    global XP,Total_list,X_Y_list,awares
+    ent=Total_list[n]
+    XP+=ent.xp
+    awares-=ent.aware
+    for k in ent.drop:
+        X_Y_list+=[X_Y_list[n]+tuple([0])]
+        Total_list+=[k]
+    Total_list.pop(n)
+    X_Y_list.pop(n)
 #####################
 #setting#####attacks#
 #####################
 def move(n):
     global Total_list,X_Y_list,Messages,XP,player,awares,PT_awares
     if(len(X_Y_list[n])==2):
-        zz=Total_list[n]
-        if(zz.hp<=0):
-            Messages+=[player.name+' kills '+zz.name+'.']
-            XP+=zz.xp
-            levelup()
+        mob=Total_list[n]
+        if(mob.hp<=0):
+            Messages+=[player.name+' kills '+mob.name+'.']
             death(n)
+            levelup()
             return
-        elif(zz.type>=0):
+        elif(mob.type>=0):
             xx=X_Y_list[n][0]
             yy=X_Y_list[n][1]
-            if(zz.bp>=zz.hp):
-                Messages+=[player.name+' kills '+zz.name+'.']
-                XP+=zz.xp
-                levelup()
+            if(mob.bp>=mob.hp):
+                Messages+=[player.name+' kills '+mob.name+'.']
                 death(n)
+                levelup()
                 return
-            elif(zz.aware==0):
-                if dis(xx,yy) < 7 + hey + zz.VIT-zz.hp:
-                    zz.aware=1
+            elif(mob.aware==0):
+                if dis(xx,yy) < 7 + hey + mob.VIT-mob.hp:
+                    mob.aware=1
                     awares+=1
-            elif dis(xx,yy) > 7 + hey + zz.VIT-zz.hp:
+                    if mob.alarming:
+                        Messages+=['This '+mob.name+' looks especially dangerous.']
+            elif dis(xx,yy) > 7 + hey + mob.VIT-mob.hp:
                 awares-=1
-                zz.aware=0
-            elif dis(xx,yy) < safe - zz.lvl - shuu - (zz.VIT-zz.hp) and dis(xx,yy) > (1 if zz.type%2==0 and zz.type%3!=1 else (6 if zz.type%2==1 else 2)):
-                PT_awares+=zz.lvl
-                Messages+=[zz.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
-            elif(zz.fp>d(20+zz.dex-zz.ER*SR_divide//(SR_divide+zz.str)) or (zz.fp>=zz.dex and zz.type%2==1) or (zz.fp>=d(zz.dex) and zz.type%3==2)):
-                zz.fp-=zz.dex
-                if(zz.fp<0):
-                    zz.fp=0
-            elif(dis(xx,yy)==2 and zz.type%3==1):
-                zz,player=farattack(zz,player)
-            elif(zz.type%2==1 and zz.mp>=Magic_value and dis(xx,yy)<=Magic_distance):
-                zz,player=magicattack(zz,player)
-            elif(dis(xx,yy)==1 and zz.type%3==2):
-                zz,player=rushattack(zz,player)
-            elif(dis(xx,yy)==1 and zz.type==0):
-                zz,player=attack(zz,player)
-            elif (zz.type==3 and dis(xx,yy)<=4) or (zz.type%3==1 and dis(xx,yy)==1):
-                if(un(xx-sig(player.x-xx),yy-sig(player.y-yy))):
-                    X_Y_list[n]=(xx-sig(player.x-xx),yy-sig(player.y-yy))
-                    zz.fp+=1
-                elif(disx(xx)>disy(yy) and un(xx-sig(player.x-xx),yy)):
-                    X_Y_list[n]=(xx-sig(player.x-xx),yy)
-                    zz.fp+=1
-                elif(disy(yy)>disx(xx) and un(xx,yy-sig(player.y-yy))):
-                    X_Y_list[n]=(xx,yy-sig(player.y-yy))
-                    zz.fp+=1
-                elif(disx(xx)==0 and un(xx+1,yy-sig(player.y-yy))):
-                    X_Y_list[n]=(xx+1,yy-sig(player.y-yy))
-                    zz.fp+=1
-                elif(disx(xx)==0 and un(xx-1,yy-sig(player.y-yy))):
-                    X_Y_list[n]=(xx-1,yy-sig(player.y-yy))
-                    zz.fp+=1
-                elif(disy(yy)==0 and un(xx-sig(player.x-xx),yy+1)):
-                    X_Y_list[n]=(xx-sig(player.x-xx),yy+1)
-                    zz.fp+=1
-                elif(disy(yy)==0 and un(xx-sig(player.x-xx),yy-1)):
-                    X_Y_list[n]=(xx-sig(player.x-xx),yy-1)
-                    zz.fp+=1
-                else:
-                    zz.fp-=zz.dex
-                    if(zz.fp<0):
-                        zz.fp=0
+                mob.aware=0
+            elif dis(xx,yy) < safe - mob.lvl - hey - (mob.VIT-mob.hp) and dis(xx,yy) > (1 if mob.type%2==0 and mob.type%3!=1 else (6 if mob.type%2==1 else 2)):
+                PT_awares+=mob.shout
+                Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
+            elif(mob.fp>d(20+mob.dex-mob.ER*SR_divide//(SR_divide+mob.str)) or (mob.fp>=mob.dex and mob.type%2==1) or (mob.fp>=d(mob.dex) and mob.type%3==2)):
+                mob.fp=max(mob.fp-mob.dex,0)
+            elif(dis(xx,yy)==2 and mob.type%3==1):
+                farattack(mob,player)
+            elif(mob.type%2==1 and mob.mp>=Magic_value and dis(xx,yy)<=Magic_distance):
+                magicattack(mob,player)
+            elif(dis(xx,yy)==1 and mob.type%3==2):
+                rushattack(mob,player)
+            elif(dis(xx,yy)==1 and mob.type==0):
+                attack(mob,player)
+            elif (mob.type==3 and dis(xx,yy)<=4) or (mob.type%3==1 and dis(xx,yy)==1):
+                stepaway(mob,n)
             elif(dis(xx,yy)==1):
-                zz,player=attack(zz,player)
-            elif(un(xx+sig(player.x-xx),yy+sig(player.y-yy))):
-                X_Y_list[n]=(xx+sig(player.x-xx),yy+sig(player.y-yy))
-                zz.fp+=1
-            elif(disx(xx)>disy(yy) and un(xx+sig(player.x-xx),yy)):
-                X_Y_list[n]=(xx+sig(player.x-xx),yy)
-                zz.fp+=1
-            elif(disy(yy)>disx(xx) and un(xx,yy+sig(player.y-yy))):
-                X_Y_list[n]=(xx,yy+sig(player.y-yy))
-                zz.fp+=1
-            elif(disx(xx)==0 and un(xx+1,yy+sig(player.y-yy))):
-                X_Y_list[n]=(xx+1,yy+sig(player.y-yy))
-                zz.fp+=1
-            elif(disx(xx)==0 and un(xx-1,yy+sig(player.y-yy))):
-                X_Y_list[n]=(xx-1,yy+sig(player.y-yy))
-                zz.fp+=1
-            elif(disy(yy)==0 and un(xx+sig(player.x-xx),yy+1)):
-                X_Y_list[n]=(xx+sig(player.x-xx),yy+1)
-                zz.fp+=1
-            elif(disy(yy)==0 and un(xx+sig(player.x-xx),yy-1)):
-                X_Y_list[n]=(xx+sig(player.x-xx),yy-1)
-                zz.fp+=1
+                attack(mob,player)
             else:
-                zz.fp-=zz.dex
-                if(zz.fp<0):
-                    zz.fp=0
-            zz.hp-=zz.bp
-            zz.bp=zz.bp*3//2
-            if(d(zz.VIT-zz.bp)>0 and zz.hp<zz.VIT):
-                zz.hp+=1
-            if(d(zz.VIT+zz.int*zz.wield.intm-zz.mp)>zz.VIT-zz.int*zz.wield.intm and zz.mp<(zz.int*zz.wield.intm*ER_divide)//(ER_divide+zz.ER)):
-                zz.mp+=1
-            Total_list[n]=zz
+                stepahead(mob,n)
+            mob.hp-=mob.bp
+            mob.bp=mob.bp*3//2
+            if(d(mob.VIT-mob.bp)>0 and mob.hp<mob.VIT):
+                mob.hp+=1
+            if(d(mob.VIT+mob.int*mob.wield.intm-mob.mp)>mob.VIT-mob.int*mob.wield.intm and mob.mp<(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER)):
+                mob.mp+=1
+            Total_list[n]=mob
 
 def help():
 	global Messages
@@ -470,7 +473,7 @@ def icons():
 	Messages+=['Letters represent enemies.']
 
 def story():
-	s()
+	clearchat()
 	print(*Messages[-transcript*3:],sep='\n')
 	print('Press any key to continue.')
 
@@ -497,7 +500,7 @@ def options():
         safe=int(input('safe='))
     except:
         print('Invalid options given.')
-    g()
+    getkey()
 
 def direction(a):
 	if a==b'r':
@@ -522,10 +525,181 @@ def direction(a):
 def isdir(a):
 	return a in (b'r',b't',b'y',b'h',b'n',b'b',b'v',b'f')
 
+def casting():
+    global player,Messages
+    a=b''
+    dx=0
+    dy=0
+    dt=-1
+    while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+        if(isdir(a)):
+            dx+=direction(a)[0]
+            dy+=direction(a)[1]
+        elif(a==b'a' and len(Targets)>0):
+            dt+=1
+            if(dt==len(Targets)):
+                dt=0
+            dx=Targets[dt][0]
+            dy=Targets[dt][1]
+        if(abs(dx)>Magic_distance):
+            dx=sig(dx)*Magic_distance
+        if(abs(dy)>Magic_distance):
+            dy=sig(dy)*Magic_distance
+        screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n\na to auto-target.')
+        a=getkey()
+    if(a==b'\x1b'):
+        return 1
+    else:
+        if(un(player.x+dx,player.y+dy)):
+            if(bonus==1):
+                if(player.mp>=max(abs(dx),abs(dy))*2):
+                    player.x+=dx
+                    player.y+=dy
+                    player.mp-=max(abs(dx),abs(dy))*2
+                    Messages+=['Player teleports.']
+                    return 0
+                else:
+                    Messages+=['Not enough MP.']
+                    return 1
+            else:
+                Messages+=['Invalid target.']
+                return 1
+        else:
+            if(player.mp>=Magic_value):
+                magicattack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
+                return 0
+            else:
+                Messages+=['Not enough MP.']
+                return 1
+
+def lancing():
+    global player,Messages
+    a=b''
+    dx=0
+    dy=0
+    while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+        if(isdir(a)):
+            dx+=direction(a)[0]
+            dy+=direction(a)[1]
+        if(abs(dx)>2):
+            dx=sig(dx)*2
+        if(abs(dy)>2):
+            dy=sig(dy)*2
+        if(abs(dy)<2 and abs(dx)<2):
+            dy=dy*2
+            dx=dx*2
+        screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n')
+        a=getkey()
+    if(a==b'\x1b'):
+        return 1
+    else:
+        if(un(player.x+dx,player.y+dy)):
+            Messages+=['Invalid target.']
+            return 1
+        else:
+            farattack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
+            return 0
+
+def berserking():
+    global player,Messages
+    a=b''
+    dx=0
+    dy=0
+    while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+        if(isdir(a)):
+            dx,dy=direction(a)
+        if(abs(dx)>1):
+            dx=sig(dx)
+        if(abs(dy)>1):
+            dy=sig(dy)
+        screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n')
+        a=getkey()
+    if(a==b'\x1b'):
+        return 1
+    else:
+        if(un(player.x+dx,player.y+dy)):
+            Messages+=['Invalid target.']
+            return 1
+        else:
+            rushattack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
+            return 0
+
+def change_weapon(a):
+    global player,familiar,Messages
+    if(player.inventory[a].dual%2==1):
+        player.inventory+=[player.wield]
+        Messages+=[player.name+' unwields '+player.wield.name+'.']
+        player.wield=player.inventory[a]
+        Messages+=[player.name+' wields '+player.wield.name+'.']
+        familiar=[0,0,0]
+    else:
+        player.inventory+=[player.shield]
+        Messages+=[player.name+' unwields '+player.shield.name+'.']
+        player.shield=player.inventory[a]
+        Messages+=[player.name+' wields '+player.shield.name+'.']
+    if(player.wield.dual==3):
+        player.AC=player.BAC+player.wear.AC+player.wield.AC
+        player.ER=player.wear.ER+player.wield.ER
+        player.MR=player.wield.MR
+    else:
+        player.AC=player.BAC+player.wear.AC+player.shield.AC
+        player.ER=player.wear.ER+player.shield.ER
+        player.MR=player.shield.MR
+    player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
+
+def change_armor(a):
+    global player,Messages
+    player.AC-=player.wear.AC
+    player.ER-=player.wear.ER
+    Messages+=[player.name+' unequips '+player.wear.name+'.']
+    player.inventory+=[player.wear]
+    player.wear=player.inventory[a]
+    player.AC+=player.wear.AC
+    player.ER+=player.wear.ER
+    player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
+    Messages+=[player.name+' equips '+player.wear.name+'.']
+
+def item_using():
+    global player,Messages
+    if(len(player.inventory)>0):
+        clearchat()
+        for i in range(len(player.inventory)):
+            print(chr(i+97)+'- '+str(player.inventory[i].name))
+        a=ord(getcharkey())-97
+        if(0<=a<=len(player.inventory)-1):
+            if(player.inventory[a].name in Weapon_types_list):
+                change_weapon(a)
+            elif(player.inventory[a].name in Armor_types_list):
+                change_armor(a)
+            elif(player.inventory[a].name in Food_types_list):
+                player.sp=min(player.VIT,player.sp+player.inventory[a].nutrition)
+                Messages+=[player.name+' eats '+player.inventory[a].name+'.']
+            elif(player.inventory[a].name in Effects_list or player.inventory[a].name in Titles_list):
+                what=player.inventory[a].number
+                consume(player,what)
+                global Know_list
+                if(Know_list[what]==0):
+                    Know_list[what]=Titles_list[what]
+                    for i in player.inventory:
+                        if(i.name is Titles_list[what]):
+                            i.name=Effects_list[what]
+                Messages+=[player.name+' drinks '+Effects_list[what]+'.']
+            else:
+                Messages+=[player.name+' uses unrecognised item.']
+            player.inventory.pop(a)
+            return 0
+        else:
+            if(a!=-70):
+                Messages+=['No such item.']
+            return 1
+    else:
+        Messages+=[player.name+"'s inventory is empty."]
+        return 1
+
 def controls(fatigue):
 	global player,Total_list,Messages,familiar
 	retry=0
-	a=g() if player.fp<=fatigue else b'.'
+	a=getkey() if player.fp<=fatigue else b'.'
 	if(a==b'?'):
 		help()
 		retry=1
@@ -536,7 +710,7 @@ def controls(fatigue):
 		icons()
 		retry=1
 	elif(a==b'.'):
-		player.fp=max(player.fp-player.dex*(50-player.VIT+player.sp)//50,0)
+		player.fp=max(player.fp-player.dex,0)
 	elif(isdir(a)):
 		dx,dy=direction(a)
 		if(un(player.x+dx,player.y+dy)):
@@ -544,168 +718,26 @@ def controls(fatigue):
 			player.y+=dy
 			player.fp+=1
 		else:
-			player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))]=attack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
+			attack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
 	elif(a==b'z' and 'caster' in player.abilities):
-		a=b''
-		dx=0
-		dy=0
-		dt=-1
-		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
-			if(isdir(a)):
-				dx+=direction(a)[0]
-				dy+=direction(a)[1]
-			elif(a==b'a' and len(Targets)>0):
-				dt+=1
-				if(dt==len(Targets)):
-					dt=0
-				dx=Targets[dt][0]
-				dy=Targets[dt][1]
-			if(abs(dx)>Magic_distance):
-				dx=sig(dx)*Magic_distance
-			if(abs(dy)>Magic_distance):
-				dy=sig(dy)*Magic_distance
-			screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n\na to auto-target.')
-			a=g()
-		if(a==b'\x1b'):
-			retry=1
-		else:
-			if(un(player.x+dx,player.y+dy)):
-				if(bonus==1):
-					if(player.mp>=max(abs(dx),abs(dy))*2):
-						player.x+=dx
-						player.y+=dy
-						player.mp-=max(abs(dx),abs(dy))*2
-						Messages+=['Player teleports.']
-					else:
-						Messages+=['Not enough MP.']
-						retry=1
-				else:
-					Messages+=['Invalid target.']
-					retry=1
-			else:
-				if(player.mp>=Magic_value):
-					player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))]=magicattack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
-				else:
-					Messages+=['Not enough MP.']
-					retry=1
+		retry=casting()
 	elif(a==b'x' and 'lancer' in player.abilities):
-		a=b''
-		dx=0
-		dy=0
-		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
-			if(isdir(a)):
-				dx+=direction(a)[0]
-				dy+=direction(a)[1]
-			if(abs(dx)>2):
-				dx=sig(dx)*2
-			if(abs(dy)>2):
-				dy=sig(dy)*2
-			if(abs(dy)<2 and abs(dx)<2):
-				dy=dy*2
-				dx=dx*2
-			screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n')
-			a=g()
-		if(a==b'\x1b'):
-			retry=1
-		else:
-			if(un(player.x+dx,player.y+dy)):
-				Messages+=['Invalid target.']
-				retry=1
-			else:
-				player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))]=farattack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
+		retry=lancing()
 	elif(a==b'c' and 'berserker' in player.abilities):
-		a=b''
-		dx=0
-		dy=0
-		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
-			if(isdir(a)):
-				dx,dy=direction(a)
-			if(abs(dx)>1):
-				dx=sig(dx)
-			if(abs(dy)>1):
-				dy=sig(dy)
-			screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n')
-			a=g()
-		if(a==b'\x1b'):
-			retry=1
-		else:
-			if(un(player.x+dx,player.y+dy)):
-				Messages+=['Invalid target.']
-				retry=1
-			else:
-				player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))]=rushattack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
+		retry=berserking()
 	elif(a==b'i'):
-		if(len(player.inventory)>0):
-			s()
-			for i in range(len(player.inventory)):
-				print(chr(i+97)+'- '+str(player.inventory[i].name))
-			a=ord(w())-97
-			if(0<=a<=len(player.inventory)-1):
-				if(player.inventory[a].name in Weapon_types_list):
-					if(player.inventory[a].dual%2==1):
-						player.inventory+=[player.wield]
-						Messages+=[player.name+' unwields '+player.wield.name+'.']
-						player.wield=player.inventory[a]
-						Messages+=[player.name+' wields '+player.wield.name+'.']
-						familiar=[0,0,0]
-					else:
-						player.inventory+=[player.shield]
-						Messages+=[player.name+' unwields '+player.shield.name+'.']
-						player.shield=player.inventory[a]
-						Messages+=[player.name+' wields '+player.shield.name+'.']
-					if(player.wield.dual==3):
-						player.AC=player.BAC+player.wear.AC+player.wield.AC
-						player.ER=player.wear.ER+player.wield.ER
-						player.MR=player.wield.MR
-					else:
-						player.AC=player.BAC+player.wear.AC+player.shield.AC
-						player.ER=player.wear.ER+player.shield.ER
-						player.MR=player.shield.MR
-					player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
-				elif(player.inventory[a].name in Armor_types_list):
-					player.AC-=player.wear.AC
-					player.ER-=player.wear.ER
-					Messages+=[player.name+' unequips '+player.wear.name+'.']
-					player.inventory+=[player.wear]
-					player.wear=player.inventory[a]
-					player.AC+=player.wear.AC
-					player.ER+=player.wear.ER
-					player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
-					Messages+=[player.name+' equips '+player.wear.name+'.']
-				elif(player.inventory[a].name in Food_types_list):
-					player.sp=min(player.VIT,player.sp+player.inventory[a].nutrition)
-					Messages+=[player.name+' eats '+player.inventory[a].name+'.']
-				elif(player.inventory[a].name in Effects_list or player.inventory[a].name in Titles_list):
-					what=player.inventory[a].number
-					player=consume(player,what)
-					global Know_list
-					if(Know_list[what]==0):
-						Know_list[what]=Titles_list[what]
-						for i in player.inventory:
-							if(i.name is Titles_list[what]):
-								i.name=Effects_list[what]
-					Messages+=[player.name+' drinks '+Effects_list[what]+'.']
-				else:
-					Messages+=[player.name+' uses unrecognised item.']
-				player.inventory.pop(a)
-			else:
-				if(a!=-70):
-					Messages+=['No such item.']
-				retry=1
-		else:
-			Messages+=[player.name+"'s inventory is empty."]
-			retry=1
+		retry=item_using()
 	elif(a==b's'):
-		player.inventory.sort(key = lambda x : x.fn)
+		player.inventory.sort(key = lambda x : x.__class__.__name__+x.name)
 		Messages+=[player.name+' sorts their inventory.']
 	elif(a==b'g'):
-		ko=(player.x,player.y,0)
-		if(ko in X_Y_list):
+		positioned=(player.x,player.y,0)
+		if(positioned in X_Y_list):
 			if(len(player.inventory)<26):
-				mur=X_Y_list.index(ko)
-				player.inventory+=[Total_list[mur]]
-				Total_list.pop(mur)
-				X_Y_list.pop(mur)
+				index=X_Y_list.index(positioned)
+				player.inventory+=[Total_list[index]]
+				Total_list.pop(index)
+				X_Y_list.pop(index)
 				if(player.inventory[-1].name in Know_list):
 					player.inventory[-1].name=Effects_list[player.inventory[-1].number]
 				Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
@@ -717,16 +749,16 @@ def controls(fatigue):
 			retry=1
 	elif(a==b'\x1b'):
 		print('Press Esc again if you are sure, or press anything else.')
-		if(g()==b'\x1b'):
+		if(getkey()==b'\x1b'):
 			exit()
 		else:
 			retry=1
 	elif(a==b'd'):
 		if(len(player.inventory)>0):
-			s()
+			clearchat()
 			for i in range(len(player.inventory)):
 				print(chr(i+97)+'- '+str(player.inventory[i].name))
-			a=ord(w())-97
+			a=ord(getcharkey())-97
 			if(0<=a<=len(player.inventory)-1):
 				Messages+=['Player destroys '+player.inventory[a].name+'.']
 				player.inventory.pop(a)
@@ -742,7 +774,7 @@ def controls(fatigue):
 		retry=1
 	elif(a==b'*'):
 		story()
-		g()
+		getkey()
 		retry=1
 	else:
 		Messages+=['Unknown command.']
@@ -783,7 +815,7 @@ def alarms():
 	if(player.bp>player.VIT):
 		Messages+=[player.name+' will die.']
 	elif(player.bp*3>player.VIT):
-		Messages+=[player.name+' bleeds severally.']
+		Messages+=[player.name+' bleeds severely.']
 	elif(player.bp*5>player.VIT):
 		Messages+=[player.name+' bleeds heavily.']
 	elif(player.bp*9>player.VIT):
@@ -820,45 +852,57 @@ def screen(x=0,y=0,extra=''):
             show[16-l][i]=check(player.x+i-8,player.y+l-8)
     show[8-y][8+x]=Magic_icon
     show[8][8]=Player_icon
-    zzzz=''
+    mobmob=''
     for i in show:
         for l in i:
-            zzzz+=l
-        zzzz+='\n'
+            mobmob+=l
+        mobmob+='\n'
     Messages=Messages[-transcript*3:]
     ab=''
     for i in player.abilities:
         ab+=i+' '
     if(ab==''):
         ab='-'
-    s()
+    clearchat()
     print('\nSTR:'+str(player.str)+' '*(10-len(str(player.str)))+'HP:'+str(player.hp),'DEX:'+str(player.dex)+' '*(10-len(str(player.dex)))+'MP:'+str(player.mp),'INT:'+str(player.int)+' '*(10-len(str(player.int)))+'FP:'+str(player.fp),'SP:'+str(player.sp)+' '*(11-len(str(player.sp)))+'BP:'+str(player.bp),sep='\n')
     print('Wield:'+player.wield.name,'Wear:'+player.wear.name,'Shield:'+(str(player.shield.name) if player.wield.dual==1 else '-'),'Abilities:'+ab,sep='\n')
-    print('MR:'+str(player.MR)+' '*(11-len(str(player.MR)))+'SM:'+(str(player.wield.strm) if familiar[0]==1 else '?')+','+(str(player.wield.dexm) if familiar[1]==1 else '?')+','+(str(player.wield.intm) if familiar[2]==1 else '?'),'ER:'+str(player.ER)+' '*(11-len(str(player.ER)))+'AC:'+str(player.AC),'XP:'+str(XP)+' '*(11-len(str(XP)))+'Level:'+str(player.lvl),zzzz,*Messages[-transcript:],sep='\n')
+    print('MR:'+str(player.MR)+' '*(11-len(str(player.MR)))+'SM:'+(str(player.wield.strm) if familiar[0]==1 else '?')+','+(str(player.wield.dexm) if familiar[1]==1 else '?')+','+(str(player.wield.intm) if familiar[2]==1 else '?'),'ER:'+str(player.ER)+' '*(11-len(str(player.ER)))+'AC:'+str(player.AC),'XP:'+str(XP)+' '*(11-len(str(XP)))+'Level:'+str(player.lvl),mobmob,*Messages[-transcript:],sep='\n')
     print(extra)
+
+def ignorant():
+    global XP,familiar,Know_list,Titles_list
+    XP=0
+    familiar=[1,1,1]
+    Know_list=[0]*len(Effects_list)
+    Titles_list=[]
+    for i in range(len(Effects_list)):
+        Title=''
+        for l in range(d(4)*d(2)+d(4)):
+            Title+=chr(64+d(26))
+        Titles_list+=[Title]
 
 while(True):
 
     print('Please wait while the world is being generated...')
 
-    player=generate()
+    generate()
+    player=Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y])
     while(True):
         alarms()
         screen()
         controls(d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
         hey=floor(log(awares+PT_awares+1.0,2.0))
-        shuu=ceil(log(8.0,1.0+1.0/(awares+PT_awares+1.0)))
         PT_awares=0
         for i in range(len(Total_list)-1,-1,-1):
             move(i)
         if(player.hp<=0):
-            s()
+            clearchat()
             Messages+=[player.name+' dies.']
             print('\n   ***'+Messages[-3]+'***   \n   ***'+Messages[-2]+'***   \n   ***'+Messages[-1]+'***\n')
             a=b''
             while(a!=b'\r' and a!=b'\x1b' and a!=b'\x0f'):
                 print('Press Enter to continue, or Esc to exit.')
-                a=g()
+                a=getkey()
             if(a==b'\x1b'):
                 exit()
             elif(a==b'\x0f'):
@@ -867,13 +911,6 @@ while(True):
 
     Messages+=[player.name+' rejoins the land of living.']
 
-    familiar=[1,1,1]
-    Know_list=[0]*len(Effects_list)
-    Titles_list=[]
     awares=0
     PT_awares=0
-    for i in range(len(Effects_list)):
-        Title=''
-        for l in range(d(4)*d(2)+d(4)):
-            Title+=chr(64+d(26))
-            Titles_list+=[Title]
+    ignorant()

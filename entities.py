@@ -1,4 +1,4 @@
-from settings import Armor_icon,Weapon_icon,Food_icon,Shield_icon,ER_divide,xp_fun,lvl,XP
+from settings import *
 from random import randint as r
 from math import ceil,floor,log
 def d(nii):
@@ -13,6 +13,7 @@ def rl(li):
 	return n
 def rlrange(n):
 	return ceil((8*d(n*(n+1)//2)+1)**0.5/2.0-0.5)
+
 class Entity:
 	def __init__(self,name):
 		self.name=name
@@ -21,13 +22,11 @@ class Item(Entity):
 		self.name=name
 		self.icon=icon
 		self.number=number
-		self.fn='i '+self.name
 class Weapon(Entity):
 	def __init__(self,a,b,c,icon,name,dual=1,d=0,e=0,f=0):
 		self.icon=icon
 		self.name=name
 		self.dual=dual
-		self.fn='w '+self.name
 		if(dual==1):
 			self.strm=a
 			self.dexm=b
@@ -49,13 +48,11 @@ class Armor(Entity):
 		self.icon=icon
 		self.name=name
 		self.ER=ER
-		self.fn='a '+self.name
 class Food(Entity):
 	def __init__(self,nutrition,icon,name):
 		self.nutrition=nutrition
 		self.icon=icon
 		self.name=name
-		self.fn='f '+self.name
 class Mob(Entity):
 	def __init__(self,ab):
 		self.hp=ab[0]
@@ -63,14 +60,17 @@ class Mob(Entity):
 		self.dex=ab[2]
 		self.int=ab[3]
 		self.AC=ab[4]
-		self.bp=ab[5]
-		self.fp=ab[6]
+		self.bp=0
+		self.fp=0
+		self.group=ab[5]
+		self.shout=ab[6]
 		self.aware=ab[7]
 		self.type=ab[8]
 		self.icon=ab[9]
 		self.name=ab[10]
 		self.inventory=ab[11]
 		self.wield=Weapon(rlrange(ab[12][0]),rlrange(ab[12][1]),rlrange(ab[12][2]),*ab[12][3:])
+		self.alarming=1 if self.wield.strm+self.wield.dexm+self.wield.intm==ab[12][0]+ab[12][1]+ab[12][2] else 0
 		self.wear=Armor(*ab[13])
 		if(self.wield.dual==3):
 			self.shield=self.wield
@@ -83,9 +83,10 @@ class Mob(Entity):
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
 		self.VIT=self.hp
 		self.BAC=self.AC-self.wear.AC-self.shield.AC
-		self.xp=xp_fun(self)*ab[11]
-		self.lvl=self.xp//500
-		self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)+[self.shield]*(rlrange(self.lvl)>=d(4) and len(ab)>14)+[self.wield]*(rlrange(self.lvl)>=d(4))+[self.wear]*(rlrange(self.lvl)>=d(4))
+		self.xp=xp_fun(self)
+		self.lvl=1 if self.xp<=XP_base else floor(log(self.xp/XP_base,2.0))+1
+		self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)+[self.shield]*(len(ab)>14 and rlrange(self.lvl)>=d(4))+[self.wield]*(rlrange(self.lvl)>=d(4)-self.alarming)+[self.wear]*(rlrange(self.lvl)>=d(4))
+
 class Me(Entity):
 	def __init__(self,ab):
 		self.hp=ab[0]
@@ -110,4 +111,3 @@ class Me(Entity):
 		self.AC=self.BAC+self.shield.AC+self.wear.AC
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
 		self.VIT=self.hp
-		XP=0

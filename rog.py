@@ -641,7 +641,7 @@ def controls(fatigue):
 		player.hp-=player.bp
 		if(bonus!=1):
 			if(player.bp*3>player.VIT):
-				Messages+=[player.name+' bleeds severally.']
+				Messages+=[player.name+' bleeds severely.']
 			elif(player.bp*5>player.VIT):
 				Messages+=[player.name+' bleeds heavily.']
 			elif(player.bp*9>player.VIT):

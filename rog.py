@@ -2,7 +2,7 @@ import sys, os
 
 def clearchat():
   if os.name == "posix":
-    os.system('clear')
+    print ("\033[2J")
   elif os.name in ("nt", "dos", "ce"):
     os.system('CLS')
   else:
@@ -427,20 +427,21 @@ def move(n):
             Total_list[n]=mob
 
 def help():
-	global Messages
-	Messages+=['']
-	Messages+=['r t y']
-	Messages+=['f   h  move/attack.']
-	Messages+=['v b n']
-	Messages+=['.      rest one turn.']
-	Messages+=['g      get item on your tile.']
-	Messages+=['i      use item in your inventory.']
-	Messages+=['d      destroy item in inventory.']
-	Messages+=['Esc    exit.']
-	Messages+=['?      help.']
-	Messages+=['!      abbreviations in stats.']
-	Messages+=['#      icons list.']
-	Messages+=['*      view transcript.']
+    global Messages
+    Messages+=['']
+    Messages+=['r t y']
+    Messages+=['f   h  move/attack.']
+    Messages+=['v b n']
+    Messages+=['u      shout for attention.']
+    Messages+=['.      rest one turn.']
+    Messages+=['g      get item on your tile.']
+    Messages+=['i      use item in your inventory.']
+    Messages+=['d      destroy item in inventory.']
+    Messages+=['Esc    exit.']
+    Messages+=['?      help.']
+    Messages+=['!      abbreviations in stats.']
+    Messages+=['#      icons list.']
+    Messages+=['*      view transcript.']
 
 def abbs():
 	global Messages
@@ -696,120 +697,133 @@ def item_using():
         Messages+=[player.name+"'s inventory is empty."]
         return 1
 
+def item_destruct():
+    global player,Messages
+    if(len(player.inventory)>0):
+        clearchat()
+        for i in range(len(player.inventory)):
+            print(chr(i+97)+'- '+str(player.inventory[i].name))
+        a=ord(getcharkey())-97
+        if(0<=a<=len(player.inventory)-1):
+            Messages+=['Player destroys '+player.inventory[a].name+'.']
+            player.inventory.pop(a)
+            return 0
+        else:
+            if(a!=-70):
+                Messages+=['No such item.']
+            return 1
+    else:
+        Messages+=[player.name+"'s inventory is empty."]
+        return 1
+
+def item_grab():
+    global player,Total_list,X_Y_list,Messages
+    positioned=(player.x,player.y,0)
+    if(positioned in X_Y_list):
+        if(len(player.inventory)<26):
+            index=X_Y_list.index(positioned)
+            player.inventory+=[Total_list[index]]
+            Total_list.pop(index)
+            X_Y_list.pop(index)
+            if(player.inventory[-1].name in Know_list):
+                player.inventory[-1].name=Effects_list[player.inventory[-1].number]
+            Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
+            return 0
+        else:
+            Messages+=[player.name+"'s inventory is already full."]
+            return 1
+    else:
+        Messages+=['There is nothing here.']
+        return 1
+
+def update_state():
+    global player,familiar,Messages
+    if(player.lvl>=player.wield.strm and familiar[0]==0):
+        Messages+=[player.name+' feels more familiar with their weapon.']
+        familiar[0]=1
+    if(player.lvl>=player.wield.dexm and familiar[1]==0):
+        Messages+=[player.name+' feels more familiar with their weapon.']
+        familiar[1]=1
+    if(player.lvl>=player.wield.intm and familiar[2]==0):
+        Messages+=[player.name+' feels more familiar with their weapon.']
+        familiar[2]=1
+    player.hp-=player.bp
+    player.sp=min(player.sp,player.VIT)
+    player.bp=player.bp*player.VIT//(player.sp//2+player.VIT)
+    player.sp-=d(player.VIT-player.hp)//5
+    if(d(player.VIT-player.bp)>max(player.VIT//2,player.VIT-player.sp) and player.hp<player.sp):
+        player.hp+=1
+    if(d(player.VIT+player.int*player.wield.intm-player.mp)>player.VIT-player.int*player.wield.intm and player.mp<(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER)):
+        player.mp+=1
+    if(player.sp<0):
+        player.hp+=player.sp
+        player.sp=0
+        Messages+=[player.name+' starves.']
+
 def controls(fatigue):
-	global player,Total_list,Messages,familiar
-	retry=0
-	a=getkey() if player.fp<=fatigue else b'.'
-	if(a==b'?'):
-		help()
-		retry=1
-	elif(a==b'!'):
-		abbs()
-		retry=1
-	elif(a==b'#'):
-		icons()
-		retry=1
-	elif(a==b'.'):
-		player.fp=max(player.fp-player.dex,0)
-	elif(isdir(a)):
-		dx,dy=direction(a)
-		if(un(player.x+dx,player.y+dy)):
-			player.x+=dx
-			player.y+=dy
-			player.fp+=1
-		else:
-			attack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
-	elif(a==b'z' and 'caster' in player.abilities):
-		retry=casting()
-	elif(a==b'x' and 'lancer' in player.abilities):
-		retry=lancing()
-	elif(a==b'c' and 'berserker' in player.abilities):
-		retry=berserking()
-	elif(a==b'i'):
-		retry=item_using()
-	elif(a==b's'):
-		player.inventory.sort(key = lambda x : x.__class__.__name__+x.name)
-		Messages+=[player.name+' sorts their inventory.']
-	elif(a==b'g'):
-		positioned=(player.x,player.y,0)
-		if(positioned in X_Y_list):
-			if(len(player.inventory)<26):
-				index=X_Y_list.index(positioned)
-				player.inventory+=[Total_list[index]]
-				Total_list.pop(index)
-				X_Y_list.pop(index)
-				if(player.inventory[-1].name in Know_list):
-					player.inventory[-1].name=Effects_list[player.inventory[-1].number]
-				Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
-			else:
-				Messages+=[player.name+"'s inventory is already full."]
-				retry=1
-		else:
-			Messages+=['There is nothing here.']
-			retry=1
-	elif(a==b'\x1b'):
-		print('Press Esc again if you are sure, or press anything else.')
-		if(getkey()==b'\x1b'):
-			exit()
-		else:
-			retry=1
-	elif(a==b'd'):
-		if(len(player.inventory)>0):
-			clearchat()
-			for i in range(len(player.inventory)):
-				print(chr(i+97)+'- '+str(player.inventory[i].name))
-			a=ord(getcharkey())-97
-			if(0<=a<=len(player.inventory)-1):
-				Messages+=['Player destroys '+player.inventory[a].name+'.']
-				player.inventory.pop(a)
-			else:
-				if(a!=-70):
-					Messages+=['No such item.']
-				retry=1
-		else:
-			Messages+=[player.name+"'s inventory is empty."]
-			retry=1
-	elif(a==b'\x18'):
-		xp()
-		retry=1
-	elif(a==b'*'):
-		story()
-		getkey()
-		retry=1
-	else:
-		Messages+=['Unknown command.']
-		retry=1
-	if(retry==1):
-		screen()
-		controls(fatigue)
-	else:
-		if(player.lvl>=player.wield.strm and familiar[0]==0):
-			Messages+=[player.name+' feels more familiar with their weapon.']
-			familiar[0]=1
-		if(player.lvl>=player.wield.dexm and familiar[1]==0):
-			Messages+=[player.name+' feels more familiar with their weapon.']
-			familiar[1]=1
-		if(player.lvl>=player.wield.intm and familiar[2]==0):
-			Messages+=[player.name+' feels more familiar with their weapon.']
-			familiar[2]=1
-		player.hp-=player.bp
-		player.sp=min(player.sp,player.VIT)
-#####################
-#######setting#######
-#####################
-		player.bp=player.bp*player.VIT//(player.sp//2+player.VIT)
-		player.sp-=d(player.VIT-player.hp)//5
-		if(d(player.VIT-player.bp)>max(player.VIT//2,player.VIT-player.sp) and player.hp<player.sp):
-			player.hp+=1
-		if(d(player.VIT+player.int*player.wield.intm-player.mp)>player.VIT-player.int*player.wield.intm and player.mp<(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER)):
-			player.mp+=1
-		if(player.sp<0):
-			player.hp+=player.sp
-			player.sp=0
-			Messages+=[player.name+' starves.']
-#####################
-#setting######points#
-#####################
+    global player,Total_list,Messages,familiar
+    retry=0
+    a=getkey() if player.fp<=fatigue else b'.'
+    if(a==b'?'):
+    	help()
+    	retry=1
+    elif(a==b'!'):
+    	abbs()
+    	retry=1
+    elif(a==b'#'):
+    	icons()
+    	retry=1
+    elif(a==b'.'):
+    	player.fp=max(player.fp-player.dex,0)
+    elif(isdir(a)):
+    	dx,dy=direction(a)
+    	if(un(player.x+dx,player.y+dy)):
+    		player.x+=dx
+    		player.y+=dy
+    		player.fp+=1
+    	else:
+    		attack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
+    elif(a==b'z' and 'caster' in player.abilities):
+    	retry=casting()
+    elif(a==b'x' and 'lancer' in player.abilities):
+    	retry=lancing()
+    elif(a==b'c' and 'berserker' in player.abilities):
+    	retry=berserking()
+    elif(a==b'i'):
+    	retry=item_using()
+    elif(a==b's'):
+    	player.inventory.sort(key = lambda x : x.__class__.__name__+x.name)
+    	Messages+=[player.name+' sorts their inventory.']
+    elif(a==b'g'):
+    	retry=item_grab()
+    elif(a==b'\x1b'):
+    	print('Press Esc again if you are sure, or press anything else.')
+    	if(getkey()==b'\x1b'):
+    		exit()
+    	else:
+    		retry=1
+    elif(a==b'd'):
+    	retry=item_destruct()
+    elif(a==b'\x18'):
+    	xp()
+    	retry=1
+    elif(a==b'u'):
+        global PT_awares
+        PT_awares+=player.str+player.dex+player.int
+        Messages+=[player.name+' shouts for attention.']
+    elif(a==b'*'):
+    	story()
+    	getkey()
+    	retry=1
+    else:
+    	Messages+=['Unknown command.']
+    	retry=1
+    if(retry==1):
+    	screen()
+    	controls(fatigue)
+    else:
+    	update_state()
+
 def alarms():
 	global Messages
 	if(player.bp>player.VIT):

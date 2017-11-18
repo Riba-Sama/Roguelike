@@ -2,7 +2,7 @@ import sys, os
 
 def s():
   if os.name == "posix":
-    os.system('clear')
+    print ("\033[2J")
   elif os.name in ("nt", "dos", "ce"):
     os.system('CLS')
   else:
@@ -714,7 +714,7 @@ def alarms():
 	if(player.bp>player.VIT):
 		Messages+=[player.name+' will die.']
 	elif(player.bp*3>player.VIT):
-		Messages+=[player.name+' bleeds severally.']
+		Messages+=[player.name+' bleeds severely.']
 	elif(player.bp*5>player.VIT):
 		Messages+=[player.name+' bleeds heavily.']
 	elif(player.bp*9>player.VIT):
@@ -795,6 +795,7 @@ while(True):
 
 	Messages+=[player.name+' rejoins the land of living.']
 
+    XP=0
 	familiar=[1,1,1]
 	Know_list=[0]*len(Effects_list)
 	Titles_list=[]

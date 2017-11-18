@@ -110,4 +110,3 @@ class Me(Entity):
 		self.AC=self.BAC+self.shield.AC+self.wear.AC
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
 		self.VIT=self.hp
-		XP=0

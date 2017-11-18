@@ -3,7 +3,7 @@ import sys, os
 
 def s():
   if os.name == "posix":
-    os.system('clear')
+    print ("\033[2J")
   elif os.name in ("nt", "dos", "ce"):
     os.system('CLS')
   else:

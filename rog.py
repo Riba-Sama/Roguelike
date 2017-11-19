@@ -532,7 +532,7 @@ def casting():
     dx=0
     dy=0
     dt=-1
-    while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+    while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
         if(isdir(a)):
             dx+=direction(a)[0]
             dy+=direction(a)[1]
@@ -578,7 +578,7 @@ def lancing():
     a=b''
     dx=0
     dy=0
-    while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+    while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
         if(isdir(a)):
             dx+=direction(a)[0]
             dy+=direction(a)[1]
@@ -606,7 +606,7 @@ def berserking():
     a=b''
     dx=0
     dy=0
-    while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+    while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
         if(isdir(a)):
             dx,dy=direction(a)
         if(abs(dx)>1):
@@ -914,7 +914,7 @@ while(True):
             Messages+=[player.name+' dies.']
             print('\n   ***'+Messages[-3]+'***   \n   ***'+Messages[-2]+'***   \n   ***'+Messages[-1]+'***\n')
             a=b''
-            while(a!=b'\r' and a!=b'\x1b' and a!=b'\x0f'):
+            while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):
                 print('Press Enter to continue, or Esc to exit.')
                 a=getkey()
             if(a==b'\x1b'):

@@ -481,7 +481,7 @@ def controls(fatigue):
 		dx=0
 		dy=0
 		dt=-1
-		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+		while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
 			if(isdir(a)):
 				dx+=direction(a)[0]
 				dy+=direction(a)[1]
@@ -523,7 +523,7 @@ def controls(fatigue):
 		a=b''
 		dx=0
 		dy=0
-		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+		while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
 			if(isdir(a)):
 				dx+=direction(a)[0]
 				dy+=direction(a)[1]
@@ -548,7 +548,7 @@ def controls(fatigue):
 		a=b''
 		dx=0
 		dy=0
-		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+		while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
 			if(isdir(a)):
 				dx,dy=direction(a)
 			if(abs(dx)>1):
@@ -786,7 +786,7 @@ while(True):
 			print('\n   ***'+Messages[-3]+'***   \n   ***'+Messages[-2]+'***   \n   ***'+Messages[-1]+'***\n')
 
 			a=b''
-			while(a!=b'\r' and a!=b'\x1b'):
+			while(a!=b'\r' and a!=b'\n' and a!=b'\x1b'):
 				print('Press Enter to continue, or Esc to exit.')
 				a=g()
 			if(a==b'\x1b'):

@@ -405,7 +405,7 @@ def controls(fatigue):
 		a=b''
 		dx=0
 		dy=0
-		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+		while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
 			if(a==b'r'):
 				dx-=1
 				dy+=1
@@ -458,7 +458,7 @@ def controls(fatigue):
 		a=b''
 		dx=0
 		dy=0
-		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+		while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
 			if(a==b'r'):
 				dx-=1
 				dy+=1
@@ -500,7 +500,7 @@ def controls(fatigue):
 		a=b''
 		dx=0
 		dy=0
-		while(a!=b'\r' and a!=b'\x1b' and a!=b'g'):
+		while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
 			if(a==b'r'):
 				dx-=1
 				dy+=1

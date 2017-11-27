@@ -17,11 +17,13 @@ def rlrange(n):
 class Entity:
 	def __init__(self,name):
 		self.name=name
+
 class Item(Entity):
 	def __init__(self,icon,number,name):
 		self.name=name
 		self.icon=icon
 		self.number=number
+
 class Weapon(Entity):
 	def __init__(self,a,b,c,icon,name,dual=1,d=0,e=0,f=0):
 		self.icon=icon
@@ -42,39 +44,41 @@ class Weapon(Entity):
 			self.AC=d
 			self.ER=e
 			self.MR=f
+
 class Armor(Entity):
 	def __init__(self,AC,icon,name,ER):
 		self.AC=AC
 		self.icon=icon
 		self.name=name
 		self.ER=ER
+
 class Food(Entity):
 	def __init__(self,nutrition,icon,name):
 		self.nutrition=nutrition
 		self.icon=icon
 		self.name=name
+
 class Mob(Entity):
-	def __init__(self,ab):
-		self.hp=ab[0]
-		self.str=ab[1]
-		self.dex=ab[2]
-		self.int=ab[3]
-		self.AC=ab[4]
+	def __init__(self,ab,leader=0):
+		self.leader=leader
+		self.hp=ab[0]*(4+self.leader)//4
+		self.str=ab[1]*(6+self.leader)//6
+		self.dex=ab[2]*(6+self.leader)//6
+		self.int=ab[3]*(6+self.leader)//6
+		self.BAC=ab[4]*(8+self.leader)//8
 		self.bp=0
 		self.fp=0
 		self.group=ab[5]
-		self.shout=ab[6]
+		self.shout=ab[6]*(1+self.leader)
 		self.aware=ab[7]
 		self.type=ab[8]
 		self.icon=ab[9]
-		self.name=ab[10]
-		self.inventory=ab[11]
-		self.wield=Weapon(rlrange(ab[12][0]),rlrange(ab[12][1]),rlrange(ab[12][2]),*ab[12][3:])
-		self.alarming=1 if self.wield.strm+self.wield.dexm+self.wield.intm==ab[12][0]+ab[12][1]+ab[12][2] else 0
-		self.wear=Armor(*ab[13])
+		self.name=ab[10]+((' Leader' if self.leader==1 else ab[15]) if self.leader else '')
+		self.wield=Weapon(ab[12][0],ab[12][1],ab[12][2],*ab[12][3:]) if self.leader else Weapon(1,1,1,Weapon_icon,'')
+		self.wear=Armor(*ab[13]) if self.leader else Armor(0,Armor_icon,'',0)
 		if(self.wield.dual==3):
 			self.shield=self.wield
-		elif(len(ab)>14):
+		elif(len(ab)>14 and self.leader):
 			self.shield=Weapon(*ab[14])
 		else:
 			self.shield=Weapon(0,0,0,Shield_icon,'',2)
@@ -82,10 +86,10 @@ class Mob(Entity):
 		self.ER=self.shield.ER+self.wear.ER
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
 		self.VIT=self.hp
-		self.BAC=self.AC-self.wear.AC-self.shield.AC
+		self.AC=self.BAC+self.wear.AC+self.shield.AC
 		self.xp=xp_fun(self)
 		self.lvl=1 if self.xp<=XP_base else floor(log(self.xp/XP_base,2.0))+1
-		self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)+[self.shield]*(len(ab)>14 and rlrange(self.lvl)>=d(4))+[self.wield]*(rlrange(self.lvl)>=d(4)-self.alarming)+[self.wear]*(rlrange(self.lvl)>=d(4))
+		self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)+[self.shield]*(len(ab)>14 and bool(self.shield.name))+[self.wield]*bool(self.wield.name)+[self.wear]*bool(self.wear.name)
 
 class Me(Entity):
 	def __init__(self,ab):

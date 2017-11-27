@@ -1,7 +1,9 @@
-from settings import Boss_icon,Armor_icon,Weapon_icon,ER_divide,xp_fun,Weapon_types_list
-from entities import Armor,Weapon,Mob
+from settings import *
+from entities import *
+Weapon_types_list=Weapon_types_list+('Excalibolg',)
 class Boss(Mob):
     def __init__(self):
+        self.leader=-10000
         self.hp=100
         self.str=30
         self.dex=20
@@ -25,5 +27,3 @@ class Boss(Mob):
         self.BAC=self.AC-self.wear.AC-self.shield.AC
         self.xp=xp_fun(self)
         self.drop=[Weapon(5,0,5,Weapon_icon,'Excalibolg',3,6,6,6)]
-        global Weapon_types_list
-        Weapon_types_list=Weapon_types_list+('Excalibolg',)

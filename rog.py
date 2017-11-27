@@ -1,5 +1,29 @@
 import sys, os
 
+def play():
+    global hey,PT_awares,Messages
+    alarms()
+    screen()
+    controls(d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
+    hey=floor(log(awares+PT_awares+1.0,2.0))
+    PT_awares=0
+    for i in range(len(Total_list)-1,-1,-1):
+        move(i)
+    if(player.hp<=0):
+        clearchat()
+        Messages+=[player.name+' dies.']
+        print(f'\n   ***{Messages[-3]}***   \n   ***{Messages[-2]}***   \n   ***{Messages[-1]}***\n')
+        a=b''
+        while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):
+            print('Press Enter to continue, or Esc to exit.')
+            a=getkey()
+        if(a==b'\x1b'):
+            exit()
+        elif(a==b'\x0f'):
+            options()
+    else:
+        play()
+
 def clearchat():
   if os.name == "posix":
     print ("\033[2J")
@@ -43,16 +67,14 @@ def getkey():
 try:
     from settings import *
 except ModuleNotFoundError as err:
-    print('Failed to import settings file,',err,
-    "\nCan't proceed executing programm.")
+    print(f"Failed to import settings file {err}\nCan't proceed executing programm.")
     getkey()
     exit()
 
 try:
     from entities import *
 except ModuleNotFoundError as err:
-    print('Failed to import entities file,',err,
-    "\nCan't proceed executing programm.")
+    print(f"Failed to import entities file {err}\nCan't proceed executing programm.")
     getkey()
     exit()
 
@@ -172,14 +194,17 @@ def consume(ent,what):
 #####################
 #setting#####potions#
 #####################
-def birth(x,y,mob,q):
-    if Map[x+y*(x_size)] == '.':
-        if un(x,y):
-            global Total_list,X_Y_list
+def birth(x,y,mob):
+    global Total_list,X_Y_list
+    for i in range(d(mob[5])//Mob_ungroup-1):
+        if un(x,y) and Map[x+y*(x_size)] == '.':
             Total_list+=[Mob(mob)]
             X_Y_list+=[(x,y)]
-            if(q>1):
-                birth(x+d(5)-4,y+d(5)-4,mob,q-1)
+        x=max(min(x+d(5)-3,x_size-1),0)
+        y=max(min(y+d(5)-3,y_size-1),0)
+    if un(x,y) and Map[x+y*(x_size)] == '.':
+        Total_list+=[Mob(mob,d(mob[11]+1)-1)]
+        X_Y_list+=[(x,y)]
 
 def generate():
     global Total_list,X_Y_list,spawn_x,spawn_y
@@ -232,7 +257,7 @@ def generate():
         l=d(y_size)-1
         a=Map[i+l*(x_size)]
         b=rl(RL_Mobs)
-        birth(i,l,Mob_list[b],d(Mob_list[b][5]//Mob_ungroup))
+        birth(i,l,Mob_list[b])
     for umlaut in range(Noob_Confetti):
         i=d(x_size)-1
         l=d(y_size)-1
@@ -390,13 +415,17 @@ def move(n):
                 death(n)
                 levelup()
                 return
-            elif(mob.aware==0):
+            elif mob.aware==0:
                 if dis(xx,yy) < 7 + hey + mob.VIT-mob.hp:
                     mob.aware=1
                     awares+=1
-                    if mob.alarming:
-                        Messages+=['This '+mob.name+' looks especially dangerous.']
-            elif dis(xx,yy) > 7 + hey + mob.VIT-mob.hp:
+                    if mob.leader:
+                        PT_awares+=mob.shout
+                        Messages+=[mob.name+' shouts vigorously!'] if dis(xx,yy)<9 else [player.name+' hears a vigorous shout!']
+                    else:
+                        PT_awares+=mob.shout
+                        Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
+            elif mob.aware==1 and dis(xx,yy) > 7 + hey + mob.VIT-mob.hp:
                 awares-=1
                 mob.aware=0
             elif dis(xx,yy) < safe - mob.lvl - hey - (mob.VIT-mob.hp) and dis(xx,yy) > (1 if mob.type%2==0 and mob.type%3!=1 else (6 if mob.type%2==1 else 2)):
@@ -665,7 +694,7 @@ def item_using():
     if(len(player.inventory)>0):
         clearchat()
         for i in range(len(player.inventory)):
-            print(chr(i+97)+'- '+str(player.inventory[i].name))
+            print(f'{chr(i+97)} - {player.inventory[i].name}')
         a=ord(getcharkey())-97
         if(0<=a<=len(player.inventory)-1):
             if(player.inventory[a].name in Weapon_types_list):
@@ -702,7 +731,7 @@ def item_destruct():
     if(len(player.inventory)>0):
         clearchat()
         for i in range(len(player.inventory)):
-            print(chr(i+97)+'- '+str(player.inventory[i].name))
+            print(f'{chr(i+97)} - {player.inventory[i].name}')
         a=ord(getcharkey())-97
         if(0<=a<=len(player.inventory)-1):
             Messages+=['Player destroys '+player.inventory[a].name+'.']
@@ -872,15 +901,27 @@ def screen(x=0,y=0,extra=''):
             mobmob+=l
         mobmob+='\n'
     Messages=Messages[-transcript*3:]
+    clearchat()
+    prints(mobmob,extra)
+
+def prints(mobmob,extra):
     ab=''
     for i in player.abilities:
         ab+=i+' '
     if(ab==''):
         ab='-'
-    clearchat()
-    print('\nSTR:'+str(player.str)+' '*(10-len(str(player.str)))+'HP:'+str(player.hp),'DEX:'+str(player.dex)+' '*(10-len(str(player.dex)))+'MP:'+str(player.mp),'INT:'+str(player.int)+' '*(10-len(str(player.int)))+'FP:'+str(player.fp),'SP:'+str(player.sp)+' '*(11-len(str(player.sp)))+'BP:'+str(player.bp),sep='\n')
-    print('Wield:'+player.wield.name,'Wear:'+player.wear.name,'Shield:'+(str(player.shield.name) if player.wield.dual==1 else '-'),'Abilities:'+ab,sep='\n')
-    print('MR:'+str(player.MR)+' '*(11-len(str(player.MR)))+'SM:'+(str(player.wield.strm) if familiar[0]==1 else '?')+','+(str(player.wield.dexm) if familiar[1]==1 else '?')+','+(str(player.wield.intm) if familiar[2]==1 else '?'),'ER:'+str(player.ER)+' '*(11-len(str(player.ER)))+'AC:'+str(player.AC),'XP:'+str(XP)+' '*(11-len(str(XP)))+'Level:'+str(player.lvl),mobmob,*Messages[-transcript:],sep='\n')
+    print(f'STR:{player.str:<6}HP:{player.hp}')
+    print(f'DEX:{player.dex:<6}MP:{player.mp}')
+    print(f'INT:{player.int:<6}FP:{player.fp}')
+    print(f'SP:{player.sp:<7}BP:{player.bp}')
+    print(f'Wield:{player.wield.name}')
+    print(f'Wear:{player.wear.name}')
+    print(f'''Shield:{player.shield.name if player.wield.dual==1 else '-'}''')
+    print(f'Abilities:{ab}')
+    print(f'AC:{player.AC:<7}ER:{player.ER}')
+    print(f'''MR:{player.MR:<7}SM:{player.wield.strm if familiar[0] else '?'},{player.wield.dexm if familiar[1] else '?'},{player.wield.intm if familiar[2] else '?'}''')
+    print(f'XP:{XP:<7}Level:{player.lvl}')
+    print(mobmob,*Messages[-transcript:],sep='\n')
     print(extra)
 
 def ignorant():
@@ -894,34 +935,16 @@ def ignorant():
         for l in range(d(4)*d(2)+d(4)):
             Title+=chr(64+d(26))
         Titles_list+=[Title]
-
+' ' ' Main ' ' '
 while(True):
 
     print('Please wait while the world is being generated...')
 
+    hey=0
     generate()
     player=Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y])
-    while(True):
-        alarms()
-        screen()
-        controls(d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
-        hey=floor(log(awares+PT_awares+1.0,2.0))
-        PT_awares=0
-        for i in range(len(Total_list)-1,-1,-1):
-            move(i)
-        if(player.hp<=0):
-            clearchat()
-            Messages+=[player.name+' dies.']
-            print('\n   ***'+Messages[-3]+'***   \n   ***'+Messages[-2]+'***   \n   ***'+Messages[-1]+'***\n')
-            a=b''
-            while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):
-                print('Press Enter to continue, or Esc to exit.')
-                a=getkey()
-            if(a==b'\x1b'):
-                exit()
-            elif(a==b'\x0f'):
-                options()
-            break
+
+    play()
 
     Messages+=[player.name+' rejoins the land of living.']
 

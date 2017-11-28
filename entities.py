@@ -73,15 +73,18 @@ class Mob(Entity):
 		self.aware=ab[7]
 		self.type=ab[8]
 		self.icon=ab[9]
-		self.name=ab[10]+((' Leader' if self.leader==1 else ab[15]) if self.leader else '')
+		self.name=ab[10]+((L_N if self.leader==1 else ab[15]) if self.leader else '')
 		self.wield=Weapon(ab[12][0],ab[12][1],ab[12][2],*ab[12][3:]) if self.leader else Weapon(1,1,1,Weapon_icon,'')
 		self.wear=Armor(*ab[13]) if self.leader else Armor(0,Armor_icon,'',0)
 		if(self.wield.dual==3):
 			self.shield=self.wield
+			self.DV=1
 		elif(len(ab)>14 and self.leader):
 			self.shield=Weapon(*ab[14])
+			self.DV=0
 		else:
 			self.shield=Weapon(0,0,0,Shield_icon,'',2)
+			self.DV=1
 		self.MR=self.shield.MR
 		self.ER=self.shield.ER+self.wear.ER
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
@@ -111,6 +114,7 @@ class Me(Entity):
 		self.abilities=set()
 		self.wear=Armor(0,Armor_icon,'rags',0)
 		self.shield=Weapon(2,0,0,Shield_icon,'buckler',2)
+		self.DV=0
 		self.wield=Weapon(1,1,1,Weapon_icon,'dagger')
 		self.AC=self.BAC+self.shield.AC+self.wear.AC
 		self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)

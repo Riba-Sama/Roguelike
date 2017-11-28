@@ -4,10 +4,13 @@ EASINESS=10
 bonus=0
 awares=0
 PT_awares=0
-transcript=13
+transcript=14
 ER_divide=2
 MR_divide=8
 SR_divide=12
+DV_divide_a=4
+DV_divide_f=1
+DV_divide_r=2
 Mob_appear=50*EASINESS
 Noob_Confetti=50*EASINESS
 Mob_ungroup=EASINESS
@@ -25,15 +28,16 @@ Player_icon='@'
 Magic_icon='*'
 Boss_icon='&'
 Wall_icon='#'
+L_N=' Leader'
 Mob_list=((200,0,0,0,1000,0,0,0,-3,Wall_icon,'Wall',0,(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0)),
 (10,6,6,4,1,80,6,0,0,'g','Goblin',1,(2,2,2,Weapon_icon,'dagger'),(1,Armor_icon,'robe',0)),
 (20,8,2,3,3,60,2,0,0,'k','Kobold',1,(3,2,2,Weapon_icon,'sword'),(3,Armor_icon,'leather armor',2),(2,0,0,Shield_icon,'buckler',2)),
 (30,4,8,4,4,40,10,0,4,'G','Gnoll',1,(2,4,1,Weapon_icon,'spear'),(3,Armor_icon,'leather armor',2)),
 (20,9,4,2,9,60,4,0,2,'o','Orc',2,(5,1,1,Weapon_icon,'mace'),(5,Armor_icon,'ringmail',10),(6,10,8,Shield_icon,'ceremonial shield',2),' High Priest'),
-(10,3,6,8,1,20,8,0,3,'i','Lesser Imp',1,(2,1,4,Weapon_icon,'wand'),(0,Armor_icon,'rags',0)),
+(10,3,6,8,1,20,8,0,3,'i','Lesser Imp',1,(2,1,4,Weapon_icon,'wand'),(0,Armor_icon,'',0)),
 (60,20,8,4,12,10,20,0,2,'O','Ogre',1,(8,1,0,Weapon_icon,'cudgel',3,6,10,4),(9,Armor_icon,'shellmail',100)),
-(20,8,12,30,2,5,8,0,3,'D','Crimson Demon',0,(0,2,7,Weapon_icon,'rod',3,2,0,12),(0,Armor_icon,'archmage robe',-1)),
-(30,12,16,16,6,5,10,0,1,'I','Greater Imp',1,(1,4,4,Weapon_icon,'trident',3,4,0,4),(0,Armor_icon,'rags',0)))
+(20,8,12,30,2,5,8,0,3,'D','Crimson Demon',1,(0,2,7,Weapon_icon,'rod',3,2,0,12),(0,Armor_icon,'archmage robe',-1)),
+(30,12,16,16,6,5,10,0,1,'I','Greater Imp',1,(1,4,4,Weapon_icon,'trident',3,4,0,4),(0,Armor_icon,'',0)))
 RL_Mobs=(0,8,8,4,4,4,2,1,1)
 Effects_list=('healing potion','magic potion','poison potion','energetic potion','experience potion')
 Titles_list=[]

@@ -1,29 +1,5 @@
 import sys, os
 
-def play():
-    global hey,PT_awares,Messages
-    alarms()
-    screen()
-    controls(d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
-    hey=floor(log(awares+PT_awares+1.0,2.0))
-    PT_awares=0
-    for i in range(len(Total_list)-1,-1,-1):
-        move(i)
-    if(player.hp<=0):
-        clearchat()
-        Messages+=[player.name+' dies.']
-        print(f'\n   ***{Messages[-3]}***   \n   ***{Messages[-2]}***   \n   ***{Messages[-1]}***\n')
-        a=b''
-        while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):
-            print('Press Enter to continue, or Esc to exit.')
-            a=getkey()
-        if(a==b'\x1b'):
-            exit()
-        elif(a==b'\x0f'):
-            options()
-    else:
-        play()
-
 def clearchat():
   if os.name == "posix":
     print ("\033[2J")
@@ -284,7 +260,7 @@ def generate():
 #####################
 def attack(enA,enD):
 	global Messages
-	atk=d(enA.str*enA.wield.strm+d(enA.dex*enA.wield.dexm*2))//2
+	atk=d(enA.str*enA.wield.strm+d(enA.dex*enA.wield.dexm*2))*(enA.DV+DV_divide_a)//(2*DV_divide_a)
 	if atk > enD.AC:
 		enD.hp+=enD.AC-atk
 		enD.bp+=atk*d(enA.int*enA.wield.intm)//d(enD.AC)
@@ -295,7 +271,7 @@ def attack(enA,enD):
 
 def farattack(enA,enD):
 	global Messages
-	atk=d(enA.dex*enA.wield.dexm+d(enA.dex*enA.wield.dexm*d(2)))//2
+	atk=d(enA.dex*enA.wield.dexm+d(enA.dex*enA.wield.dexm*d(2)))*(enA.DV+DV_divide_f)//(2*DV_divide_f)
 	if atk > enD.AC//2:
 		enD.hp+=enD.AC//2-atk
 		enD.bp+=atk*d(enA.dex*enA.wield.dexm)//d(enD.AC)
@@ -306,7 +282,7 @@ def farattack(enA,enD):
 
 def rushattack(enA,enD):
 	global Messages
-	atk=d(enA.str*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))//2+enA.str*enA.wield.strm
+	atk=d(enA.str*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))*(enA.DV+DV_divide_r)//(2*DV_divide_r)+enA.str*enA.wield.strm
 	if atk > enD.AC and d(enA.dex) > d(enD.dex):
 		enD.hp+=enD.AC//2-atk
 		enD.fp+=atk*d(enA.str*enA.wield.strm)//d(enD.AC)
@@ -420,7 +396,7 @@ def move(n):
                     mob.aware=1
                     awares+=1
                     if mob.leader:
-                        PT_awares+=mob.shout
+                        PT_awares+=mob.shout*2
                         Messages+=[mob.name+' shouts vigorously!'] if dis(xx,yy)<9 else [player.name+' hears a vigorous shout!']
                     else:
                         PT_awares+=mob.shout
@@ -471,6 +447,7 @@ def help():
     Messages+=['!      abbreviations in stats.']
     Messages+=['#      icons list.']
     Messages+=['*      view transcript.']
+    Messages+=['Space  toggle dual wield.']
 
 def abbs():
 	global Messages
@@ -661,21 +638,15 @@ def change_weapon(a):
         Messages+=[player.name+' unwields '+player.wield.name+'.']
         player.wield=player.inventory[a]
         Messages+=[player.name+' wields '+player.wield.name+'.']
+        if player.wield.dual==3:
+            player.DV=1
         familiar=[0,0,0]
     else:
         player.inventory+=[player.shield]
         Messages+=[player.name+' unwields '+player.shield.name+'.']
         player.shield=player.inventory[a]
         Messages+=[player.name+' wields '+player.shield.name+'.']
-    if(player.wield.dual==3):
-        player.AC=player.BAC+player.wear.AC+player.wield.AC
-        player.ER=player.wear.ER+player.wield.ER
-        player.MR=player.wield.MR
-    else:
-        player.AC=player.BAC+player.wear.AC+player.shield.AC
-        player.ER=player.wear.ER+player.shield.ER
-        player.MR=player.shield.MR
-    player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
+    shield_recalculate()
 
 def change_armor(a):
     global player,Messages
@@ -789,6 +760,34 @@ def update_state():
         player.sp=0
         Messages+=[player.name+' starves.']
 
+def DoVi():
+    global player,Messages
+    if(player.wield.dual==3):
+        Messages+=[f'''Can't wield {player.wield.name} in one hand''']
+        return 1
+    else:
+        player.DV=1-player.DV
+        Messages+=[f'{player.name} wields his {player.wield.name} in both hands.' if player.DV else f'{player.name} wields his {player.wield.name} in his right hand.']
+        shield_recalculate()
+        return 0
+
+def shield_recalculate():
+    global player
+    if player.DV:
+        if(player.wield.dual==3):
+            player.AC=player.BAC+player.wear.AC+player.wield.AC
+            player.ER=player.wear.ER+player.wield.ER
+            player.MR=player.wield.MR
+        else:
+            player.AC=player.BAC+player.wear.AC
+            player.ER=player.wear.ER
+            player.MR=0
+    else:
+        player.AC=player.BAC+player.wear.AC+player.shield.AC
+        player.ER=player.wear.ER+player.shield.ER
+        player.MR=player.shield.MR
+    player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
+
 def controls(fatigue):
     global player,Total_list,Messages,familiar
     retry=0
@@ -812,6 +811,8 @@ def controls(fatigue):
     		player.fp+=1
     	else:
     		attack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
+    elif(a==b' '):
+        retry=DoVi()
     elif(a==b'z' and 'caster' in player.abilities):
     	retry=casting()
     elif(a==b'x' and 'lancer' in player.abilities):
@@ -916,7 +917,7 @@ def prints(mobmob,extra):
     print(f'SP:{player.sp:<7}BP:{player.bp}')
     print(f'Wield:{player.wield.name}')
     print(f'Wear:{player.wear.name}')
-    print(f'''Shield:{player.shield.name if player.wield.dual==1 else '-'}''')
+    print(f'''Shield:{'-' if player.DV else player.shield.name}''')
     print(f'Abilities:{ab}')
     print(f'AC:{player.AC:<7}ER:{player.ER}')
     print(f'''MR:{player.MR:<7}SM:{player.wield.strm if familiar[0] else '?'},{player.wield.dexm if familiar[1] else '?'},{player.wield.intm if familiar[2] else '?'}''')
@@ -944,7 +945,27 @@ while(True):
     generate()
     player=Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y])
 
-    play()
+    while(True):
+            alarms()
+            screen()
+            controls(d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
+            hey=floor(log(awares+PT_awares+1.0,2.0))
+            PT_awares=0
+            for i in range(len(Total_list)-1,-1,-1):
+                move(i)
+            if(player.hp<=0):
+                clearchat()
+                Messages+=[player.name+' dies.']
+                print(f'\n   ***{Messages[-3]}***   \n   ***{Messages[-2]}***   \n   ***{Messages[-1]}***\n')
+                a=b''
+                while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):
+                    print('Press Enter to continue, or Esc to exit.')
+                    a=getkey()
+                if(a==b'\x1b'):
+                    exit()
+                elif(a==b'\x0f'):
+                    options()
+                break
 
     Messages+=[player.name+' rejoins the land of living.']
 

@@ -3,7 +3,7 @@ from entities import *
 Weapon_types_list=Weapon_types_list+('Excalibolg',)
 class Boss(Mob):
     def __init__(self):
-        self.leader=-10000
+        self.leader=10
         self.hp=100
         self.str=30
         self.dex=20
@@ -18,6 +18,7 @@ class Boss(Mob):
         self.inventory=[]
         self.wear=Armor(3,Armor_icon,'leather armor',2)
         self.wield=Weapon(5,0,5,Weapon_icon,'Excalibolg',3,6,6,6)
+        self.DV=1
         self.shield=self.wield
         self.ER=self.wield.ER+self.wear.ER
         self.MR=self.wield.MR

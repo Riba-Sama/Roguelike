@@ -43,14 +43,14 @@ def getkey():
 try:
     from settings import *
 except ModuleNotFoundError as err:
-    print(f"Failed to import settings file {err}\nCan't proceed executing programm.")
+    print("Failed to import settings file \n"+str(err)+"\nCan't proceed executing programm.")
     getkey()
     exit()
 
 try:
     from entities import *
 except ModuleNotFoundError as err:
-    print(f"Failed to import entities file {err}\nCan't proceed executing programm.")
+    print("Failed to import entities file \n"+str(err)+"\nCan't proceed executing programm.")
     getkey()
     exit()
 
@@ -117,7 +117,7 @@ def lvlup(x):
     	if x.__class__.__name__ == 'Me' and x.abilities != Ability:
             qyu=''
             for i in Ability - x.abilities:
-            	qyu+='If you want to become '+i[0].upper()+i[1:]+', type in '+i+'.\n'
+            	qyu+='If you want to become '+i.capitalize()+', type in '+i+'.\n'
             qyu+='If you want to become stronger, type in anything else.'
             screen(0,0,qyu)
             a=input('')
@@ -665,7 +665,7 @@ def item_using():
     if(len(player.inventory)>0):
         clearchat()
         for i in range(len(player.inventory)):
-            print(f'{chr(i+97)} - {player.inventory[i].name}')
+            print(chr(i+97)+" - "+player.inventory[i].name)
         a=ord(getcharkey())-97
         if(0<=a<=len(player.inventory)-1):
             if(player.inventory[a].name in Weapon_types_list):
@@ -702,7 +702,7 @@ def item_destruct():
     if(len(player.inventory)>0):
         clearchat()
         for i in range(len(player.inventory)):
-            print(f'{chr(i+97)} - {player.inventory[i].name}')
+            print(chr(i+97)+" - "+player.inventory[i].name)
         a=ord(getcharkey())-97
         if(0<=a<=len(player.inventory)-1):
             Messages+=['Player destroys '+player.inventory[a].name+'.']
@@ -763,11 +763,11 @@ def update_state():
 def DoVi():
     global player,Messages
     if(player.wield.dual==3):
-        Messages+=[f'''Can't wield {player.wield.name} in one hand''']
+        Messages+=['''Can't wield '''+player.wield.name+''' in one hand.''']
         return 1
     else:
         player.DV=1-player.DV
-        Messages+=[f'{player.name} wields his {player.wield.name} in both hands.' if player.DV else f'{player.name} wields his {player.wield.name} in his right hand.']
+        Messages+=[player.name+' wields his '+player.wield.name+' in both hands.' if player.DV else player.name+' wields his '+player.wield.name+' in right hand.']
         shield_recalculate()
         return 0
 
@@ -911,17 +911,17 @@ def prints(mobmob,extra):
         ab+=i+' '
     if(ab==''):
         ab='-'
-    print(f'STR:{player.str:<6}HP:{player.hp}')
-    print(f'DEX:{player.dex:<6}MP:{player.mp}')
-    print(f'INT:{player.int:<6}FP:{player.fp}')
-    print(f'SP:{player.sp:<7}BP:{player.bp}')
-    print(f'Wield:{player.wield.name}')
-    print(f'Wear:{player.wear.name}')
-    print(f'''Shield:{'-' if player.DV else player.shield.name}''')
-    print(f'Abilities:{ab}')
-    print(f'AC:{player.AC:<7}ER:{player.ER}')
-    print(f'''MR:{player.MR:<7}SM:{player.wield.strm if familiar[0] else '?'},{player.wield.dexm if familiar[1] else '?'},{player.wield.intm if familiar[2] else '?'}''')
-    print(f'XP:{XP:<7}Level:{player.lvl}')
+    print('STR:{:<6}HP:{}'.format(player.str,player.hp))
+    print('DEX:{:<6}MP:{}'.format(player.dex,player.mp))
+    print('INT:{:<6}FP:{}'.format(player.int,player.fp))
+    print('SP:{:<7}BP:{}'.format(player.sp,player.bp))
+    print('Wield:'+player.wield.name)
+    print('Wear:'+player.wear.name)
+    print('Shield:'+('-' if player.DV else player.shield.name))
+    print('Abilities:'+ab)
+    print('AC:{:<7}ER:{}'.format(player.AC,player.ER))
+    print('MR:{:<7}SM:{},{},{}'.format(player.MR,player.wield.strm if familiar[0] else '?',player.wield.dexm if familiar[1] else '?',player.wield.intm if familiar[2] else '?'))
+    print('XP:{:<7}Level:{}'.format(XP,player.lvl))
     print(mobmob,*Messages[-transcript:],sep='\n')
     print(extra)
 
@@ -956,7 +956,7 @@ while(True):
             if(player.hp<=0):
                 clearchat()
                 Messages+=[player.name+' dies.']
-                print(f'\n   ***{Messages[-3]}***   \n   ***{Messages[-2]}***   \n   ***{Messages[-1]}***\n')
+                print('\n   ***{}***   \n   ***{}***   \n   ***{}***\n'.format(Messages[-3],Messages[-2],Messages[-1]))
                 a=b''
                 while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):
                     print('Press Enter to continue, or Esc to exit.')

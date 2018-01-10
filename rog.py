@@ -271,7 +271,7 @@ def attack(enA,enD):
 
 def farattack(enA,enD):
 	global Messages
-	atk=d(enA.dex*enA.wield.dexm+d(enA.dex*enA.wield.dexm*d(2)))*(enA.DV+DV_divide_f)//(2*DV_divide_f)
+	atk=d(enA.dex*enA.wield.dexm+d(enA.dex*enA.wield.dexm*d(2)))*(enA.DV+DV_divide_f)//(4*DV_divide_f)
 	if atk > enD.AC//2:
 		enD.hp+=enD.AC//2-atk
 		enD.bp+=atk*d(enA.dex*enA.wield.dexm)//d(enD.AC)
@@ -282,7 +282,7 @@ def farattack(enA,enD):
 
 def rushattack(enA,enD):
 	global Messages
-	atk=d(enA.str*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))*(enA.DV+DV_divide_r)//(2*DV_divide_r)+enA.str*enA.wield.strm
+	atk=d(enA.str*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))*(enA.DV+DV_divide_r)//(3*DV_divide_r)+enA.str*enA.wield.strm
 	if atk > enD.AC and d(enA.dex) > d(enD.dex):
 		enD.hp+=enD.AC//2-atk
 		enD.fp+=atk*d(enA.str*enA.wield.strm)//d(enD.AC)

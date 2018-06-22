@@ -29,7 +29,7 @@ class Boss(Mob):
             self.VIT=self.hp
             self.BAC=self.AC-self.wear.AC-self.shield.AC
             self.xp=5000
-            self.drop=[Weapon(5,0,5,Weapon_icon,'Excalibolg',3,6,6,6)]
+            self.drop=[Weapon(5,0,3,Weapon_icon,'Excalibolg',3,3,3,3)]
             self.doping=[]
         elif(num==2):
             self.leader=0

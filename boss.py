@@ -13,6 +13,7 @@ class Boss(Mob):
         self.fp=0
         self.aware=0
         self.type=5
+        self.shout=100
         self.icon=Boss_icon
         self.name='World Ender'
         self.inventory=[]

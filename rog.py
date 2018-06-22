@@ -825,12 +825,12 @@ def controls(fatigue):
     elif(a==b'>'):
         if(Map[player.y*x_size+player.x]=='>'):
             Floor+=1
-            Messages+=['Descending to Floor '+str(Floor)+'.']
+            Messages+=['Ascending to Floor '+str(Floor)+'.']
             newstage()
             generate()
             player.x,player.y=spawn_x,spawn_y
         else:
-            Messages+=["Can't descend here."]
+            Messages+=["Can't ascend here."]
             retry=1
     elif(a==b'z' and 'caster' in player.abilities):
     	retry=casting()
@@ -895,7 +895,7 @@ def alarms():
 
 def check(xx,yy):
     if((xx,yy) in X_Y_list):
-        if('stealth' in Total_list[X_Y_list.index((xx,yy))].doping and max(abs(player.x-xx),abs(player.y-yy))>=8-d(Total_list[X_Y_list.index((xx,yy))].dex//d(player.dex))):
+        if('stealth' in Total_list[X_Y_list.index((xx,yy))].doping and max(abs(player.x-xx),abs(player.y-yy))>=8-d(Total_list[X_Y_list.index((xx,yy))].dex)//player.dex):
             return '.'
         elif(max(abs(player.x-xx),abs(player.y-yy))<=Magic_distance):
             global Targets

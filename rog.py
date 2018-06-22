@@ -285,6 +285,9 @@ def attack(enA,enD):
 		if('death' in enA.doping):
 			enD.hp=-45
 			Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+		elif('purify' in enA.doping and 'kai' in enD.doping):
+			enD.hp=-45
+			Messages+=[enA.name+' purifies '+enD.name+'.']
 	else:
 		Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
 	enA.fp+=2
@@ -299,6 +302,9 @@ def farattack(enA,enD):
 		if('death' in enA.doping):
 			enD.hp=-45
 			Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+		elif('purify' in enA.doping and 'kai' in enD.doping):
+			enD.hp=-45
+			Messages+=[enA.name+' purifies '+enD.name+'.']
 	else:
 		Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
 	enA.fp+=4
@@ -313,6 +319,9 @@ def rushattack(enA,enD):
 		if('death' in enA.doping):
 			enD.hp=-45
 			Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+		elif('purify' in enA.doping and 'kai' in enD.doping):
+			enD.hp=-45
+			Messages+=[enA.name+' purifies '+enD.name+'.']
 	else:
 		Messages+=[enA.name+' crushes floor near '+enD.name+"'s feet."] if atk > enD.AC else [enD.name+' barely blocks '+enA.name+"'s hit."]
 	enA.fp+=8
@@ -320,16 +329,19 @@ def rushattack(enA,enD):
 def magicattack(enA,enD):
 	global Messages
 	atk=d(enA.int*enA.wield.intm+d(enA.int*enA.wield.intm*d(2)))*MR_divide//(MR_divide+enD.ER)//2
+	Messages+=[enA.name+' gestures at '+enD.name+'.']
 	if atk > enD.AC//3+enD.mp:
 		enD.hp+=enD.AC//3+enD.mp-atk
 		enD.fp+=d(atk)
 		enD.mp=0
-		Messages+=[enA.name+' gestures at '+enD.name+'.']
+
 		Messages+=['Pain surges through '+enD.name+"'s body."]
+		if('purify' in enA.doping and 'kai' in enD.doping):
+			enD.hp=-45
+			Messages+=[enA.name+' purifies '+enD.name+'.']
 	else:
 		if atk > enD.AC//3:
 			enD.mp+=enD.AC//3-atk
-		Messages+=[enA.name+' gestures at '+enD.name+'.']
 	enA.fp+=4
 	enA.mp-=Magic_value
 
@@ -421,29 +433,32 @@ def move(n):
                 if dis(xx,yy) < 7 + hey + mob.VIT-mob.hp:
                     mob.aware=1
                     awares+=1
-                    if mob.leader:
+                    if mob.leader==1:
                         PT_awares+=mob.shout*2
                         Messages+=[mob.name+' shouts vigorously!'] if dis(xx,yy)<9 else [player.name+' hears a vigorous shout!']
+                    elif mob.leader:
+                        PT_awares+=mob.shout*(1+mob.leader)
+                        Messages+=[mob.catchphrase[0]] if dis(xx,yy)<9 else [mob.catchphrase[1]]
                     else:
                         PT_awares+=mob.shout
                         Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
             elif mob.aware==1 and dis(xx,yy) > 7 + hey + mob.VIT-mob.hp:
                 awares-=1
                 mob.aware=0
-            elif dis(xx,yy) < safe - mob.lvl - hey - (mob.VIT-mob.hp) and dis(xx,yy) > (1 if mob.type%2==0 and mob.type%3!=1 else (6 if mob.type%2==1 else 2)):
+            elif dis(xx,yy) < safe - mob.lvl - hey - (mob.VIT-mob.hp) and dis(xx,yy) > (1 if mob.type%2==0 and mob.type%3!=2 else (6 if mob.type%2==1 else 2)):
                 PT_awares+=mob.shout
                 Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
             elif(mob.fp>d(20+mob.dex-mob.ER*SR_divide//(SR_divide+mob.str)) or (mob.fp>=mob.dex and mob.type%2==1) or (mob.fp>=d(mob.dex) and mob.type%3==2)):
                 mob.fp=max(mob.fp-mob.dex,0)
-            elif(dis(xx,yy)==2 and mob.type%3==1):
+            elif(dis(xx,yy)==2 and mob.type%3==2):
                 farattack(mob,player)
             elif(mob.type%2==1 and mob.mp>=Magic_value and dis(xx,yy)<=Magic_distance):
                 magicattack(mob,player)
-            elif(dis(xx,yy)==1 and mob.type%3==2):
+            elif(dis(xx,yy)==1 and mob.type%5==4):
                 rushattack(mob,player)
             elif(dis(xx,yy)==1 and mob.type==0):
                 attack(mob,player)
-            elif (mob.type==3 and dis(xx,yy)<=4) or (mob.type%3==1 and dis(xx,yy)==1):
+            elif (mob.type==1 and dis(xx,yy)<=4) or (mob.type%3==2 and dis(xx,yy)==1):
                 stepaway(mob,n)
             elif(dis(xx,yy)==1):
                 attack(mob,player)

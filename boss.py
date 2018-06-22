@@ -1,6 +1,6 @@
 from settings import *
 from entities import *
-Weapon_types_list=Weapon_types_list+('Excalibolg',)
+Weapon_types_list=Weapon_types_list+('Excalibolg','Satosame','Shinzowatari')
 class Boss(Mob):
     def __init__(self,num):
         if(num==1):
@@ -13,7 +13,7 @@ class Boss(Mob):
             self.bp=0
             self.fp=0
             self.aware=0
-            self.type=5
+            self.type=9
             self.shout=100
             self.icon=Boss_icon
             self.name='World Ender'
@@ -31,8 +31,9 @@ class Boss(Mob):
             self.xp=5000
             self.drop=[Weapon(5,0,3,Weapon_icon,'Excalibolg',3,3,3,3)]
             self.doping=[]
+            self.catchphrase=('Despair overwhelms you.','Despair overwhelms you.')
         elif(num==2):
-            self.leader=0
+            self.leader=10
             self.hp=20
             self.str=12
             self.dex=30
@@ -42,7 +43,7 @@ class Boss(Mob):
             self.fp=0
             self.aware=0
             self.type=0
-            self.shout=1
+            self.shout=0
             self.icon=Boss_icon
             self.name='Midorime'
             self.inventory=[]
@@ -57,5 +58,34 @@ class Boss(Mob):
             self.VIT=self.hp
             self.BAC=self.AC-self.wear.AC-self.shield.AC
             self.xp=50000
-            self.drop=[Weapon(5,0,5,Weapon_icon,'Satosame',3,6,6,6)]
+            self.drop=[Weapon(1,6,0,Weapon_icon,'Satosame',1,0,0,0,['death'])]
             self.doping=['stealth','death']
+            self.catchphrase=('You sense murderous aura.','You sense murderous aura.')
+        elif(num==3):
+            self.leader=10
+            self.hp=30
+            self.str=24
+            self.dex=30
+            self.int=12
+            self.AC=12
+            self.bp=0
+            self.fp=0
+            self.aware=0
+            self.type=14
+            self.shout=1
+            self.icon=Boss_icon
+            self.name='Kill-Shot'
+            self.inventory=[]
+            self.wear=Armor(1,Armor_icon,'robe',0)
+            self.wield=Weapon(6,6,2,Weapon_icon,'Shinzowatari',3,6,2,4,['purify'])
+            self.DV=1
+            self.shield=self.wield
+            self.ER=self.wear.ER
+            self.MR=0
+            self.lvl=99
+            self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
+            self.VIT=self.hp
+            self.BAC=self.AC-self.wear.AC-self.shield.AC
+            self.xp=100000
+            self.drop=[Weapon(6,6,2,Weapon_icon,'Shinzowatari',3,6,2,4,['purify'])]
+            self.doping=['purify','kai']

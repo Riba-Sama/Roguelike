@@ -75,7 +75,7 @@ class Mob(Entity):
 		self.aware=ab[7]
 		self.type=ab[8]
 		self.icon=ab[9]
-		self.name=ab[10]+((L_N if self.leader==1 else ab[17]) if self.leader else '')
+		self.name=ab[10]+((L_N if self.leader==1 else ab[17][0]) if self.leader else '')
 		self.wield=Weapon(ab[14][0],ab[14][1],ab[14][2],*ab[14][3:]) if self.leader else Weapon(1,1,1,Weapon_icon,'')
 		self.wear=Armor(*ab[15]) if self.leader else Armor(0,Armor_icon,'',0)
 		if(self.wield.dual==3):
@@ -96,6 +96,8 @@ class Mob(Entity):
 		self.lvl=1 if self.xp<=XP_base else floor(log(self.xp/XP_base,2.0))+1
 		self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)+[self.shield]*(len(ab)>14 and bool(self.shield.name))+[self.wield]*bool(self.wield.name)+[self.wear]*bool(self.wear.name)
 		self.doping=ab[13]+self.wield.doping+self.wear.doping
+		if(len(ab)>17):
+			self.catchphrase=ab[17][1]
 
 class Me(Entity):
 	def __init__(self,ab):

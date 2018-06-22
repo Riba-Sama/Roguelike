@@ -284,7 +284,7 @@ def attack(enA,enD):
 		Messages+=[enA.name+' hits '+enD.name+'.']
 		if('death' in enA.doping):
 			enD.hp=-45
-			Messages+=['The curse of '+enA.wield.name+' kills you.']
+			Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
 	else:
 		Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
 	enA.fp+=2
@@ -298,7 +298,7 @@ def farattack(enA,enD):
 		Messages+=[enA.name+' hits '+enD.name+' from afar.']
 		if('death' in enA.doping):
 			enD.hp=-45
-			Messages+=['The curse of '+enA.wield.name+' kills you.']
+			Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
 	else:
 		Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
 	enA.fp+=4
@@ -312,7 +312,7 @@ def rushattack(enA,enD):
 		Messages+=[enA.name+' crushes '+enD.name+' mightily.']
 		if('death' in enA.doping):
 			enD.hp=-45
-			Messages+=['The curse of '+enA.wield.name+' kills you.']
+			Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
 	else:
 		Messages+=[enA.name+' crushes floor near '+enD.name+"'s feet."] if atk > enD.AC else [enD.name+' barely blocks '+enA.name+"'s hit."]
 	enA.fp+=8

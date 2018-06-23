@@ -29,16 +29,16 @@ def getcharkey():
     return result
 
 def getkey():
-	result = None
-	if os.name == 'nt':
-		import msvcrt
-		result = msvcrt.getch()
-	else:
-		try:
-			result = getcharkey().encode()
-		except:
-			result = b''
-	return result
+    result = None
+    if os.name == 'nt':
+        import msvcrt
+        result = msvcrt.getch()
+    else:
+        try:
+            result = getcharkey().encode()
+        except:
+            result = b''
+    return result
 
 try:
     from settings import *
@@ -79,14 +79,14 @@ except ModuleNotFoundError as err :
     y_size=512
     spawn_x,spawn_y=x_size//2,y_size//2
 except NameError as err:
-	Messages+=['Failed to import map, '+str(err)]
-	Map='.'*262144
-	x_size=512
-	y_size=512
-	spawn_x,spawn_y=x_size//2,y_size//2
+    Messages+=['Failed to import map, '+str(err)]
+    Map='.'*262144
+    x_size=512
+    y_size=512
+    spawn_x,spawn_y=x_size//2,y_size//2
 
 try:
-	from map import Presets
+    from map import Presets
 except ModuleNotFoundError as err:
     Presets=()
     Messages+=['Failed to import presets file, '+str(err)]
@@ -101,89 +101,89 @@ except ModuleNotFoundError as err:
 
 Know_list=[0]*len(Effects_list)
 for i in range(len(Effects_list)):
-	Title=''
-	for l in range(d(4)*d(2)+d(4)):
-		Title+=chr(64+d(26))
-	Titles_list+=[Title]
+    Title=''
+    for l in range(d(4)*d(2)+d(4)):
+        Title+=chr(64+d(26))
+    Titles_list+=[Title]
 
 def un(x,y):
-	return not (x,y) in X_Y_list
+    return not (x,y) in X_Y_list
 def disx(x):
-	return abs(player.x-x)
+    return abs(player.x-x)
 def disy(y):
-	return abs(player.y-y)
+    return abs(player.y-y)
 def dis(x,y):
-	return max(disx(x),disy(y))
+    return max(disx(x),disy(y))
 def sig(x):
-	if(x>0):
-		return 1
-	elif(x<0):
-		return -1
-	else:
-		return 0
+    if(x>0):
+        return 1
+    elif(x<0):
+        return -1
+    else:
+        return 0
 
 def lvlup(x):
     x.lvl+=1
     if d(3) == 1:
-    	x.str+=1
+        x.str+=1
     elif d(2) == 1:
-    	x.dex+=1
+        x.dex+=1
     else:
-    	x.int+=1
+        x.int+=1
     if x.lvl%5 == 0:
-    	if x.__class__.__name__ == 'Me' and x.abilities != Ability:
+        if x.__class__.__name__ == 'Me' and x.abilities != Ability:
             qyu=''
             for i in Ability - x.abilities:
-            	qyu+='If you want to become '+i.capitalize()+', type in '+i+'.\n'
+                qyu+='If you want to become '+i.capitalize()+', type in '+i+'.\n'
             qyu+='If you want to become stronger, type in anything else.'
             screen(0,0,qyu)
             a=input('')
             global Messages
             if a in Ability:
-            	x.abilities=x.abilities | {a}
-            	a=Cool_dict[a]
-            	Messages+=[a[0]]
-            	x.str+=a[1]
-            	x.dex+=a[2]
-            	x.int+=a[3]
+                x.abilities=x.abilities | {a}
+                a=Cool_dict[a]
+                Messages+=[a[0]]
+                x.str+=a[1]
+                x.dex+=a[2]
+                x.int+=a[3]
             else:
-            	x.str+=Coolness
-            	x.dex+=Coolness
-            	x.int+=Coolness
-    	else:
-    		x.str+=Coolness
-    		x.dex+=Coolness
-    		x.int+=Coolness
+                x.str+=Coolness
+                x.dex+=Coolness
+                x.int+=Coolness
+        else:
+            x.str+=Coolness
+            x.dex+=Coolness
+            x.int+=Coolness
     return x
 
 def levelup():
-	global player
-	while XP >= XP_base*2**player.lvl:
-		player=lvlup(player)
+    global player
+    while XP >= XP_base*2**player.lvl:
+        player=lvlup(player)
 #####################
 #######setting#######
 #####################
 def consume(ent,what):
-	if what == 0:
-		ent.hp=ent.VIT
-		ent.bp=0
-		ent.fp=ent.fp//2
-		ent.sp+=2
-	elif what == 1:
-		ent.mp=(ent.int*ent.wield.intm*ER_divide)//(ER_divide+ent.ER)
-		ent.fp=ent.fp//2
-		ent.bp=ent.bp//2
-		ent.sp+=2
-	elif what == 2:
-		ent.hp=ent.hp//3
-		ent.fp+=10
-		ent.sp-=2
-	elif what == 3:
-		ent.fp=-(ent.dex+10)**2//25
-		ent.bp=ent.bp*3
-		ent.sp+=4
-	elif what == 4:
-		ent=lvlup(ent)
+    if what == 0:
+        ent.hp=ent.VIT
+        ent.bp=0
+        ent.fp=ent.fp//2
+        ent.sp+=2
+    elif what == 1:
+        ent.mp=(ent.int*ent.wield.intm*ER_divide)//(ER_divide+ent.ER)
+        ent.fp=ent.fp//2
+        ent.bp=ent.bp//2
+        ent.sp+=2
+    elif what == 2:
+        ent.hp=ent.hp//3
+        ent.fp+=10
+        ent.sp-=2
+    elif what == 3:
+        ent.fp=-(ent.dex+10)**2//25
+        ent.bp=ent.bp*3
+        ent.sp+=4
+    elif what == 4:
+        ent=lvlup(ent)
 #####################
 #setting#####potions#
 #####################
@@ -196,7 +196,7 @@ def birth(x,y,mob):
         x=max(min(x+d(5)-3,x_size-1),0)
         y=max(min(y+d(5)-3,y_size-1),0)
     if un(x,y) and Map[x+y*(x_size)] == '.':
-        Total_list+=[Mob(mob,d(mob[11])//d(Lead_c))]
+        Total_list+=[Mob(mob,mob[11]//d(Lead_c))]
         X_Y_list+=[(x,y)]
 
 def generate():
@@ -236,7 +236,7 @@ def generate():
                     X_Y_list+=[(i,l,0)]
                 elif a is Weapon_icon:
                     usl=rl(RL_Weapons)
-                    Total_list+=[Weapon(d(Weapon_m_list[usl][0]),d(Weapon_m_list[usl][1]),d(Weapon_m_list[usl][2]),Weapon_icon,Weapon_types_list[usl])]
+                    Total_list+=[Weapon(Weapon_m_list[usl][0],Weapon_m_list[usl][1],Weapon_m_list[usl][2],Weapon_icon,Weapon_types_list[usl])]
                     X_Y_list+=[(i,l,0)]
                 elif a is Armor_icon:
                     usl=rl(RL_Armor)
@@ -276,74 +276,88 @@ def generate():
 #######setting#######
 #####################
 def attack(enA,enD):
-	global Messages
-	atk=d(enA.str*enA.wield.strm+d(enA.dex*enA.wield.dexm*2))*(enA.DV+DV_divide_a)//(2*DV_divide_a)
-	if atk > enD.AC:
-		enD.hp+=enD.AC-atk
-		enD.bp+=atk*d(enA.int*enA.wield.intm)//d(enD.AC)
-		Messages+=[enA.name+' hits '+enD.name+'.']
-		if('death' in enA.doping):
-			enD.hp=-45
-			Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
-		elif('purify' in enA.doping and 'kai' in enD.doping):
-			enD.hp=-45
-			Messages+=[enA.name+' purifies '+enD.name+'.']
-	else:
-		Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
-	enA.fp+=2
+    global Messages
+    atk=d((enA.str+('illusion' in enA.doping)*enD.str//enD.int)*enA.wield.strm+d(enA.dex*enA.wield.dexm*2))*(enA.DV+DV_divide_a)//(2*DV_divide_a)
+    if atk > enD.AC:
+        enD.hp+=enD.AC-atk
+        enD.bp+=atk*d(enA.int*enA.wield.intm)//d(enD.AC)
+        Messages+=[enA.name+' hits '+enD.name+'.']
+        if('vampirism' in enA.doping):
+            enA.hp+=atk-enD.AC
+            Messages+=[enA.name+' drains '+enD.name+"'s life force."]
+            if(enD.__class__.__name__ == 'Me'):
+                ththyhyujy=1
+        if('death' in enA.doping):
+            enD.hp=-45
+            Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+        elif('purify' in enA.doping and 'kai' in enD.doping):
+            enD.hp=-45
+            Messages+=[enA.name+' purifies '+enD.name+'.']
+    else:
+        Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
+    enA.fp+=2
 
 def farattack(enA,enD):
-	global Messages
-	atk=d(enA.dex*enA.wield.dexm+d(enA.dex*enA.wield.dexm*d(2)))*(enA.DV+DV_divide_f)//(4*DV_divide_f)
-	if atk > enD.AC//2:
-		enD.hp+=enD.AC//2-atk
-		enD.bp+=atk*d(enA.dex*enA.wield.dexm)//d(enD.AC)
-		Messages+=[enA.name+' hits '+enD.name+' from afar.']
-		if('death' in enA.doping):
-			enD.hp=-45
-			Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
-		elif('purify' in enA.doping and 'kai' in enD.doping):
-			enD.hp=-45
-			Messages+=[enA.name+' purifies '+enD.name+'.']
-	else:
-		Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
-	enA.fp+=4
+    global Messages
+    atk=d((enA.dex+('illusion' in enA.doping)*enD.dex//enD.int)*enA.wield.dexm+d(enA.dex*enA.wield.dexm*d(2)))*(enA.DV+DV_divide_f)//(4*DV_divide_f)
+    if atk > enD.AC//2:
+        enD.hp+=enD.AC//2-atk
+        enD.bp+=atk*d(enA.dex*enA.wield.dexm)//d(enD.AC)
+        Messages+=[enA.name+' hits '+enD.name+' from afar.']
+        if('vampirism' in enA.doping):
+            enA.hp+=atk-enD.AC//2
+            Messages+=[enA.name+' drains '+enD.name+"'s life force."]
+            if(enD.__class__.__name__ == 'Me'):
+                ththyhyujy=1
+        if('death' in enA.doping):
+            enD.hp=-45
+            Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+        elif('purify' in enA.doping and 'kai' in enD.doping):
+            enD.hp=-45
+            Messages+=[enA.name+' purifies '+enD.name+'.']
+    else:
+        Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
+    enA.fp+=4
 
 def rushattack(enA,enD):
-	global Messages
-	atk=d(enA.str*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))*(enA.DV+DV_divide_r)//(3*DV_divide_r)+enA.str*enA.wield.strm
-	if atk > enD.AC and d(enA.dex) > d(enD.dex):
-		enD.hp+=enD.AC//2-atk
-		enD.fp+=atk*d(enA.str*enA.wield.strm)//d(enD.AC)
-		Messages+=[enA.name+' crushes '+enD.name+' mightily.']
-		if('death' in enA.doping):
-			enD.hp=-45
-			Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
-		elif('purify' in enA.doping and 'kai' in enD.doping):
-			enD.hp=-45
-			Messages+=[enA.name+' purifies '+enD.name+'.']
-	else:
-		Messages+=[enA.name+' crushes floor near '+enD.name+"'s feet."] if atk > enD.AC else [enD.name+' barely blocks '+enA.name+"'s hit."]
-	enA.fp+=8
+    global Messages
+    atk=d((enA.str+('illusion' in enA.doping)*enD.str//enD.int)*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))*(enA.DV+DV_divide_r)//(3*DV_divide_r)+(enA.str+('illusion' in enA.doping)*enD.str//enD.int)*enA.wield.strm
+    if atk > enD.AC and d(enA.dex) > d(enD.dex):
+        enD.hp+=enD.AC//2-atk
+        enD.fp+=atk*d(enA.str*enA.wield.strm)//d(enD.AC)
+        Messages+=[enA.name+' crushes '+enD.name+' mightily.']
+        if('vampirism' in enA.doping):
+            enA.hp+=atk-enD.AC//2
+            Messages+=[enA.name+' drains '+enD.name+"'s life force."]
+            if(enD.__class__.__name__ == 'Me'):
+                ththyhyujy=1
+        if('death' in enA.doping):
+            enD.hp=-45
+            Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+        elif('purify' in enA.doping and 'kai' in enD.doping):
+            enD.hp=-45
+            Messages+=[enA.name+' purifies '+enD.name+'.']
+    else:
+        Messages+=[enA.name+' crushes floor near '+enD.name+"'s feet."] if atk > enD.AC else [enD.name+' barely blocks '+enA.name+"'s hit."]
+    enA.fp+=8
 
 def magicattack(enA,enD):
-	global Messages
-	atk=d(enA.int*enA.wield.intm+d(enA.int*enA.wield.intm*d(2)))*MR_divide//(MR_divide+enD.ER)//2
-	Messages+=[enA.name+' gestures at '+enD.name+'.']
-	if atk > enD.AC//3+enD.mp:
-		enD.hp+=enD.AC//3+enD.mp-atk
-		enD.fp+=d(atk)
-		enD.mp=0
-
-		Messages+=['Pain surges through '+enD.name+"'s body."]
-		if('purify' in enA.doping and 'kai' in enD.doping):
-			enD.hp=-45
-			Messages+=[enA.name+' purifies '+enD.name+'.']
-	else:
-		if atk > enD.AC//3:
-			enD.mp+=enD.AC//3-atk
-	enA.fp+=4
-	enA.mp-=Magic_value
+    global Messages
+    atk=d(enA.int*enA.wield.intm+d(enA.int*enA.wield.intm*d(2)))*MR_divide//(MR_divide+enD.ER)//2
+    Messages+=[enA.name+' gestures at '+enD.name+'.']
+    if atk > enD.AC//3+enD.mp:
+        enD.hp+=enD.AC//3+enD.mp-atk
+        enD.fp+=d(atk)
+        enD.mp=0
+        Messages+=['Pain surges through '+enD.name+"'s body."]
+        if('purify' in enA.doping and 'kai' in enD.doping):
+            enD.hp=-45
+            Messages+=[enA.name+' purifies '+enD.name+'.']
+    else:
+        if atk > enD.AC//3:
+            enD.mp+=enD.AC//3-atk
+    enA.fp+=4
+    enA.mp-=Magic_value
 
 def stepaway(mob,n):
     global X_Y_list
@@ -439,7 +453,7 @@ def move(n):
                     elif mob.leader:
                         PT_awares+=mob.shout*(1+mob.leader)
                         Messages+=[mob.catchphrase[0]] if dis(xx,yy)<9 else [mob.catchphrase[1]]
-                    else:
+                    elif not 'stealth' in mob.doping:
                         PT_awares+=mob.shout
                         Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
             elif mob.aware==1 and dis(xx,yy) > 7 + hey + mob.VIT-mob.hp:
@@ -456,6 +470,8 @@ def move(n):
                 magicattack(mob,player)
             elif(dis(xx,yy)==1 and mob.type%5==4):
                 rushattack(mob,player)
+                if('roller-skates' in mob.doping and d(mob.dex)>d(mob.fp)):
+                    stepaway(mob,n)
             elif(dis(xx,yy)==1 and mob.type==0):
                 attack(mob,player)
             elif (mob.type==1 and dis(xx,yy)<=4) or (mob.type%3==2 and dis(xx,yy)==1):
@@ -464,6 +480,8 @@ def move(n):
                 attack(mob,player)
             else:
                 stepahead(mob,n)
+                if('roller-skates' in mob.doping and d(mob.dex)>d(mob.fp)):
+                    rushattack(mob,player)
             mob.hp-=mob.bp
             mob.bp=mob.bp*3//2
             if(d(mob.VIT-mob.bp)>0 and mob.hp<mob.VIT):
@@ -489,72 +507,73 @@ def help():
     Messages+=['#      icons list.']
     Messages+=['*      view transcript.']
     Messages+=['Space  toggle dual wield.']
+    Messages+=['>      ascend.']
 
 def abbs():
-	global Messages
-	Messages+=['']
-	Messages+=['STR    strenght.']
-	Messages+=['DEX    dexterity.']
-	Messages+=['INT    intellect.']
-	Messages+=['HP     health points.']
-	Messages+=['MP     magic points.']
-	Messages+=['BP     bleed points.']
-	Messages+=['FP     fatigue points.']
-	Messages+=['SP     saturation points.']
-	Messages+=['XP     experience points.']
-	Messages+=['SM     stats multiplier from wielded weapon.']
-	Messages+=['AC     summary armor count.']
-	Messages+=['ER     armor encumbrance rating.']
-	Messages+=['MR     magical resistance from wielded shield.']
+    global Messages
+    Messages+=['']
+    Messages+=['STR    strenght.']
+    Messages+=['DEX    dexterity.']
+    Messages+=['INT    intellect.']
+    Messages+=['HP     health points.']
+    Messages+=['MP     magic points.']
+    Messages+=['BP     bleed points.']
+    Messages+=['FP     fatigue points.']
+    Messages+=['SP     saturation points.']
+    Messages+=['XP     experience points.']
+    Messages+=['SM     stats multiplier from wielded weapon.']
+    Messages+=['AC     summary armor count.']
+    Messages+=['ER     armor encumbrance rating.']
+    Messages+=['MR     magical resistance from wielded shield.']
 
 def icons():
-	global Messages
-	Messages+=['']
-	Messages+=[Player_icon+' '*6+'player.']
-	Messages+=[Potion_icon+' '*6+'potion.']
-	Messages+=[Weapon_icon+' '*6+'weapon.']
-	Messages+=[Shield_icon+' '*6+'shield.']
-	Messages+=[Armor_icon+' '*6+'armor.']
-	Messages+=[Food_icon+' '*6+'food.']
-	Messages+=[Wall_icon+' '*6+'wall.']
-	Messages+=[Boss_icon+' '*6+'boss.']
-	Messages+=['Letters represent enemies.']
+    global Messages
+    Messages+=['']
+    Messages+=[Player_icon+' '*6+'player.']
+    Messages+=[Potion_icon+' '*6+'potion.']
+    Messages+=[Weapon_icon+' '*6+'weapon.']
+    Messages+=[Shield_icon+' '*6+'shield.']
+    Messages+=[Armor_icon+' '*6+'armor.']
+    Messages+=[Food_icon+' '*6+'food.']
+    Messages+=[Wall_icon+' '*6+'wall.']
+    Messages+=[Boss_icon+' '*6+'boss.']
+    Messages+=['Letters represent enemies.']
 
 def story():
-	clearchat()
-	print(*Messages[-transcript*3:],sep='\n')
-	print('Press any key to continue.')
+    clearchat()
+    print(*Messages[-transcript*3:],sep='\n')
+    print('Press any key to continue.')
 
 def xp():
-	global Messages
-	for i in Mob_list:
-		zoo=Mob(i)
-		Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)+(8-len(str(zoo.xp)))*' '+str(i)]
-	zoo=Boss()
-	Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)]
+    global Messages
+    for i in Mob_list:
+        zoo=Mob(i)
+        Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)+(8-len(str(zoo.xp)))*' '+str(i)]
+    zoo=Boss()
+    Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)]
 
 def direction(a):
-	if a==b'r':
-		return -1,1
-	elif a==b't':
-		return 0,1
-	elif a==b'y':
-		return 1,1
-	elif a==b'h':
-		return 1,0
-	elif a==b'n':
-		return 1,-1
-	elif a==b'b':
-		return 0,-1
-	elif a==b'v':
-		return -1,-1
-	elif a==b'f':
-		return -1,0
-	else:
-		return ValueError
+    if a==b'r':
+        return -1,1
+    elif a==b't':
+        return 0,1
+    elif a==b'y':
+        return 1,1
+    elif a==b'h':
+        return 1,0
+    elif a==b'n':
+        return 1,-1
+    elif a==b'b':
+        return 0,-1
+    elif a==b'v':
+        return -1,-1
+    elif a==b'f':
+        return -1,0
+    else:
+        return ValueError
 
 def isdir(a):
-	return a in (b'r',b't',b'y',b'h',b'n',b'b',b'v',b'f')
+    return a in (b'r',b't',b'y',b'h',b'n',b'b',b'v',b'f')
 
 def casting():
     global player,Messages
@@ -817,24 +836,24 @@ def controls(fatigue):
     retry=0
     a=getkey() if player.fp<=fatigue else b'.'
     if(a==b'?'):
-    	help()
-    	retry=1
+        help()
+        retry=1
     elif(a==b'!'):
-    	abbs()
-    	retry=1
+        abbs()
+        retry=1
     elif(a==b'#'):
-    	icons()
-    	retry=1
+        icons()
+        retry=1
     elif(a==b'.'):
-    	player.fp=max(player.fp-player.dex,0)
+        player.fp=max(player.fp-player.dex,0)
     elif(isdir(a)):
-    	dx,dy=direction(a)
-    	if(un(player.x+dx,player.y+dy)):
-    		player.x+=dx
-    		player.y+=dy
-    		player.fp+=1
-    	else:
-    		attack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
+        dx,dy=direction(a)
+        if(un(player.x+dx,player.y+dy)):
+            player.x+=dx
+            player.y+=dy
+            player.fp+=1
+        else:
+            attack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
     elif(a==b' '):
         retry=DoVi()
     elif(a==b'>'):
@@ -848,69 +867,69 @@ def controls(fatigue):
             Messages+=["Can't ascend here."]
             retry=1
     elif(a==b'z' and 'caster' in player.abilities):
-    	retry=casting()
+        retry=casting()
     elif(a==b'x' and 'lancer' in player.abilities):
-    	retry=lancing()
+        retry=lancing()
     elif(a==b'c' and 'berserker' in player.abilities):
-    	retry=berserking()
+        retry=berserking()
     elif(a==b'i'):
-    	retry=item_using()
+        retry=item_using()
     elif(a==b's'):
-    	player.inventory.sort(key = lambda x : x.__class__.__name__+x.name)
-    	Messages+=[player.name+' sorts their inventory.']
+        player.inventory.sort(key = lambda x : x.__class__.__name__+x.name)
+        Messages+=[player.name+' sorts their inventory.']
     elif(a==b'g'):
-    	retry=item_grab()
+        retry=item_grab()
     elif(a==b'\x1b'):
-    	print('Press Esc again if you are sure, or press anything else.')
-    	if(getkey()==b'\x1b'):
-    		exit()
-    	else:
-    		retry=1
+        print('Press Esc again if you are sure, or press anything else.')
+        if(getkey()==b'\x1b'):
+            exit()
+        else:
+            retry=1
     elif(a==b'd'):
-    	retry=item_destruct()
+        retry=item_destruct()
     elif(a==b'\x18'):
-    	xp()
-    	retry=1
+        xp()
+        retry=1
     elif(a==b'u'):
         global PT_awares
         PT_awares+=player.str+player.dex+player.int
         Messages+=[player.name+' shouts for attention.']
     elif(a==b'*'):
-    	story()
-    	getkey()
-    	retry=1
+        story()
+        getkey()
+        retry=1
     else:
-    	Messages+=['Unknown command.']
-    	retry=1
+        Messages+=['Unknown command.']
+        retry=1
     if(retry==1):
-    	screen()
-    	controls(fatigue)
+        screen()
+        controls(fatigue)
     else:
-    	update_state()
+        update_state()
 
 def alarms():
-	global Messages
-	if(player.bp>player.VIT):
-		Messages+=[player.name+' will die.']
-	elif(player.bp*3>player.VIT):
-		Messages+=[player.name+' bleeds severely.']
-	elif(player.bp*5>player.VIT):
-		Messages+=[player.name+' bleeds heavily.']
-	elif(player.bp*9>player.VIT):
-		Messages+=[player.name+' bleeds mildly.']
-	elif(player.bp>0):
-		Messages+=[player.name+' bleeds lightly.']
-	if(player.sp>0):
-		if(player.sp*5<player.VIT):
-			Messages+=[player.name+' is almost starving.']
-		elif(player.sp*3<player.VIT):
-			Messages+=[player.name+' is very hungry.']
-		elif(player.sp*2<player.VIT):
-			Messages+=[player.name+' is hungry.']
+    global Messages
+    if(player.bp>player.VIT):
+        Messages+=[player.name+' will die.']
+    elif(player.bp*3>player.VIT):
+        Messages+=[player.name+' bleeds severely.']
+    elif(player.bp*5>player.VIT):
+        Messages+=[player.name+' bleeds heavily.']
+    elif(player.bp*9>player.VIT):
+        Messages+=[player.name+' bleeds mildly.']
+    elif(player.bp>0):
+        Messages+=[player.name+' bleeds lightly.']
+    if(player.sp>0):
+        if(player.sp*5<player.VIT):
+            Messages+=[player.name+' is almost starving.']
+        elif(player.sp*3<player.VIT):
+            Messages+=[player.name+' is very hungry.']
+        elif(player.sp*2<player.VIT):
+            Messages+=[player.name+' is hungry.']
 
 def check(xx,yy):
     if((xx,yy) in X_Y_list):
-        if('stealth' in Total_list[X_Y_list.index((xx,yy))].doping and max(abs(player.x-xx),abs(player.y-yy))>=8-d(Total_list[X_Y_list.index((xx,yy))].dex)//player.dex):
+        if('stealth' in Total_list[X_Y_list.index((xx,yy))].doping and max(abs(player.x-xx),abs(player.y-yy))>=8-d(Total_list[X_Y_list.index((xx,yy))].dex)//(d(player.dex)+ST_divide)):
             return '.'
         elif(max(abs(player.x-xx),abs(player.y-yy))<=Magic_distance):
             global Targets

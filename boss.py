@@ -1,6 +1,6 @@
 from settings import *
 from entities import *
-Weapon_types_list=Weapon_types_list+('Excalibolg','Satosame','Shinzowatari')
+Weapon_types_list=Weapon_types_list+('Excalibolg','Satosame','Shinzowatari','Silver Bat')
 class Boss(Mob):
     def __init__(self,num):
         if(num==1):
@@ -80,12 +80,42 @@ class Boss(Mob):
             self.wield=Weapon(6,6,2,Weapon_icon,'Shinzowatari',3,6,2,4,['purify'])
             self.DV=1
             self.shield=self.wield
+            self.ER=self.wear.ER+self.shield.ER
+            self.MR=self.shield.MR
+            self.lvl=99
+            self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
+            self.VIT=self.hp
+            self.BAC=self.AC-self.wear.AC-self.shield.AC
+            self.xp=1000000
+            self.drop=[Weapon(6,6,2,Weapon_icon,'Shinzowatari',3,6,2,4,['purify'])]
+            self.doping=['purify','kai','vampirism']
+            self.catchphrase=('You sense your life force being drained.','You sense your life force being drained.')
+        elif(num==4):
+            self.leader=10
+            self.hp=60
+            self.str=30
+            self.dex=30
+            self.int=30
+            self.AC=12
+            self.bp=0
+            self.fp=0
+            self.aware=0
+            self.type=4
+            self.shout=1
+            self.icon=Boss_icon
+            self.name='Josei Bat'
+            self.inventory=[]
+            self.wear=Armor(3,Armor_icon,'leather armor',2)
+            self.wield=Weapon(4,4,2,Weapon_icon,'Silver Bat',1,0,0,0,['illusion'])
+            self.DV=1
+            self.shield=self.wield
             self.ER=self.wear.ER
             self.MR=0
             self.lvl=99
             self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
             self.VIT=self.hp
             self.BAC=self.AC-self.wear.AC-self.shield.AC
-            self.xp=100000
-            self.drop=[Weapon(6,6,2,Weapon_icon,'Shinzowatari',3,6,2,4,['purify'])]
-            self.doping=['purify','kai']
+            self.xp=5000000
+            self.drop=[Weapon(4,4,2,Weapon_icon,'Silver Bat',1,0,0,0,['illusion'])]
+            self.doping=['illusion','roller-skates','kai']
+            self.catchphrase=('You shiver as you hear sound of inline skates.','You shiver as you hear sound of inline skates.')

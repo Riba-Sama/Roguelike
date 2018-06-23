@@ -1,7 +1,7 @@
 bonus=0
 awares=0
 PT_awares=0
-transcript=14
+transcript=15
 ER_divide=2
 Floor=1
 ththyhyujy=0

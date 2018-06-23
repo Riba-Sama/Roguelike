@@ -830,6 +830,7 @@ def shield_recalculate():
         player.ER=player.wear.ER+player.shield.ER
         player.MR=player.shield.MR
     player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
+    player.doping=player.wield.doping+(player.shield.doping)*(1-player.DV)+player.wear.doping
 
 def controls(fatigue):
     global player,Total_list,Messages,familiar,Floor

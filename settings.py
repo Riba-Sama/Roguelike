@@ -33,10 +33,10 @@ Mob_list=(
 (30,4,8,4,4,40,10,0,2,'G','Gnoll',1,2000,[],(2,4,1,Weapon_icon,'spear'),(3,Armor_icon,'leather armor',2)),
 (20,9,4,2,9,60,4,0,4,'o','Orc',2,5000,[],(5,1,1,Weapon_icon,'mace'),(5,Armor_icon,'ringmail',10),(6,10,8,Shield_icon,'ceremonial shield',2),(' High Priest',('Orc High Priest shouts terrible curses.','You hear terrible curses.'))),
 (10,3,6,8,1,20,8,0,1,'i','Lesser Imp',1,2000,['kai'],(2,1,4,Weapon_icon,'wand'),(0,Armor_icon,'',0)),
-(60,20,8,4,12,10,20,0,4,'O','Ogre',1,30000,[],(8,1,0,Weapon_icon,'cudgel',3,6,10,4),(9,Armor_icon,'shellmail',100)),
+(60,20,6,4,12,10,20,0,4,'O','Ogre',1,30000,[],(8,1,0,Weapon_icon,'cudgel',3,6,10,4),(9,Armor_icon,'shellmail',100)),
 (20,8,12,30,2,5,8,0,1,'D','Crimson Demon',1,200000,['kai'],(0,2,7,Weapon_icon,'rod',3,2,0,12),(0,Armor_icon,'archmage robe',-1)),
 (30,12,16,16,6,5,10,0,5,'I','Greater Imp',1,300000,['kai'],(1,4,4,Weapon_icon,'trident',3,4,0,4),(0,Armor_icon,'',0)),
-(30,12,24,12,8,20,4,0,0,'v','Vampire',1,400000,['roller-skates','kai','vampirism','stealth'],(3,3,2,Weapon_icon,'vampric dagger',1,0,0,0,'vampirism'),(1,Armor_icon,'robe',0)),
+(30,12,24,12,8,20,4,0,0,'v','Vampire',1,400000,['kai','vampirism','stealth'],(3,3,2,Weapon_icon,'vampric dagger',1,0,0,0,'vampirism'),(1,Armor_icon,'robe',0)),
 (40,20,20,4,12,100,1,2,0,'p','Phantom',4,100000,['kai','illusion','stealth'],(3,3,3,Weapon_icon,'dagger'),(0,Armor_icon,'',0),(4,0,1,Shield_icon,'mirror shield',2,0,0,0,['illusion']),(' Killer',('You are being haunted.','You are being haunted.')))
 )
 Effects_list=('healing potion','magic potion','poison potion','energetic potion','experience potion')

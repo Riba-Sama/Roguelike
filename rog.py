@@ -189,15 +189,15 @@ def consume(ent,what):
 #####################
 def birth(x,y,mob):
     global Total_list,X_Y_list
-    for i in range(d(mob[5])//Mob_ungroup-1):
-        if un(x,y) and Map[x+y*(x_size)] == '.':
-            Total_list+=[Mob(mob)]
-            X_Y_list+=[(x,y)]
-        x=max(min(x+d(5)-3,x_size-1),0)
-        y=max(min(y+d(5)-3,y_size-1),0)
     if un(x,y) and Map[x+y*(x_size)] == '.':
         Total_list+=[Mob(mob,mob[11]//d(Lead_c))]
         X_Y_list+=[(x,y)]
+    for i in range(d(mob[5])//Mob_ungroup-1):
+        x=max(min(x+d(5)-3,x_size-2),1)
+        y=max(min(y+d(5)-3,y_size-2),1)
+        if un(x,y) and Map[x+y*(x_size)] == '.':
+            Total_list+=[Mob(mob)]
+            X_Y_list+=[(x,y)]
 
 def generate():
     global Total_list,X_Y_list,spawn_x,spawn_y
@@ -600,7 +600,7 @@ def casting():
     if(a==b'\x1b'):
         return 1
     else:
-        if(un(player.x+dx,player.y+dy)):
+        if(show[8-dy][8+dx]==Magic_icon):
             if(bonus==1):
                 if(player.mp>=max(abs(dx),abs(dy))*2):
                     player.x+=dx
@@ -643,7 +643,7 @@ def lancing():
     if(a==b'\x1b'):
         return 1
     else:
-        if(un(player.x+dx,player.y+dy)):
+        if(show[8-dy][8+dx]==Magic_icon):
             Messages+=['Invalid target.']
             return 1
         else:
@@ -667,7 +667,7 @@ def berserking():
     if(a==b'\x1b'):
         return 1
     else:
-        if(un(player.x+dx,player.y+dy)):
+        if(show[8-dy][8+dx]==Magic_icon):
             Messages+=['Invalid target.']
             return 1
         else:
@@ -930,9 +930,9 @@ def alarms():
 
 def check(xx,yy):
     if((xx,yy) in X_Y_list):
-        if('stealth' in Total_list[X_Y_list.index((xx,yy))].doping and max(abs(player.x-xx),abs(player.y-yy))>=8-d(Total_list[X_Y_list.index((xx,yy))].dex)//(d(player.dex)+ST_divide)):
+        if('stealth' in Total_list[X_Y_list.index((xx,yy))].doping and max(abs(player.x-xx),abs(player.y-yy))>=8-Total_list[X_Y_list.index((xx,yy))].dex//(ST_dice+ST_divide)):
             return '.'
-        elif(max(abs(player.x-xx),abs(player.y-yy))<=Magic_distance):
+        elif(max(abs(player.x-xx),abs(player.y-yy))<=Magic_distance and Total_list[X_Y_list.index((xx,yy))].icon!=Wall_icon):
             global Targets
             Targets+=[(xx-player.x,yy-player.y)]
         return Total_list[X_Y_list.index((xx,yy))].icon
@@ -944,7 +944,7 @@ def check(xx,yy):
         return '.'
 
 def screen(x=0,y=0,extra=''):
-    global Targets,Messages
+    global Targets,Messages,show
     show=[]
     for i in range(17):
         show+=[[',']*17]
@@ -952,7 +952,7 @@ def screen(x=0,y=0,extra=''):
     for i in range(17):
         for l in range(17):
             show[16-l][i]=check(player.x+i-8,player.y+l-8)
-    show[8-y][8+x]=Magic_icon
+    show[8-y][8+x]=Magic_icon if show[8-y][8+x] in ('.',Player_icon,Food_icon,Potion_icon,Weapon_icon,Armor_icon,Shield_icon) else Target_icon
     show[8][8]=Player_icon
     mobmob=''
     for i in show:
@@ -1000,13 +1000,13 @@ while(True):
     print('Please wait while the world is being generated...')
 
     hey=0
-    Floor=1
     newstage()
     generate()
     player=Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y])
 
     while(True):
             alarms()
+            ST_dice=d(player.dex)
             screen()
             controls(d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
             hey=floor(log(awares+PT_awares+1.0,2.0))
@@ -1027,6 +1027,7 @@ while(True):
 
     Messages+=[player.name+' rejoins the land of living.']
 
+    Floor=1
     awares=0
     PT_awares=0
     ignorant()

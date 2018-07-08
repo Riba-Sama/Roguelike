@@ -92,9 +92,9 @@ class Mob(Entity):
         self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
         self.VIT=self.hp
         self.AC=self.BAC+self.wear.AC+self.shield.AC
-        self.xp=ab[12]
+        self.xp=ab[12]*(2**self.leader)
         self.lvl=1 if self.xp<=XP_base else floor(log(self.xp/XP_base,2.0))+1
-        self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)+[self.shield]*(len(ab)>14 and bool(self.shield.name))+[self.wield]*bool(self.wield.name)+[self.wear]*bool(self.wear.name)
+        self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)+[self.shield]*(self.shield.name!=self.wield.name and bool(self.shield.name))+[self.wield]*bool(self.wield.name)+[self.wear]*bool(self.wear.name)
         self.doping=ab[13]+self.wield.doping+self.wear.doping
         if(len(ab)>17):
             self.catchphrase=ab[17][1]
@@ -114,7 +114,7 @@ class Me(Entity):
         self.ER=0
         self.lvl=lvl
         self.sp=self.hp
-        self.name='Player'
+        self.name=name
         self.inventory=[]
         self.abilities=set()
         self.wear=Armor(0,Armor_icon,'rags',0)

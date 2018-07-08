@@ -31,7 +31,7 @@ class Boss(Mob):
             self.xp=5000
             self.drop=[Weapon(5,0,3,Weapon_icon,'Excalibolg',3,3,3,3)]
             self.doping=[]
-            self.catchphrase=('Despair overwhelms you.','Despair overwhelms you.')
+            self.catchphrase=('Despair overwhelms '+name+'.','Despair overwhelms '+name+'.')
         elif(num==2):
             self.leader=10
             self.hp=20
@@ -60,7 +60,7 @@ class Boss(Mob):
             self.xp=50000
             self.drop=[Weapon(1,6,0,Weapon_icon,'Satosame',1,0,0,0,['death'])]
             self.doping=['stealth','death']
-            self.catchphrase=('You sense murderous aura.','You sense murderous aura.')
+            self.catchphrase=(name+' senses murderous aura.',name+' senses murderous aura.')
         elif(num==3):
             self.leader=10
             self.hp=30
@@ -89,7 +89,7 @@ class Boss(Mob):
             self.xp=1000000
             self.drop=[Weapon(6,6,2,Weapon_icon,'Shinzowatari',3,6,2,4,['purify'])]
             self.doping=['purify','kai','vampirism']
-            self.catchphrase=('You sense your life force being drained.','You sense your life force being drained.')
+            self.catchphrase=(name+' senses '+name+"'s life force being drained.",name+' senses '+name+"'s life force being drained.")
         elif(num==4):
             self.leader=10
             self.hp=60
@@ -103,7 +103,7 @@ class Boss(Mob):
             self.type=4
             self.shout=1
             self.icon=Boss_icon
-            self.name='Josei Bat'
+            self.name='Shounin Bat'
             self.inventory=[]
             self.wear=Armor(3,Armor_icon,'leather armor',2)
             self.wield=Weapon(4,4,2,Weapon_icon,'Silver Bat',1,0,0,0,['illusion'])
@@ -118,4 +118,4 @@ class Boss(Mob):
             self.xp=5000000
             self.drop=[Weapon(4,4,2,Weapon_icon,'Silver Bat',1,0,0,0,['illusion'])]
             self.doping=['illusion','roller-skates','kai']
-            self.catchphrase=('You shiver as you hear sound of inline skates.','You shiver as you hear sound of inline skates.')
+            self.catchphrase=(name+' shivers as '+name+' hears sound of inline skates.',name+' shivers as '+name+' hears sound of inline skates.')

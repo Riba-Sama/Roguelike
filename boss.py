@@ -81,7 +81,7 @@ class Boss(Mob):
             self.DV=1
             self.shield=self.wield
             self.ER=self.wear.ER+self.shield.ER
-            self.MR=self.shield.MR
+            self.MR=self.shield.MR+2
             self.lvl=99
             self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
             self.VIT=self.hp
@@ -110,7 +110,7 @@ class Boss(Mob):
             self.DV=1
             self.shield=self.wield
             self.ER=self.wear.ER
-            self.MR=0
+            self.MR=4
             self.lvl=99
             self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
             self.VIT=self.hp

@@ -132,18 +132,11 @@ def lvlup(x):
     else:
         x.int+=1
     if x.lvl%5 == 0:
-        if x.__class__.__name__ == 'Me' and x.abilities != Ability:
+        if x.__class__.__name__ == 'Me' and x.abilities != set(Ability):
             qyu=''
-            for i in Ability - x.abilities:
-                qyu+='If you want to become '+i.capitalize()+', type in '+i+'.\n'
-            qyu+='If you want to become stronger, type in anything else.'
-            mol=0
-            qun=1
-            for i in Ability:
-                mol+=(i in x.abilities)*qun
-                qun*=2
-            if mol:
-                x.skills=x.skills | {Skill_list[mol-1]}
+            for i in set(Ability) - x.abilities:
+                qyu+='If '+x.name+' wants to become '+i.capitalize()+', type in '+i+'.\n'
+            qyu+='If '+x.name+' wants to become stronger, type in anything else.'
             screen(0,0,qyu)
             a=input('')
             global Messages
@@ -158,6 +151,13 @@ def lvlup(x):
                 x.str+=Coolness
                 x.dex+=Coolness
                 x.int+=Coolness
+            mol=0
+            qun=1
+            for i in Ability:
+                mol+=(i in x.abilities)*qun
+                qun*=2
+            if mol:
+                x.skills=x.skills | {Skill_list[mol-1]}
         else:
             x.str+=Coolness
             x.dex+=Coolness
@@ -293,7 +293,7 @@ def attack(enA,enD):
         enD.bp+=atk*d(enA.int*enA.wield.intm)//d(enD.AC)
         Messages+=[enA.name+' hits '+enD.name+'.']
         if('vampirism' in enA.doping):
-            enA.hp+=atk-enD.AC
+            enA.hp=min(enA.VIT,atk-enD.AC)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
             if(enD.__class__.__name__ == 'Me' and not ththyhyujy):
                 ththyhyujy=1
@@ -317,7 +317,7 @@ def farattack(enA,enD):
         enD.bp+=atk*d(enA.dex*enA.wield.dexm)//d(enD.AC)
         Messages+=[enA.name+' hits '+enD.name+' from afar.']
         if('vampirism' in enA.doping):
-            enA.hp+=atk-enD.AC//2
+            enA.hp=min(enA.VIT,atk-enD.AC//2)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
             if(enD.__class__.__name__ == 'Me' and not ththyhyujy):
                 ththyhyujy=1
@@ -341,7 +341,7 @@ def rushattack(enA,enD):
         enD.fp+=atk*d(enA.str*enA.wield.strm)//d(enD.AC)
         Messages+=[enA.name+' crushes '+enD.name+' mightily.']
         if('vampirism' in enA.doping):
-            enA.hp+=atk-enD.AC//2
+            enA.hp=min(enA.VIT,atk-enD.AC//2)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
             if(enD.__class__.__name__ == 'Me' and not ththyhyujy):
                 ththyhyujy=1
@@ -833,11 +833,148 @@ def DoVi():
         shield_recalculate()
         return 0
 
+def clockattack(start=0,wise=1):
+    global Messages,Total_list
+    atk=player.str*player.wield.strm*(player.DV+2)//2
+    for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0))[start-1-(wise==1):start+7-(wise==1)][::wise]:
+        if(not un(player.x-i[0],player.y-i[1])):
+            enD=Total_list[X_Y_list.index((player.x-i[0],player.y-i[1]))]
+            if(atk>enD.AC):
+                atk=atk-enD.AC//4
+                enD.hp-=atk
+                enD.fp+=atk//3
+                Messages+=[player.name+' hits '+enD.name+'.']
+                player.fp+=2
+                if('vampirism' in player.doping):
+                    player.hp=min(player.VIT,atk)
+                    Messages+=[player.name+' drains '+enD.name+"'s life force."]
+                if('death' in player.doping):
+                    enD.hp=-45
+                    Messages+=['The curse of '+player.wield.name+' kills '+enD.name+'.']
+                elif('purify' in player.doping and 'kai' in enD.doping):
+                    enD.hp=-45
+                    Messages+=[player.name+' purifies '+enD.name+'.']
+            else:
+                enD.fp+=atk//2
+                player.fp+=4
+                atk=atk*3//5
+                Messages+=[enD.name+' struggles to block '+player.name+"'s hit."]
+            Total_list[X_Y_list.index((player.x-i[0],player.y-i[1]))]=enD
+
+def runattack(i=(1,0)):
+    global Messages,Total_list
+    atk=player.dex*player.wield.dexm*(player.DV+1)
+    while un(player.x+i[0],player.y+i[1]) and d(player.fp)<player.dex:
+        player.x+=i[0]
+        player.y+=i[1]
+        player.fp+=2
+    if not un(player.x+i[0],player.y+i[1]):
+        enD=Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]
+        if atk > enD.AC//4:
+            enD.hp+=enD.AC//4-atk
+            enD.bp+=atk*player.dex*player.wield.dexm//d(enD.AC)
+            Messages+=[player.name+' lunges at '+enD.name+'.']
+            if('vampirism' in player.doping):
+                player.hp=min(player.VIT,atk-enD.AC//4)
+                Messages+=[player.name+' drains '+enD.name+"'s life force."]
+            if('death' in player.doping):
+                enD.hp=-45
+                Messages+=['The curse of '+player.wield.name+' kills '+enD.name+'.']
+            elif('purify' in player.doping and 'kai' in enD.doping):
+                enD.hp=-45
+                Messages+=[player.name+' purifies '+enD.name+'.']
+        else:
+            Messages+=[enD.name+' blocks '+player.name+"'s lunge."]
+        player.fp+=4
+        Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]=enD
+
+def exhaustattack(i=(1,0)):
+    global Messages,Total_list
+    enD=Total_list[X_Y_list.index((player.x+i[0],player.y-i[1]))]
+    atk=(player.int+('illusion' in player.doping)*enD.int//d(enD.int))**2*player.wield.intm
+    Messages+=[player.name+' gestures at '+enD.name+'.']
+    enD.fp+=atk*MR_divide//(enD.MR+MR_divide)
+    if atk*MR_divide//(enD.MR+MR_divide)>0:
+        Messages+=['Sudden exhaustion washes over '+enD.name+'.']
+        if('purify' in player.doping and 'kai' in enD.doping and d(player.int)>d(enD.int)+enD.MR):
+            enD.hp=-45
+            Messages+=[player.name+' purifies '+enD.name+'.']
+    Total_list[X_Y_list.index((player.x+i[0],player.y-i[1]))]=enD
+    player.fp+=8
+
 def Skilling():
+    global Messages,player
     if player.skills:
         qyu=''
         for i in player.skills:
-            qyu+=i
+            qyu+=i+'- '+Descriptions[i][0]+'SP cost: '+str(Descriptions[i][1])
+        screen(0,0,qyu)
+        inpu=getcharkey()
+        if (inpu in player.skills):
+            if inpu=='a' and player.sp>=Descriptions[inpu][1]:
+                screen(0,0,'r t y\nf   h to choose direction.\nv b n')
+                inpy=getkey()
+                if isdir(inpy):
+                    dire=direction(inpy)
+                else:
+                    Messages+=['Invalid direction.']
+                    return 1
+                screen(*dire,'w for clockwise, c for counterclockwise.')
+                inpy=getkey()
+                dire=((1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1)).index(dire)
+                if inpy==b'w':
+                    player.sp-=Descriptions[inpu][1]
+                    clockattack(dire,1)
+                    return 0
+                elif inpy==b'c':
+                    player.sp-=Descriptions[inpu][1]
+                    clockattack(dire,-1)
+                    return 0
+                Messages+=['Invalid direction.']
+                return 1
+            elif inpu=='x' and player.sp>=Descriptions[inpu][1]:
+                screen(0,0,'r t y\nf   h to choose direction.\nv b n')
+                inpy=getkey()
+                if isdir(inpy):
+                    player.sp-=Descriptions[inpu][1]
+                    runattack(direction(inpy))
+                    return 0
+                else:
+                    Messages+=['Invalid direction.']
+                    return 1
+            elif inpu=='e' and player.sp>=Descriptions[inpu][1]:
+                a=b''
+                dx=0
+                dy=0
+                dt=-1
+                while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
+                    if(isdir(a)):
+                        dx+=direction(a)[0]
+                        dy+=direction(a)[1]
+                    if(abs(dx)>8):
+                        dx=sig(dx)*8
+                    if(abs(dy)>8):
+                        dy=sig(dy)*8
+                    screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n')
+                    a=getkey()
+                if(a==b'\x1b'):
+                    return 1
+                else:
+                    if(show[8-dy][8+dx]==Magic_icon):
+                        Messages+=['Invalid target.']
+                        return 1
+                    else:
+                        player.sp-=Descriptions[inpu][1]
+                        exhaustattack((dx,-dy))
+                        return 0
+            else:
+                Messages+=['Coming soon!']
+                return 1
+        Messages+=['Invalid ability.']
+        return 1
+    Messages+=[player.name+' does not possess anything.']
+    return 1
+
 def shield_recalculate():
     global player
     if player.DV:
@@ -881,8 +1018,8 @@ def controls(fatigue):
             attack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
     elif(a==b' '):
         retry=DoVi()
-#    elif(a==b'a'):
-#        retry=Skilling()
+    elif(a==b'a'):
+        retry=Skilling()
     elif(a==b'>'):
         if(Map[player.y*x_size+player.x]=='>'):
             Floor+=1
@@ -907,7 +1044,7 @@ def controls(fatigue):
     elif(a==b'g'):
         retry=item_grab()
     elif(a==b'\x1b'):
-        print('Press Esc again if you are sure, or press anything else.')
+        print('Press Esc again if '+player.name+' is sure, or press anything else.')
         if(getkey()==b'\x1b'):
             exit()
         else:

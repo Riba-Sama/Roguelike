@@ -907,7 +907,7 @@ def Skilling():
     if player.skills:
         qyu=''
         for i in player.skills:
-            qyu+=i+'- '+Descriptions[i][0]+'SP cost: '+str(Descriptions[i][1])
+            qyu+=i+'- '+Descriptions[i][0]+'SP cost: '+str(Descriptions[i][1])+'.\n'
         screen(0,0,qyu)
         inpu=getcharkey()
         if (inpu in player.skills):

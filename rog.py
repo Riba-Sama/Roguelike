@@ -66,6 +66,7 @@ try:
         Mob_ungroup=Maps[Floor-1][5]
         Lead_c=Maps[Floor-1][6]
         RL_Mobs=Maps[Floor-1][7]
+        awares=0
         try:
             spawn_x,spawn_y=Maps[Floor-1][0].index('@')%x_size,Maps[Floor-1][0].index('@')//x_size
         except ValueError as err :
@@ -136,6 +137,13 @@ def lvlup(x):
             for i in Ability - x.abilities:
                 qyu+='If you want to become '+i.capitalize()+', type in '+i+'.\n'
             qyu+='If you want to become stronger, type in anything else.'
+            mol=0
+            qun=1
+            for i in Ability:
+                mol+=(i in x.abilities)*qun
+                qun*=2
+            if mol:
+                x.skills=x.skills | {Skill_list[mol-1]}
             screen(0,0,qyu)
             a=input('')
             global Messages
@@ -188,15 +196,17 @@ def consume(ent,what):
 #setting#####potions#
 #####################
 def birth(x,y,mob):
-    global Total_list,X_Y_list
+    global Total_list,X_Y_list,awares
     if un(x,y) and Map[x+y*(x_size)] == '.':
         Total_list+=[Mob(mob,mob[11]//d(Lead_c))]
+        awares+=mob[7]
         X_Y_list+=[(x,y)]
     for i in range(d(mob[5])//Mob_ungroup-1):
         x=max(min(x+d(5)-3,x_size-2),1)
         y=max(min(y+d(5)-3,y_size-2),1)
         if un(x,y) and Map[x+y*(x_size)] == '.':
             Total_list+=[Mob(mob)]
+            awares+=mob[7]
             X_Y_list+=[(x,y)]
 
 def generate():
@@ -276,8 +286,8 @@ def generate():
 #######setting#######
 #####################
 def attack(enA,enD):
-    global Messages
-    atk=d((enA.str+('illusion' in enA.doping)*enD.str//enD.int)*enA.wield.strm+d(enA.dex*enA.wield.dexm*2))*(enA.DV+DV_divide_a)//(2*DV_divide_a)
+    global Messages,ththyhyujy
+    atk=d((enA.str+('illusion' in enA.doping)*enD.str//d(enD.int))*enA.wield.strm+d(enA.dex*enA.wield.dexm*2))*(enA.DV+DV_divide_a)//(2*DV_divide_a)
     if atk > enD.AC:
         enD.hp+=enD.AC-atk
         enD.bp+=atk*d(enA.int*enA.wield.intm)//d(enD.AC)
@@ -285,11 +295,13 @@ def attack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp+=atk-enD.AC
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me'):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy):
                 ththyhyujy=1
         if('death' in enA.doping):
             enD.hp=-45
             Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+            if(enD.__class__.__name__ == 'Me'):
+                ththyhyujy=2
         elif('purify' in enA.doping and 'kai' in enD.doping):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
@@ -298,8 +310,8 @@ def attack(enA,enD):
     enA.fp+=2
 
 def farattack(enA,enD):
-    global Messages
-    atk=d((enA.dex+('illusion' in enA.doping)*enD.dex//enD.int)*enA.wield.dexm+d(enA.dex*enA.wield.dexm*d(2)))*(enA.DV+DV_divide_f)//(4*DV_divide_f)
+    global Messages,ththyhyujy
+    atk=d((enA.dex+('illusion' in enA.doping)*enD.dex//d(enD.int))*enA.wield.dexm+d(enA.dex*enA.wield.dexm*d(2)))*(enA.DV+DV_divide_f)//(4*DV_divide_f)
     if atk > enD.AC//2:
         enD.hp+=enD.AC//2-atk
         enD.bp+=atk*d(enA.dex*enA.wield.dexm)//d(enD.AC)
@@ -307,11 +319,13 @@ def farattack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp+=atk-enD.AC//2
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me'):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy):
                 ththyhyujy=1
         if('death' in enA.doping):
             enD.hp=-45
             Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+            if(enD.__class__.__name__ == 'Me'):
+                ththyhyujy=2
         elif('purify' in enA.doping and 'kai' in enD.doping):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
@@ -320,8 +334,8 @@ def farattack(enA,enD):
     enA.fp+=4
 
 def rushattack(enA,enD):
-    global Messages
-    atk=d((enA.str+('illusion' in enA.doping)*enD.str//enD.int)*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))*(enA.DV+DV_divide_r)//(3*DV_divide_r)+(enA.str+('illusion' in enA.doping)*enD.str//enD.int)*enA.wield.strm
+    global Messages,ththyhyujy
+    atk=d((enA.str+('illusion' in enA.doping)*enD.str//d(enD.int))*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))*(enA.DV+DV_divide_r)//(3*DV_divide_r)+(enA.str+('illusion' in enA.doping)*enD.str//enD.int)*enA.wield.strm
     if atk > enD.AC and d(enA.dex) > d(enD.dex):
         enD.hp+=enD.AC//2-atk
         enD.fp+=atk*d(enA.str*enA.wield.strm)//d(enD.AC)
@@ -329,11 +343,13 @@ def rushattack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp+=atk-enD.AC//2
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me'):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy):
                 ththyhyujy=1
         if('death' in enA.doping):
             enD.hp=-45
             Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+            if(enD.__class__.__name__ == 'Me'):
+                ththyhyujy=2
         elif('purify' in enA.doping and 'kai' in enD.doping):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
@@ -343,7 +359,7 @@ def rushattack(enA,enD):
 
 def magicattack(enA,enD):
     global Messages
-    atk=d(enA.int*enA.wield.intm+d(enA.int*enA.wield.intm*d(2)))*MR_divide//(MR_divide+enD.ER)//2
+    atk=d((enA.int+('illusion' in enA.doping)*enD.int//d(enD.int))*enA.wield.intm+d(enA.int*enA.wield.intm*d(2)))*MR_divide//(MR_divide+enD.ER)//2
     Messages+=[enA.name+' gestures at '+enD.name+'.']
     if atk > enD.AC//3+enD.mp:
         enD.hp+=enD.AC//3+enD.mp-atk
@@ -481,7 +497,10 @@ def move(n):
             else:
                 stepahead(mob,n)
                 if('roller-skates' in mob.doping and d(mob.dex)>d(mob.fp)):
-                    rushattack(mob,player)
+                    if(dis(xx,yy)==1):
+                        rushattack(mob,player)
+                    else:
+                        stepahead(mob,n)
             mob.hp-=mob.bp
             mob.bp=mob.bp*3//2
             if(d(mob.VIT-mob.bp)>0 and mob.hp<mob.VIT):
@@ -814,6 +833,11 @@ def DoVi():
         shield_recalculate()
         return 0
 
+def Skilling():
+    if player.skills:
+        qyu=''
+        for i in player.skills:
+            qyu+=i
 def shield_recalculate():
     global player
     if player.DV:
@@ -857,6 +881,8 @@ def controls(fatigue):
             attack(player,Total_list[X_Y_list.index((player.x+dx,player.y+dy))])
     elif(a==b' '):
         retry=DoVi()
+#    elif(a==b'a'):
+#        retry=Skilling()
     elif(a==b'>'):
         if(Map[player.y*x_size+player.x]=='>'):
             Floor+=1
@@ -1016,6 +1042,11 @@ while(True):
             if(player.hp<=0):
                 clearchat()
                 Messages+=[player.name+' dies.']
+                if ththyhyujy:
+                    if ththyhyujy==1:
+                        Messages+=[player.name+', unable to move, rots alive for ages.','Dead End 2:Bloodlust']
+                    elif ththyhyujy==2:
+                        Messages+=[player.name+"'s heart stops instantly.",'Dead End 1:Curse']
                 print('\n   ***{}***   \n   ***{}***   \n   ***{}***\n'.format(Messages[-3],Messages[-2],Messages[-1]))
                 a=b''
                 while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):

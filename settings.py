@@ -11,6 +11,7 @@ DV_divide_a=4
 DV_divide_f=1
 DV_divide_r=2
 ST_divide=2
+controllers=[b'r',b't',b'y',b'h',b'n',b'b',b'v',b'f',b'g',b'i',b'd',b's',b' ',b'z',b'x',b'c',b'u',b'.']
 name='Player'
 safe=5
 Messages=['']*transcript*3
@@ -38,7 +39,7 @@ Mob_list=(
 (60,20,6,4,12,10,20,0,4,'O','Ogre',1,30000,[],(8,1,0,Weapon_icon,'cudgel',3,6,10,4),(9,Armor_icon,'shellmail',100)),
 (20,8,12,30,2,5,8,0,1,'D','Crimson Demon',1,200000,['kai'],(0,2,7,Weapon_icon,'rod',3,2,0,12),(0,Armor_icon,'archmage robe',-1)),
 (30,12,16,16,6,5,10,0,5,'I','Greater Imp',1,300000,['kai'],(1,4,4,Weapon_icon,'trident',3,4,0,4),(0,Armor_icon,'',0)),
-(30,12,24,12,8,20,4,0,0,'v','Vampire',1,400000,['kai','vampirism','stealth'],(3,3,2,Weapon_icon,'vampric dagger',1,0,0,0,'vampirism'),(1,Armor_icon,'robe',0)),
+(30,12,24,12,8,20,4,0,0,'v','Vampire',1,400000,['kai','vampirism','stealth'],(3,3,2,Weapon_icon,'vampric dagger',1,0,0,0,['vampirism']),(1,Armor_icon,'robe',0)),
 (40,20,20,4,12,100,1,2,0,'p','Phantom',4,100000,['kai','illusion','stealth'],(3,3,3,Weapon_icon,'dagger'),(0,Armor_icon,'',0),(4,0,1,Shield_icon,'mirror shield',2,0,0,0,['illusion']),(' Killer',('You are being haunted.','You are being haunted.')))
 )
 Effects_list=('healing potion','magic potion','poison potion','energetic potion','experience potion')
@@ -56,6 +57,7 @@ RL_Food=(0,2,1)
 VIT=20
 Ability={'caster','lancer','berserker'}
 Cool_dict={'caster':['Now you possess legendary power of Caster! You can cast dark magic by pressing z!',0,0,5],'lancer':['Now you possess legendary power of Lancer! You can make far-reaching lunges by pressing x!',0,5,0],'berserker':['Now you possess legendary power of Berserker! You can crush your foes by pressing c!',5,0,0]}
+Skill_list=['e','x','d','a','z','w','s']
 Coolness=3
 Magic_value=4
 Magic_distance=6

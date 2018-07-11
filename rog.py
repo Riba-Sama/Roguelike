@@ -919,7 +919,7 @@ def Skilling():
                 else:
                     Messages+=['Invalid direction.']
                     return 1
-                screen(*dire,'w for clockwise, c for counterclockwise.')
+                screen(dire[0],dire[1],'w for clockwise, c for counterclockwise.')
                 inpy=getkey()
                 dire=((1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1)).index(dire)
                 if inpy==b'w':

@@ -295,8 +295,9 @@ def attack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (self.wield==Weapon(1,1,1,Weapon_icon,'') or 'vampirism' in self.wield.doping)):
                 ththyhyujy=1
+                enA.doping+=['kai']
         if('death' in enA.doping):
             enD.hp=-45
             Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
@@ -305,6 +306,8 @@ def attack(enA,enD):
         elif('purify' in enA.doping and 'kai' in enD.doping):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
+            if enD.__class__.__name__ == 'Me':
+                ththyhyujy==3
     else:
         Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
     enA.fp+=2
@@ -319,8 +322,9 @@ def farattack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC//2)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (self.wield==Weapon(1,1,1,Weapon_icon,'') or 'vampirism' in self.wield.doping)):
                 ththyhyujy=1
+                enA.doping+=['kai']
         if('death' in enA.doping):
             enD.hp=-45
             Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
@@ -329,6 +333,8 @@ def farattack(enA,enD):
         elif('purify' in enA.doping and 'kai' in enD.doping):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
+            if enD.__class__.__name__ == 'Me':
+                ththyhyujy==3
     else:
         Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
     enA.fp+=4
@@ -343,8 +349,9 @@ def rushattack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC//2)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (self.wield==Weapon(1,1,1,Weapon_icon,'') or 'vampirism' in self.wield.doping)):
                 ththyhyujy=1
+                enA.doping+=['kai']
         if('death' in enA.doping):
             enD.hp=-45
             Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
@@ -353,6 +360,10 @@ def rushattack(enA,enD):
         elif('purify' in enA.doping and 'kai' in enD.doping):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
+            if enD.__class__.__name__ == 'Me':
+                ththyhyujy==3
+                if enD.__class__.__name__ == 'Me':
+                    ththyhyujy==3
     else:
         Messages+=[enA.name+' crushes floor near '+enD.name+"'s feet."] if atk > enD.AC else [enD.name+' barely blocks '+enA.name+"'s hit."]
     enA.fp+=8
@@ -369,6 +380,8 @@ def magicattack(enA,enD):
         if('purify' in enA.doping and 'kai' in enD.doping):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
+            if enD.__class__.__name__ == 'Me':
+                ththyhyujy==3
     else:
         if atk > enD.AC//3:
             enD.mp+=enD.AC//3-atk
@@ -918,9 +931,12 @@ def jumpattack(dx,dy):
     for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)):
         if(not un(player.x+i[0],player.y+i[1])):
             enD=Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]
-            enD.hp-=atk
-            enD.fp+=atk//4
-            Messages+=['Stones hit '+enD.name+'.']
+            if enD.type>=0:
+                enD.hp-=atk
+                enD.fp+=atk//4
+                Messages+=['Stones hit '+enD.name+'.']
+            else:
+                Messages+=['Stones bounce from '+enD.name+'.']
             Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]=enD
     player.fp+=player.AC-player.BAC
 
@@ -1302,12 +1318,14 @@ while(True):
                 move(i)
             if(player.hp<=0):
                 clearchat()
-                Messages+=[player.name+' dies.']
                 if ththyhyujy:
                     if ththyhyujy==1:
-                        Messages+=[player.name+', unable to move, rots alive for ages.','Dead End 2:Bloodlust']
+                        Messages+=[player.name+', unable to move, rots alive for ages.','Dead End 2:Immortality.']
                     elif ththyhyujy==2:
-                        Messages+=[player.name+"'s heart stops instantly.",'Dead End 1:Curse']
+                        Messages+=[player.name+"'s heart stops instantly.",'Dead End 1:Curse.']
+                    elif ththyhyujy==3:
+                        Messages+=[player.name+" turns to ashes.",'Dead End 3:Exorcism.']
+                Messages+=[player.name+' dies.']
                 print('\n   ***{}***   \n   ***{}***   \n   ***{}***\n'.format(Messages[-3],Messages[-2],Messages[-1]))
                 a=b''
                 while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):

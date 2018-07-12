@@ -454,11 +454,8 @@ def move(n):
         elif(mob.type>=0):
             xx=X_Y_list[n][0]
             yy=X_Y_list[n][1]
-            if(mob.bp>=mob.hp):
-                Messages+=[player.name+' kills '+mob.name+'.']
-                death(n)
-                levelup()
-                return
+            if(mob.fp>d(FP_bonus+mob.dex-mob.ER*SR_divide//(SR_divide+mob.str))):
+                mob.fp=max(mob.fp-mob.dex,0)
             elif mob.aware==0:
                 if dis(xx,yy) < 7 + hey + mob.VIT-mob.hp:
                     mob.aware=1
@@ -478,7 +475,7 @@ def move(n):
             elif dis(xx,yy) < safe - mob.lvl - hey - (mob.VIT-mob.hp) and dis(xx,yy) > (1 if mob.type%2==0 and mob.type%3!=2 else (6 if mob.type%2==1 else 2)):
                 PT_awares+=mob.shout
                 Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
-            elif(mob.fp>d(FP_bonus+mob.dex-mob.ER*SR_divide//(SR_divide+mob.str)) or (mob.fp>=mob.dex and mob.type%2==1) or (mob.fp>=d(mob.dex) and mob.type%3==2)):
+            elif((mob.fp>=mob.dex and mob.type%2==1) or (mob.fp>=d(mob.dex) and mob.type%3==2)):
                 mob.fp=max(mob.fp-mob.dex,0)
             elif(dis(xx,yy)==2 and mob.type%3==2):
                 farattack(mob,player)

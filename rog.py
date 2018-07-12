@@ -520,6 +520,7 @@ def help():
     Messages+=['g      get item on your tile.']
     Messages+=['i      use item in your inventory.']
     Messages+=['d      destroy item in inventory.']
+    Messages+=['a      use ability.']
     Messages+=['Esc    exit.']
     Messages+=['?      help.']
     Messages+=['!      abbreviations in stats.']

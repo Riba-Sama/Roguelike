@@ -114,7 +114,7 @@ class Boss(Mob):
             self.lvl=99
             self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
             self.VIT=self.hp
-            self.BAC=self.AC-self.wear.AC-self.shield.AC
+            self.BAC=self.AC-self.wear.AC
             self.xp=5000000
             self.drop=[Weapon(4,4,2,Weapon_icon,'Silver Bat',1,0,0,0,['illusion'])]
             self.doping=['illusion','roller-skates','kai']

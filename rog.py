@@ -478,7 +478,7 @@ def move(n):
             elif dis(xx,yy) < safe - mob.lvl - hey - (mob.VIT-mob.hp) and dis(xx,yy) > (1 if mob.type%2==0 and mob.type%3!=2 else (6 if mob.type%2==1 else 2)):
                 PT_awares+=mob.shout
                 Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
-            elif(mob.fp>d(20+mob.dex-mob.ER*SR_divide//(SR_divide+mob.str)) or (mob.fp>=mob.dex and mob.type%2==1) or (mob.fp>=d(mob.dex) and mob.type%3==2)):
+            elif(mob.fp>d(FP_bonus+mob.dex-mob.ER*SR_divide//(SR_divide+mob.str)) or (mob.fp>=mob.dex and mob.type%2==1) or (mob.fp>=d(mob.dex) and mob.type%3==2)):
                 mob.fp=max(mob.fp-mob.dex,0)
             elif(dis(xx,yy)==2 and mob.type%3==2):
                 farattack(mob,player)
@@ -568,8 +568,9 @@ def xp():
     for i in Mob_list:
         zoo=Mob(i)
         Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)+(8-len(str(zoo.xp)))*' '+str(i)]
-    zoo=Boss()
-    Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)]
+    for i in range(4):
+        zoo=Boss(i+1)
+        Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)]
 
 def direction(a):
     if a==b'r':
@@ -835,7 +836,7 @@ def DoVi():
 
 def clockattack(start=0,wise=1):
     global Messages,Total_list
-    atk=player.str*player.wield.strm*(player.DV+2)//2
+    atk=player.str*player.wield.strm*(player.DV+2)//5
     for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0))[start-1-(wise==1):start+7-(wise==1)][::wise]:
         if(not un(player.x-i[0],player.y-i[1])):
             enD=Total_list[X_Y_list.index((player.x-i[0],player.y-i[1]))]
@@ -863,13 +864,13 @@ def clockattack(start=0,wise=1):
 
 def runattack(i=(1,0)):
     global Messages,Total_list
-    atk=player.dex*player.wield.dexm*(player.DV+1)
     while un(player.x+i[0],player.y+i[1]) and d(player.fp)<player.dex:
         player.x+=i[0]
         player.y+=i[1]
         player.fp+=2
     if not un(player.x+i[0],player.y+i[1]):
         enD=Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]
+        atk=player.dex*player.wield.dexm*(player.DV+1)*3//max(5,player.fp)
         if atk > enD.AC//4:
             enD.hp+=enD.AC//4-atk
             enD.bp+=atk*player.dex*player.wield.dexm//d(enD.AC)
@@ -891,7 +892,7 @@ def runattack(i=(1,0)):
 def exhaustattack(i=(1,0)):
     global Messages,Total_list
     enD=Total_list[X_Y_list.index((player.x+i[0],player.y-i[1]))]
-    atk=(player.int+('illusion' in player.doping)*enD.int//d(enD.int))**2*player.wield.intm
+    atk=(player.int+('illusion' in player.doping)*enD.int//d(enD.int))*player.wield.intm
     Messages+=[player.name+' gestures at '+enD.name+'.']
     enD.fp+=atk*MR_divide//(enD.MR+MR_divide)
     if atk*MR_divide//(enD.MR+MR_divide)>0:
@@ -1171,7 +1172,7 @@ while(True):
             alarms()
             ST_dice=d(player.dex)
             screen()
-            controls(d(20+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
+            controls(d(FP_bonus+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
             hey=floor(log(awares+PT_awares+1.0,2.0))
             PT_awares=0
             for i in range(len(Total_list)-1,-1,-1):

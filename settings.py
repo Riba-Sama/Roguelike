@@ -11,6 +11,7 @@ DV_divide_a=4
 DV_divide_f=1
 DV_divide_r=2
 ST_divide=2
+FP_bonus=20
 controllers=[b'r',b't',b'y',b'h',b'n',b'b',b'v',b'f',b'g',b'i',b'd',b's',b' ',b'z',b'x',b'c',b'u',b'.']
 name='Player'
 safe=5

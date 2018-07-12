@@ -618,7 +618,7 @@ def casting():
     if(a==b'\x1b'):
         return 1
     else:
-        if(show[8-dy][8+dx]==Magic_icon):
+        if(show[8-dy][8+dx]==Magic_icon or show[8-dy][8+dx]==Player_icon):
             if(bonus==1):
                 if(player.mp>=max(abs(dx),abs(dy))*2):
                     player.x+=dx
@@ -661,7 +661,7 @@ def lancing():
     if(a==b'\x1b'):
         return 1
     else:
-        if(show[8-dy][8+dx]==Magic_icon):
+        if(show[8-dy][8+dx]==Magic_icon or show[8-dy][8+dx]==Player_icon):
             Messages+=['Invalid target.']
             return 1
         else:
@@ -685,7 +685,7 @@ def berserking():
     if(a==b'\x1b'):
         return 1
     else:
-        if(show[8-dy][8+dx]==Magic_icon):
+        if(show[8-dy][8+dx]==Magic_icon or show[8-dy][8+dx]==Player_icon):
             Messages+=['Invalid target.']
             return 1
         else:
@@ -1001,7 +1001,7 @@ def Skilling():
                 if(a==b'\x1b'):
                     return 1
                 else:
-                    if(show[8-dy][8+dx]==Magic_icon):
+                    if(show[8-dy][8+dx]==Magic_icon or show[8-dy][8+dx]==Player_icon):
                         Messages+=['Invalid target.']
                         return 1
                     else:
@@ -1035,7 +1035,7 @@ def Skilling():
                 if(a==b'\x1b'):
                     return 1
                 else:
-                    if(show[8-dy][8+dx]!=Magic_icon or player.x+dx>x_size):
+                    if(show[8-dy][8+dx]!=Magic_icon and show[8-dy][8+dx]!=Player_icon):
                         Messages+=['Invalid target.']
                         return 1
                     else:
@@ -1059,7 +1059,7 @@ def Skilling():
                 if(a==b'\x1b'):
                     return 1
                 else:
-                    if(show[8-dy][8+dx]==Magic_icon or Total_list[X_Y_list.index((player.x+dx,player.y+dy))].type<0):
+                    if((show[8-dy][8+dx]==Magic_icon or show[8-dy][8+dx]==Player_icon) or Total_list[X_Y_list.index((player.x+dx,player.y+dy))].type<0):
                         Messages+=['Invalid target.']
                         return 1
                     else:
@@ -1091,7 +1091,7 @@ def Skilling():
                     if inpy!='\x1b':Messages+=['Invalid ability.']
                     return 1
             else:
-                Messages+=['Coming soon!']
+                Messages+=['Not enough SP.']
                 return 1
         if inpu!='\x1b':Messages+=['Invalid ability.']
         return 1

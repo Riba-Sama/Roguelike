@@ -30,7 +30,7 @@ class Boss(Mob):
             self.xp=5000
             self.drop=[Weapon(5,0,3,Weapon_icon,'Excalibolg',3,3,3,3)]
             self.doping=[]
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=('Despair overwhelms '+name+'.','Despair overwhelms '+name+'.')
         elif(num==2):
             self.leader=10
@@ -60,7 +60,7 @@ class Boss(Mob):
             self.xp=50000
             self.drop=[Weapon(1,6,0,Weapon_icon,'Satosame',1,0,0,0,['death'])]
             self.doping=['stealth','death']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=(name+' senses murderous aura.',name+' senses murderous aura.')
         elif(num==3):
             self.leader=10
@@ -90,7 +90,7 @@ class Boss(Mob):
             self.xp=1000000
             self.drop=[Weapon(6,6,2,Weapon_icon,'Shinzowatari',3,6,2,4,['purify'])]
             self.doping=['purify','kai','vampirism']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=(name+' senses '+name+"'s life force being drained.",name+' senses '+name+"'s life force being drained.")
         elif(num==4):
             self.leader=10
@@ -120,7 +120,7 @@ class Boss(Mob):
             self.xp=5000000
             self.drop=[Weapon(4,4,2,Weapon_icon,'Silver Bat',1,0,0,0,['illusion'])]
             self.doping=['illusion','roller-skates','kai']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=(name+' shivers as '+name+' hears sound of inline skates.',name+' shivers as '+name+' hears sound of inline skates.')
         elif(num==5):
             self.leader=10
@@ -150,7 +150,7 @@ class Boss(Mob):
             self.xp=10**9
             self.drop=[Weapon(8,1,4,Weapon_icon,'pearl cudgel',3,8,1,4,['purify']),Armor(12,Armor_icon,'pearl shellmail',0,['purify'])]
             self.doping=['purify','parry','rabbit']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=('Dwarf Rabbit shouts prayers!',name+' hears prayers.')
         elif(num==6):
             self.leader=10
@@ -180,7 +180,7 @@ class Boss(Mob):
             self.xp=10**8
             self.drop=[Weapon(3,3,3,Weapon_icon,'ebony sword',1,0,0,0,['vampirism']),Armor(12,Armor_icon,'ebony platemail',0,['vampirism'])]
             self.doping=['vampirism','kai','pride']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=('Lucifer laughs haughtily noticing '+name+'.',name+' hears a haughty laugh.')
         elif(num==7):
             self.leader=10
@@ -210,7 +210,7 @@ class Boss(Mob):
             self.xp=10**8
             self.drop=[Weapon(1,0,6,Weapon_icon,'ebony wand',1,0,0,0,['illusion']),Armor(6,Armor_icon,'ebony scalemail',0,['vampirism'])]
             self.doping=['illusion','vampirism','kai','sloth']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=('Belphegor yawns meeting '+name+"'s gaze.",name+' hears a yawn.')
         elif(num==8):
             self.leader=10
@@ -240,7 +240,7 @@ class Boss(Mob):
             self.xp=10**8
             self.drop=[Weapon(1,2,3,Weapon_icon,'golden wand',3,6,0,12,['teleport']),Armor(4,Armor_icon,'golden scalemail',3)]
             self.doping=['vampirism','kai','greed','teleport']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=('Belphegor yawns meeting '+name+"'s gaze.",name+' hears a yawn.')
         elif(num==9):
             self.leader=10
@@ -271,7 +271,7 @@ class Boss(Mob):
             self.xp=10**8
             self.drop=[Weapon(8,2,2,Weapon_icon,'ebony cudgel',3,6,6,6,['vampirism']),Armor(6,Armor_icon,'ebony scalemail',0,['vampirism'])]
             self.doping=['vampirism','kai','wrath']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=('Satan screams in fury!',name+' hears a furious scream!')
         elif(num==10):
             self.leader=10
@@ -303,7 +303,7 @@ class Boss(Mob):
             self.Denvy=0
             self.drop=[Weapon(1,1,1,Weapon_icon,'shabby dagger',1,0,0,0,['vampirism']),Armor(0,Armor_icon,'shabby rags',0,['vampirism'])]
             self.doping=['vampirism','kai','envy']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=('Leviatan stares intently at '+name+"'s belongings.",name+' feels an intent stare.')
         elif(num==11):
             self.leader=10
@@ -333,7 +333,7 @@ class Boss(Mob):
             self.xp=10**8
             self.drop=[Armor(2,Armor_icon,'ebony hide',-1,['vampirism'])]
             self.doping=['vampirism','kai','gluttony']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=("Saliva oozes from Belzebub's mouth, ears and eyes.",name+' hears some liquid dropping on the floor.')
         elif(num==12):
             self.leader=10
@@ -363,5 +363,5 @@ class Boss(Mob):
             self.xp=10**8
             self.drop=[Armor(2,Armor_icon,'ebony hide',-1,['vampirism']),Weapon(3,3,4,Weapon_icon,'ebony dagger',1,0,0,0,['vampirism'])]
             self.doping=['vampirism','kai','lust']
-            self.status=Status_template
+            self.status={'hitstun':0,'poison':0}
             self.catchphrase=("Asmodeus's bloodshot eyes roll in "+name+"'s direction.",name+' hears a rolling sound.')

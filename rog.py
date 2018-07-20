@@ -1544,7 +1544,7 @@ def controls(fatigue):
         player.AC=player.BAC+player.wear.AC
         player.MR=0
         if 'parry' in player.doping:
-            mob.doping.remove('parry')
+            player.doping.remove('parry')
         if player.status['hitstun']==1:
             shield_recalculate()
         player.status['hitstun']-=1

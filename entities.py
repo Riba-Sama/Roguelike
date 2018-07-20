@@ -100,7 +100,7 @@ class Mob(Entity):
         self.lvl=1 if self.xp<=XP_base else floor(log(self.xp/XP_base,2.0))+1
         self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)+[self.shield]*(self.shield.name!=self.wield.name and bool(self.shield.name))+[self.wield]*bool(self.wield.name)+[self.wear]*bool(self.wear.name)
         self.doping=ab[13]
-        self.status=Status_template
+        self.status={'hitstun':0,'poison':0}
         if(len(ab)>17):
             self.catchphrase=ab[17][1]
 
@@ -131,5 +131,5 @@ class Me(Entity):
         self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
         self.VIT=self.hp
         self.doping=[]
-        self.status=Status_template
+        self.status={'hitstun':0,'poison':0}
         self.relics={'Stakes':[0,7],'Rabbit Feet':[0,400]}

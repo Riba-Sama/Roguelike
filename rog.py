@@ -72,18 +72,34 @@ try:
         except ValueError as err :
             Messages+=['Map file misses player, '+str(err)]
             spawn_x,spawn_y=x_size//2,y_size//2
+        if Floor==5 and ththyhyujy==1:
+            global player
+            player.hp=-45
+            ththyhyujy=4
     newstage()
 except ModuleNotFoundError as err :
     Messages+=['Failed to import map file, '+str(err)]
     Map='.'*262144
     x_size=512
     y_size=512
+    Mob_appear=500
+    Noob_Confetti=500
+    Mob_ungroup=12
+    Lead_c=4
+    RL_Mobs=(0,8,8,8,3,3,3,1,1,1)
+    awares=0
     spawn_x,spawn_y=x_size//2,y_size//2
 except NameError as err:
     Messages+=['Failed to import map, '+str(err)]
     Map='.'*262144
     x_size=512
     y_size=512
+    Mob_appear=500
+    Noob_Confetti=500
+    Mob_ungroup=12
+    Lead_c=4
+    RL_Mobs=(0,8,8,8,3,3,3,1,1,1)
+    awares=0
     spawn_x,spawn_y=x_size//2,y_size//2
 
 try:
@@ -168,13 +184,78 @@ def levelup():
     global player
     while XP >= XP_base*2**player.lvl:
         player=lvlup(player)
-#####################
-#######setting#######
-#####################
+
+def outro(num):
+    global Messages
+    clearchat()
+    print('Any key to advance epilogue')
+    getkey()
+    clearchat()
+    if num==1:
+        a=(player.name+' defeated all princes of Hell,',
+        ' and therefore was prime candidate for next inauguration.',
+        'But as they were alive,',
+        ' they could not be official resident of Hell.',
+        'As thus,','\choice','They decided to depart from Hell.','They decided to establish themselves as tyrant.')
+    elif num==2:
+        a=('Cerberus by the exit of Hell had eaten '+player.name+"'s soul.",'Bad End 4: Coward.')
+    elif num==3:
+        a=('Being feared by everyone,',
+        ' '+player.name+' easily conquered Hell.',
+        'Good End 2: Tyrant.')
+    elif num==4:
+        a=(player.name+' defeated all princes of Hell,',
+        ' and therefore was prime candidate for next inauguration.',
+        "Being converted to dead soul by Lucifer's exploded pride,",
+        ' they could become king of Hell officially.',
+        'Good End 3: Incorporeal King.')
+    elif num==5:
+        a=(player.name+' defeated all princes of Hell,',
+        ' and therefore was prime candidate for next inauguration.',
+        "Being a vampire,",
+        ' they could become king of Hell officially.',
+        'Good End 4: Undead King.')
+    elif num==6:
+        a=('Having been killed at holy place,',
+        ' '+player.name+' have been sent to Purgatory.',
+        'Unable to successfully atone,',
+        ' they were sent to Hell.',
+        'Bad End 2: Sinner.')
+    elif num==7:
+        a=('Having been killed at holy place,',
+        ' '+player.name+' have been sent to Purgatory.',
+        'After atoning successfully,',
+        ' they were sent to Heaven.',
+        'Good End 1: Innocent.')
+    elif num==8:
+        a=('After '+player.name+' killed all four hundred holy rabbits,',
+        ' Special Archangel force was dispatched,',
+        ' they were murdered in very gruesome way,',
+        ' and sent to Hell afterwards.',
+        'Bad End 3: Infidel.')
+    elif num==9:
+        a=('As '+player.name+' sees walls of a cathedral,',
+        ' they turn to ashes.',
+        'Bad End 1: Desecrator.')
+    for i in range(len(a)):
+        if a[i]=='\choice':
+            for j in range(len(a)-i-1):
+                print(chr(j+97)+" - "+a[j+i+1])
+            b=-1
+            while(not 0<=b<=len(a)-i-2):
+                b=ord(getcharkey())-97
+            outro(num+b+1)
+            return
+        else:
+            print(a[i])
+            Messages+=[a[i]]
+            getkey()
+
 def consume(ent,what):
     if what == 0:
         ent.hp=ent.VIT
         ent.bp=0
+        ent.status['poison']=0
         ent.fp=ent.fp//2
         ent.sp+=2
     elif what == 1:
@@ -183,18 +264,14 @@ def consume(ent,what):
         ent.bp=ent.bp//2
         ent.sp+=2
     elif what == 2:
-        ent.hp=ent.hp//3
-        ent.fp+=10
-        ent.sp-=2
+        ent.status['poison']+=10
     elif what == 3:
         ent.fp=-(ent.dex+10)**2//25
         ent.bp=ent.bp*3
         ent.sp+=4
     elif what == 4:
         ent=lvlup(ent)
-#####################
-#setting#####potions#
-#####################
+
 def birth(x,y,mob):
     global Total_list,X_Y_list,awares
     if un(x,y) and Map[x+y*(x_size)] == '.':
@@ -213,8 +290,9 @@ def generate():
     global Total_list,X_Y_list,spawn_x,spawn_y
     Total_list=[]
     X_Y_list=[]
-    for i in range(x_size):
-        for l in range(y_size):
+    Uppu=0
+    for l in range(y_size):
+        for i in range(x_size):
             if Map[i+l*(x_size)] != '.':
                 a=Map[i+l*(x_size)]
                 if a is Wall_icon:
@@ -222,19 +300,18 @@ def generate():
                     X_Y_list+=[(i,l)]
                 elif a is Boss_icon:
                     try:
-                        Total_list+=[Boss(Floor)]
+                        Total_list+=[Boss(Floor+Uppu)]
+                        Uppu+=1
                         X_Y_list+=[(i,l)]
                     except:
                         pass
                 elif 97 <= ord(a.lower()) <= 122:
                     usl1=rl(RL_Weapons)
-                    usl2=rl(RL_Armor)
-                    usl3=rl(RL_Mobs)
                     auto=()
                     for r in Presets:
                         if(r[9] is a):
                             auto=r
-                    Total_list+=[Mob(auto)] if auto!=() else [Mob(Mob_list[usl3])]
+                    Total_list+=[Mob(auto,max(min(d(Floor)-d(Mob_ungroup),auto[11]),0))] if auto!=() else [Mob(Mob_list[usl3])]
                     X_Y_list+=[(i,l)]
                 elif a is Potion_icon:
                     usl=rl(RL_Potions)
@@ -282,9 +359,7 @@ def generate():
                 usl=rl(RL_Armor)
                 Total_list+=[Armor(Armor_AC_ER_list[usl][0],Armor_icon,Armor_types_list[usl],Armor_AC_ER_list[usl][1])]
                 X_Y_list+=[(i,l,0)]
-#####################
-#######setting#######
-#####################
+
 def attack(enA,enD):
     global Messages,ththyhyujy
     atk=d((enA.str+('illusion' in enA.doping)*enD.str//d(enD.int))*enA.wield.strm+d(enA.dex*enA.wield.dexm*2))*(enA.DV+DV_divide_a)//(2*DV_divide_a)
@@ -295,9 +370,9 @@ def attack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (self.wield==Weapon(1,1,1,Weapon_icon,'') or 'vampirism' in self.wield.doping)):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield==Weapon(1,1,1,Weapon_icon,''))):
                 ththyhyujy=1
-                enA.doping+=['kai']
+                enD.doping+=['kai','vampirism']
         if('death' in enA.doping):
             enD.hp=-45
             Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
@@ -308,8 +383,33 @@ def attack(enA,enD):
             Messages+=[enA.name+' purifies '+enD.name+'.']
             if enD.__class__.__name__ == 'Me':
                 ththyhyujy==3
+        if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC)
     else:
-        Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
+        if('parry' in enD.name):
+            enA.status['hitstun']+=1
+            Messages+=[enD.name+' parries '+enA.name+"'s hit!"]
+        else:
+            if 'gluttony' in enA.doping:
+                if enA.hp==enA.VIT:
+                    Messages+=[enA.name+' nibbles on '+enD.name+"'s armor."]
+                    enD.wear.AC-=1
+                    enD.AC-=1
+                elif enA.hp>enA.VIT//2:
+                    Messages+=[enA.name+' bites off a piece of '+enD.name+"'s armor."]
+                    enD.wear.AC-=3
+                    enD.AC-=3
+                    enA.hp=min(enA.VIT,enA.hp+3)
+                    enA.bp=0
+                else:
+                    Messages+=[enA.name+' devoires the most of '+enD.name+"'s armor."]
+                    enD.wear.AC-=5
+                    enD.AC-=5
+                    enA.hp=min(enA.VIT,enA.hp+8)
+                    enA.bp=0
+                    enA.fp=0
+            else:
+                Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
+        if 'envy' in enA.doping:enA.Denvy+=d(atk)
     enA.fp+=2
 
 def farattack(enA,enD):
@@ -322,9 +422,9 @@ def farattack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC//2)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (self.wield==Weapon(1,1,1,Weapon_icon,'') or 'vampirism' in self.wield.doping)):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield==Weapon(1,1,1,Weapon_icon,''))):
                 ththyhyujy=1
-                enA.doping+=['kai']
+                enD.doping+=['kai','vampirism']
         if('death' in enA.doping):
             enD.hp=-45
             Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
@@ -335,23 +435,48 @@ def farattack(enA,enD):
             Messages+=[enA.name+' purifies '+enD.name+'.']
             if enD.__class__.__name__ == 'Me':
                 ththyhyujy==3
+        if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC//2)
     else:
-        Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
+        if('parry' in enD.name):
+            enA.status['hitstun']+=2
+            Messages+=[enD.name+' parries '+enA.name+"'s hit!"]
+        else:
+            if 'gluttony' in enA.doping:
+                if enA.hp==enA.VIT:
+                    Messages+=[enA.name+' nibbles on '+enD.name+"'s armor."]
+                    enD.wear.AC-=1
+                    enD.AC-=1
+                elif enA.hp>enA.VIT//2:
+                    Messages+=[enA.name+' bites off a piece of '+enD.name+"'s armor."]
+                    enD.wear.AC-=3
+                    enD.AC-=3
+                    enA.hp=min(enA.VIT,enA.hp+3)
+                    enA.bp=0
+                else:
+                    Messages+=[enA.name+' devoires the most of '+enD.name+"'s armor."]
+                    enD.wear.AC-=5
+                    enD.AC-=5
+                    enA.hp=min(enA.VIT,enA.hp+8)
+                    enA.bp=0
+                    enA.fp=0
+            else:
+                Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
+        if 'envy' in enA.doping:enA.Denvy+=d(atk)
     enA.fp+=4
 
 def rushattack(enA,enD):
     global Messages,ththyhyujy
-    atk=d((enA.str+('illusion' in enA.doping)*enD.str//d(enD.int))*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))*(enA.DV+DV_divide_r)//(3*DV_divide_r)+(enA.str+('illusion' in enA.doping)*enD.str//enD.int)*enA.wield.strm
-    if atk > enD.AC and d(enA.dex) > d(enD.dex):
+    atk=d((enA.str+('illusion' in enA.doping)*enD.str//d(enD.int))*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))*(enA.DV+DV_divide_r)//(3*DV_divide_r)+enA.str*enA.wield.strm
+    if atk > enD.AC and d(enA.dex+('illusion' in enA.doping)*enD.dex//d(enD.int)) > d(enD.dex):
         enD.hp+=enD.AC//2-atk
         enD.fp+=atk*d(enA.str*enA.wield.strm)//d(enD.AC)
         Messages+=[enA.name+' crushes '+enD.name+' mightily.']
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC//2)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (self.wield==Weapon(1,1,1,Weapon_icon,'') or 'vampirism' in self.wield.doping)):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield==Weapon(1,1,1,Weapon_icon,''))):
                 ththyhyujy=1
-                enA.doping+=['kai']
+                enD.doping+=['kai','vampirism']
         if('death' in enA.doping):
             enD.hp=-45
             Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
@@ -364,8 +489,36 @@ def rushattack(enA,enD):
                 ththyhyujy==3
                 if enD.__class__.__name__ == 'Me':
                     ththyhyujy==3
+        if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC//2)
     else:
-        Messages+=[enA.name+' crushes floor near '+enD.name+"'s feet."] if atk > enD.AC else [enD.name+' barely blocks '+enA.name+"'s hit."]
+        if(atk<=enD.AC):
+            if('parry' in enD.name):
+                enA.status['hitstun']+=4
+                Messages+=[enD.name+' parries '+enA.name+"'s hit!"]
+            else:
+                if 'gluttony' in enA.doping:
+                    if enA.hp==enA.VIT:
+                        Messages+=[enA.name+' nibbles on '+enD.name+"'s armor."]
+                        enD.wear.AC-=1
+                        enD.AC-=1
+                    elif enA.hp>enA.VIT//2:
+                        Messages+=[enA.name+' bites off a piece of '+enD.name+"'s armor."]
+                        enD.wear.AC-=3
+                        enD.AC-=3
+                        enA.hp=min(enA.VIT,enA.hp+3)
+                        enA.bp=0
+                    else:
+                        Messages+=[enA.name+' devoires the most of '+enD.name+"'s armor."]
+                        enD.wear.AC-=5
+                        enD.AC-=5
+                        enA.hp=min(enA.VIT,enA.hp+8)
+                        enA.bp=0
+                        enA.fp=0
+                else:
+                    Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
+        else:
+            Messages+=[enA.name+' crushes floor near '+enD.name+"'s feet."]
+        if 'envy' in enA.doping:enA.Denvy+=d(atk)
     enA.fp+=8
 
 def magicattack(enA,enD):
@@ -382,11 +535,58 @@ def magicattack(enA,enD):
             Messages+=[enA.name+' purifies '+enD.name+'.']
             if enD.__class__.__name__ == 'Me':
                 ththyhyujy==3
+        if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC//3)
     else:
         if atk > enD.AC//3:
             enD.mp+=enD.AC//3-atk
+            if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC//3)
+        if 'envy' in enA.doping:enA.Denvy+=d(atk)
     enA.fp+=4
     enA.mp-=Magic_value
+
+def prideattack(enA,enD):
+    global Messages,ththyhyujy
+    atk=d((enA.str+('illusion' in enA.doping)*enD.str//d(enD.int))+d(enA.dex*2))*(enA.DV+DV_divide_a)//(2*DV_divide_a)
+    if atk > enD.AC:
+        enD.hp+=enD.AC-atk
+        enD.bp+=atk*d(enA.int)//d(enD.AC)
+        Messages+=[enA.name+' hits '+enD.name+'.']
+        if('vampirism' in enA.doping):
+            enA.hp=min(enA.VIT,atk-enD.AC)
+            Messages+=[enA.name+' drains '+enD.name+"'s life force."]
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield==Weapon(1,1,1,Weapon_icon,''))):
+                ththyhyujy=1
+                enD.doping+=['kai','vampirism']
+        if('death' in enA.doping):
+            enD.hp=-45
+            Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+            if(enD.__class__.__name__ == 'Me'):
+                ththyhyujy=2
+        elif('purify' in enA.doping and 'kai' in enD.doping):
+            enD.hp=-45
+            Messages+=[enA.name+' purifies '+enD.name+'.']
+            if enD.__class__.__name__ == 'Me':
+                ththyhyujy==3
+    else:
+        enA.hp-=atk
+        enA.bp+=atk*d(enA.int)
+        Messages+=[enD.name+' blocks '+enA.name+"'s hit.",enA.name+' pride hurts.']
+    enA.fp+=2
+
+def steal(enA,enD):
+    global Messages
+    x=d(len(enD.inventory))-1
+    Thing_in_question=enD.inventory[x]
+    if Thing_in_question.__class__.__name__=='Armor' and Thing_in_question.AC>=enA.wear.AC and Thing_in_question.ER<=enA.wear.ER:
+        enA.wear=Thing_in_question
+        enA.drop+=[Thing_in_question]
+        Messages+=[enA.name+' changes in '+Thing_in_question.name+' from '+player.name+"'s inventory!"]
+        enA.fp+=8
+    else:
+        enA.inventory+=[enD.inventory[x]]
+        Messages+=[enA.name+' acquires '+Thing_in_question.name+' from '+player.name+"'s inventory!"]
+        enA.fp+=4
+    enD.inventory.pop(x)
 
 def stepaway(mob,n):
     global X_Y_list
@@ -414,6 +614,7 @@ def stepaway(mob,n):
         mob.fp+=1
     else:
         mob.fp=max(mob.fp-mob.dex,0)
+        if 'sloth' in mob.doping:mob.mp=min(mob.mp+mob.int,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER))
 
 def stepahead(mob,n):
     global X_Y_list
@@ -441,6 +642,7 @@ def stepahead(mob,n):
         mob.fp+=1
     else:
         mob.fp=max(mob.fp-mob.dex,0)
+        if 'sloth' in mob.doping:mob.mp=min(mob.mp+mob.int,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER))
 
 def death(n):
     global XP,Total_list,X_Y_list,awares
@@ -450,11 +652,18 @@ def death(n):
     for k in ent.drop:
         X_Y_list+=[X_Y_list[n]+tuple([0])]
         Total_list+=[k]
+    for k in ent.inventory:
+        X_Y_list+=[X_Y_list[n]+tuple([0])]
+        Total_list+=[k]
+    if Floor>4:
+        global player
+        if Floor==5:
+            player.relics['Rabbit Feet'][0]+=1
+        elif ent.lvl==99:
+            player.relics['Stakes'][0]+=1
     Total_list.pop(n)
     X_Y_list.pop(n)
-#####################
-#setting#####attacks#
-#####################
+
 def move(n):
     global Total_list,X_Y_list,Messages,XP,player,awares,PT_awares
     if(len(X_Y_list[n])==2):
@@ -467,15 +676,43 @@ def move(n):
         elif(mob.type>=0):
             xx=X_Y_list[n][0]
             yy=X_Y_list[n][1]
-            if(mob.fp>d(FP_bonus+mob.dex-mob.ER*SR_divide//(SR_divide+mob.str))):
+            rol=1
+            if mob.status['poison']:
+                mob.status['poison']-=1
+                mob.hp-=mob.VIT//10
+                mob.fp+=2
+            if 'wrath' in mob.doping:
+                mob.str=mob.Bstr*mob.VIT//mob.hp
+            if mob.status['poison']>P_value:
+                mob.status['poison']//=2
+                mob.fp+=4
+                Messages+=[mob.name+' throws up.']
+            elif mob.status['hitstun']:
+                mob.AC=mob.BAC+mob.wear.AC
+                if 'parry' in mob.doping:
+                    mob.doping.remove('parry')
+                    mob.doping.append('p')
+                if mob.lvl<99:
+                    mob.MR=0
+                    if mob.status['hitstun']==1:
+                        mob.MR+=mob.shield.MR
+                if mob.status['hitstun']==1:
+                    mob.AC+=mob.shield.AC
+                    if 'p' in mob.doping:
+                        mob.doping.remove('p')
+                        mob.doping.append('parry')
+                mob.status['hitstun']-=1
+            elif(mob.fp>d(FP_bonus+mob.dex-mob.ER*SR_divide//(SR_divide+mob.str))):
                 mob.fp=max(mob.fp-mob.dex,0)
+                if 'sloth' in mob.doping:mob.mp=min(mob.mp+mob.int,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER))
             elif mob.aware==0:
                 if dis(xx,yy) < 7 + hey + mob.VIT-mob.hp:
                     mob.aware=1
                     awares+=1
                     if mob.leader==1:
-                        PT_awares+=mob.shout*2
-                        Messages+=[mob.name+' shouts vigorously!'] if dis(xx,yy)<9 else [player.name+' hears a vigorous shout!']
+                        if not 'stealth' in mob.doping:
+                            PT_awares+=mob.shout*2
+                            Messages+=[mob.name+' shouts vigorously!'] if dis(xx,yy)<9 else [player.name+' hears a vigorous shout!']
                     elif mob.leader:
                         PT_awares+=mob.shout*(1+mob.leader)
                         Messages+=[mob.catchphrase[0]] if dis(xx,yy)<9 else [mob.catchphrase[1]]
@@ -485,34 +722,134 @@ def move(n):
             elif mob.aware==1 and dis(xx,yy) > 7 + hey + mob.VIT-mob.hp:
                 awares-=1
                 mob.aware=0
-            elif dis(xx,yy) < safe - mob.lvl - hey - (mob.VIT-mob.hp) and dis(xx,yy) > (1 if mob.type%2==0 and mob.type%3!=2 else (6 if mob.type%2==1 else 2)):
-                PT_awares+=mob.shout
-                Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
-            elif((mob.fp>=mob.dex and mob.type%2==1) or (mob.fp>=d(mob.dex) and mob.type%3==2)):
-                mob.fp=max(mob.fp-mob.dex,0)
-            elif(dis(xx,yy)==2 and mob.type%3==2):
+            elif(Item('?',0,'healing potion') in mob.inventory and mob.hp-mob.bp<mob.VIT*min(16,8+mob.inventory.count(Item('?',0,'healing potion')))//16):
+                consume(mob,0)
+                mob.inventory.remove(Item('?',0,'healing potion'))
+            elif(Item('?',1,'magic potion') in mob.inventory and mob.mp<(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)*min(8,mob.inventory.count(Item('?',1,'magic potion')))//8):
+                consume(mob,1)
+                mob.inventory.remove(Item('?',1,'magic potion'))
+            elif(Item('?',3,'energetic potion') in mob.inventory and mob.fp>mob.dex*max(0,8-mob.inventory.count(Item('?',3,'energetic potion'))//8)):
+                consume(mob,3)
+                mob.inventory.remove(Item('?',3,'energetic potion'))
+            elif ('envy' in mob.doping) and (d(mob.Aenvy)>=NV_value or d(mob.Denvy)>=NV_value):
+                if mob.Denvy>=mob.Aenvy:
+                    mob.AC+=d(player.AC-player.BAC)
+                    mob.VIT+=d(player.hp)
+                    mob.hp=mob.VIT
+                    Messages+=[mob.name+' is envious of your defense!']
+                    mob.Denvy-=NV_value
+                else:
+                    mob.wield.strm+=d(player.wield.strm)
+                    mob.wield.dexm+=d(player.wield.dexm)
+                    mob.wield.intm+=d(player.wield.intm)
+                    Messages+=[mob.name+' is envious of your offense!']
+                    mob.Aenvy-=NV_value
+            elif dis(xx,yy)==1 and ('pride' in mob.doping):
+                prideattack(mob,player)
+            elif dis(xx,yy)==1 and ('greed' in mob.doping) and player.inventory!=[]:
+                steal(mob,player)
+                if d(mob.fp)<d(mob.dex):
+                    stepaway(mob,n)
+            elif(dis(xx,yy)==2 and mob.type//2%2==1):
                 farattack(mob,player)
+                rol=0
             elif(mob.type%2==1 and mob.mp>=Magic_value and dis(xx,yy)<=Magic_distance):
                 magicattack(mob,player)
-            elif(dis(xx,yy)==1 and mob.type%5==4):
+                rol=0
+            elif(dis(xx,yy)==1 and mob.type//4%2==1):
                 rushattack(mob,player)
-                if('roller-skates' in mob.doping and d(mob.dex)>d(mob.fp)):
-                    stepaway(mob,n)
-            elif(dis(xx,yy)==1 and mob.type==0):
-                attack(mob,player)
-            elif (mob.type==1 and dis(xx,yy)<=4) or (mob.type%3==2 and dis(xx,yy)==1):
+                rol=0
+            elif 'teleport' in mob.doping and mob.type%2==1 and dis(xx,yy)<Magic_distance:
+                if dis(xx,yy)<3 and (mob.fp>=TP_value or mob.hp-mob.bp<mob.VIT):
+                    for i in sorted(((j,-Magic_value) for j in range(-Magic_value,Magic_value+1))+((j,Magic_value) for j in range(-Magic_value,Magic_value+1))+((Magic_value,j) for j in range(-Magic_value,Magic_value+1))+((-Magic_value,j) for j in range(-Magic_value,Magic_value+1)),key= lambda x: d(1000)):
+                        if(un(X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1])):
+                            mob.fp+=Magic_value*TP_cost
+                            X_Y_list[n]=X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1]
+                            Messages+=[mob.name+' teleports!']
+                            break
+                elif mob.type//2%2==0:
+                    for i in sorted(((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)),key= lambda x: d(100)):
+                        if(un(player.x+i[0],player.y+i[1])):
+                            mob.fp+=max(abs(player.x+i[0]-X_Y_list[n][0]),abs(player.y+i[1]-X_Y_list[n][1]))*TP_cost
+                            X_Y_list[n]=player.x+i[0],player.y+i[1]
+                            Messages+=[mob.name+' teleports!']
+                            break
+                else:
+                    for i in sorted(((-2,2),(-1,2),(0,2),(1,2),(2,2),(2,1),(2,0),(2,-1),(2,-2),(1,-2),(0,-2),(-1,-2),(-2,-2),(-2,-1),(-2,0),(-2,1)),key= lambda x: d(100)):
+                        if(un(player.x+i[0],player.y+i[1])):
+                            mob.fp+=max(abs(player.x+i[0]-X_Y_list[n][0]),abs(player.y+i[1]-X_Y_list[n][1]))*TP_cost
+                            X_Y_list[n]=player.x+i[0],player.y+i[1]
+                            Messages+=[mob.name+' teleports!']
+                            break
+            elif((mob.fp>=mob.dex and mob.type%2==1) or (mob.fp>=d(mob.dex) and mob.type//2%2==1)):
+                mob.fp=max(mob.fp-mob.dex,0)
+                if 'sloth' in mob.doping:mob.mp=min(mob.mp+mob.int,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER))
+            elif (mob.type==1 and dis(xx,yy)<=4) or (mob.type//2%2==1 and dis(xx,yy)==1):
                 stepaway(mob,n)
             elif(dis(xx,yy)==1):
                 attack(mob,player)
+            elif dis(xx,yy) < safe - mob.lvl - hey - (mob.VIT-mob.hp):
+                PT_awares+=mob.shout
+                Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
+            elif not 'sloth' in mob.doping:
+                if 'rabbit' in mob.doping:
+                    for i in sorted(((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)),key= lambda x: d(100)):
+                        if(not un(player.x+i[0],player.y+i[1])):
+                            X_Y_list[X_Y_list.index((player.x+i[0],player.y+i[1]))],X_Y_list[n]=X_Y_list[n],X_Y_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]
+                            Messages+=[mob.name+' swaps with a nearby rabbit!']
+                            break
+                else:
+                    stepahead(mob,n)
             else:
-                stepahead(mob,n)
-                if('roller-skates' in mob.doping and d(mob.dex)>d(mob.fp)):
-                    if(dis(xx,yy)==1):
-                        rushattack(mob,player)
-                    else:
-                        stepahead(mob,n)
-            mob.hp-=mob.bp
+                mob.fp=max(mob.fp-mob.dex,0)
+                mob.mp=min(mob.mp+mob.int,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER))
+            if('roller-skates' in mob.doping and d(mob.dex)>d(mob.fp)):
+                if(rol and dis(xx,yy)==2 and mob.type//2%2==1):
+                    farattack(mob,player)
+                elif(rol and mob.type%2==1 and mob.mp>=Magic_value and dis(xx,yy)<=Magic_distance):
+                    magicattack(mob,player)
+                elif(rol and dis(xx,yy)==1 and mob.type//4%2==1):
+                    rushattack(mob,player)
+                elif(rol and dis(xx,yy)==1):
+                    attack(mob,player)
+                elif(dis(xx,yy)==1):
+                    stepaway(mob,n)
+                else:
+                    stepahead(mob,n)
+            if 'lust' in mob.doping:
+                mob.hp=min(mob.VIT,mob.hp+mob.bp+player.bp)
+            else:
+                mob.hp-=mob.bp
             mob.bp=mob.bp*3//2
+            if mob.hp-mob.bp<=0 and ('wrath' in mob.doping):
+                Messages+=[mob.name+' explodes!']
+                atk=mob.VIT
+                for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)):
+                    if(not un(X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1])):
+                        enD=Total_list[X_Y_list.index((X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1]))]
+                        enD.hp-=atk
+                        enD.fp+=atk//4
+                        enD.status['hitstun']+=d(enD.fp)//(d(enD.dex)+d(enD.AC))
+                        Messages+=[enD.name+' gets caught up in explosion!']
+                        Total_list[X_Y_list.index((X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1]))]=enD
+                if dis(xx,yy)==1:
+                    player.fp-=atk
+                    player.fp+=atk//4
+                    player.status['hitstun']+=d(player.fp)//(d(player.dex)+d(player.AC))
+                death(n)
+                levelup()
+                return
+            elif mob.hp-mob.bp<=0 and ('pride' in mob.doping):
+                mob.doping.remove('pride')
+                mob.hp=1
+                mob.bp=1
+                mob.fp=0
+                mob.shield=Weapon(0,0,0,Shield_icon,'',2)
+                mob.DV=1
+                mob.doping+=['wrath']
+                Messages+=[mob.name+"'s pride is destroyed!"]
+                X_Y_list+=[X_Y_list[n]+tuple([0])]
+                Total_list+=[Weapon(6,0,6,Shield_icon,'ebony shield',2,0,0,0,['vampirism'])]
             if(d(mob.VIT-mob.bp)>0 and mob.hp<mob.VIT):
                 mob.hp+=1
             if(d(mob.VIT+mob.int*mob.wield.intm-mob.mp)>mob.VIT-mob.int*mob.wield.intm and mob.mp<(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER)):
@@ -526,9 +863,10 @@ def help():
     Messages+=['f   h  move/attack.']
     Messages+=['v b n']
     Messages+=['u      shout for attention.']
+    Messages+=['j      to throw up.']
     Messages+=['.      rest one turn.']
-    Messages+=['g      get item on your tile.']
-    Messages+=['i      use item in your inventory.']
+    Messages+=['g      get item on '+player.name+"'s tile."]
+    Messages+=['i      use item in '+player.name+"'s inventory."]
     Messages+=['d      destroy item in inventory.']
     Messages+=['a      use ability.']
     Messages+=['Esc    exit.']
@@ -632,12 +970,15 @@ def casting():
         return 1
     else:
         if(show[8-dy][8+dx]==Magic_icon or show[8-dy][8+dx]==Player_icon):
-            if(bonus==1):
-                if(player.mp>=max(abs(dx),abs(dy))*2):
+            if('teleport' in player.doping and player.DV==1):
+                if(player.mp>=max(abs(dx),abs(dy))*TP_cost):
                     player.x+=dx
                     player.y+=dy
-                    player.mp-=max(abs(dx),abs(dy))*2
+                    player.mp-=max(abs(dx),abs(dy))*TP_cost
                     Messages+=['Player teleports.']
+                    if(not un(player.x,player.y)):
+                        Total_list[X_Y_list.index((player.x,player.y))].hp=-45
+                        Messages+=[player.name+' disintegrates something.']
                     return 0
                 else:
                     Messages+=['Not enough MP.']
@@ -715,11 +1056,33 @@ def change_weapon(a):
         if player.wield.dual==3:
             player.DV=1
         familiar=[0,0,0]
+        if 'vampirism' in player.wield.doping:
+            Messages+=[player.name+' feels demonic power emanating from their weapon.']
+        if 'purify' in player.wield.doping:
+            Messages+=[player.name+' feels holy power emanating from their weapon.']
+        if 'death' in player.wield.doping:
+            Messages+=[player.name+' feels cursed power emanating from their weapon.']
+        if 'teleport' in player.wield.doping:
+            Messages+=[player.name+' feels translocational power emanating from their weapon.']
+        if 'illusion' in player.wield.doping:
+            Messages+=[player.name+"'s weapon appears blurry."]
+        if 'parry' in player.wield.doping:
+            Messages+=[player.name+"'s weapon appears suitable for parrying."]
     else:
         player.inventory+=[player.shield]
         Messages+=[player.name+' unwields '+player.shield.name+'.']
         player.shield=player.inventory[a]
         Messages+=[player.name+' wields '+player.shield.name+'.']
+        if 'vampirism' in player.wield.doping:
+            Messages+=[player.name+' feels demonic power emanating from their shield.']
+        if 'purify' in player.wield.doping:
+            Messages+=[player.name+' feels holy power emanating from their shield.']
+        if 'death' in player.wield.doping:
+            Messages+=[player.name+' feels cursed power emanating from their shield.']
+        if 'teleport' in player.wield.doping:
+            Messages+=[player.name+' feels translocational power emanating from their shield.']
+        if 'illusion' in player.wield.doping:
+            Messages+=[player.name+"'s shield appears blurry."]
     shield_recalculate()
 
 def change_armor(a):
@@ -733,6 +1096,16 @@ def change_armor(a):
     player.ER+=player.wear.ER
     player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
     Messages+=[player.name+' equips '+player.wear.name+'.']
+    if 'vampirism' in player.wield.doping:
+        Messages+=[player.name+' feels demonic power emanating from their armor.']
+    if 'purify' in player.wield.doping:
+        Messages+=[player.name+' feels holy power emanating from their armor.']
+    if 'death' in player.wield.doping:
+        Messages+=[player.name+' feels cursed power emanating from their armor.']
+    if 'teleport' in player.wield.doping:
+        Messages+=[player.name+' feels translocational power emanating from their armor.']
+    if 'illusion' in player.wield.doping:
+        Messages+=[player.name+"'s armor appears blurry."]
 
 def item_using():
     global player,Messages
@@ -742,14 +1115,14 @@ def item_using():
             print(chr(i+97)+" - "+player.inventory[i].name)
         a=ord(getcharkey())-97
         if(0<=a<=len(player.inventory)-1):
-            if(player.inventory[a].name in Weapon_types_list):
+            if(player.inventory[a].__class__.__name__=='Weapon'):
                 change_weapon(a)
-            elif(player.inventory[a].name in Armor_types_list):
+            elif(player.inventory[a].__class__.__name__=='Armor'):
                 change_armor(a)
-            elif(player.inventory[a].name in Food_types_list):
+            elif(player.inventory[a].__class__.__name__=='Food'):
                 player.sp=min(player.VIT,player.sp+player.inventory[a].nutrition)
                 Messages+=[player.name+' eats '+player.inventory[a].name+'.']
-            elif(player.inventory[a].name in Effects_list or player.inventory[a].name in Titles_list):
+            elif(player.inventory[a].__class__.__name__=='Item'):
                 what=player.inventory[a].number
                 consume(player,what)
                 global Know_list
@@ -867,10 +1240,16 @@ def clockattack(start=0,wise=1):
                     enD.hp=-45
                     Messages+=[player.name+' purifies '+enD.name+'.']
             else:
-                enD.fp+=atk//2
+                if('parry' in enD.name):
+                    enD.fp+=atk//4
+                    atk=atk//3
+                    enA.status['hitstun']+=2
+                    Messages+=[enD.name+' parries '+enA.name+"'s hit!"]
+                else:
+                    enD.fp+=atk//2
+                    atk=atk*3//5
+                    Messages+=[enD.name+' blocks '+player.name+"'s hit."]
                 player.fp+=4
-                atk=atk*3//5
-                Messages+=[enD.name+' struggles to block '+player.name+"'s hit."]
             Total_list[X_Y_list.index((player.x-i[0],player.y-i[1]))]=enD
 
 def runattack(i=(1,0)):
@@ -896,7 +1275,11 @@ def runattack(i=(1,0)):
                 enD.hp=-45
                 Messages+=[player.name+' purifies '+enD.name+'.']
         else:
-            Messages+=[enD.name+' blocks '+player.name+"'s lunge."]
+            if('parry' in enD.name):
+                enA.status['hitstun']+=2
+                Messages+=[enD.name+' parries '+enA.name+"'s lunge!"]
+            else:
+                Messages+=[enD.name+' blocks '+player.name+"'s lunge."]
         player.fp+=4
         Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]=enD
 
@@ -917,7 +1300,7 @@ def exhaustattack(i=(1,0)):
 def healability():
     global player,Messages
     player.VIT=20+(player.str+player.lvl)//8
-#    player.VIT+=1
+    player.status['poison']=0
     player.hp=player.VIT
     player.bp=0
     player.fp+=8
@@ -926,14 +1309,19 @@ def jumpattack(dx,dy):
     global Messages,Total_list,player
     player.x+=dx
     player.y+=dy
-    atk=(player.str+player.dex)*player.AC*ER_divide//(ER_divide+player.ER)//12
-    Messages+=['As '+player.name+' lands, stones fly.']
+    atk=player.dex*player.AC*ER_divide//(ER_divide+player.ER//player.str)//6
+    if(not un(player.x,player.y)):
+        Total_list[X_Y_list.index((player.x,player.y))].hp=-45
+        Messages+=[player.name+' lands on something.']
+    else:
+        Messages+=['As '+player.name+' lands, stones fly.']
     for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)):
         if(not un(player.x+i[0],player.y+i[1])):
             enD=Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]
-            if enD.type>=0:
+            if enD.AC//4<atk:
                 enD.hp-=atk
                 enD.fp+=atk//4
+                enD.status['hitstun']+=d(enD.fp)//(d(enD.dex)+d(enD.AC))
                 Messages+=['Stones hit '+enD.name+'.']
             else:
                 Messages+=['Stones bounce from '+enD.name+'.']
@@ -946,7 +1334,7 @@ def swapattack(dx,dy):
     X_Y_list[n]=(player.x,player.y)
     player.x+=dx
     player.y+=dy
-    atk=player.int*player.wield.intm*ER_divide//(ER_divide+player.ER)
+    atk=player.int*player.wield.intm*ER_divide//(ER_divide+player.ER)//4
     enD=Total_list[n]
     enD.hp+=enD.AC//4-atk*MR_divide//(enD.MR+MR_divide)
     enD.fp+=atk*MR_divide//(enD.MR+MR_divide)
@@ -959,6 +1347,16 @@ def swapattack(dx,dy):
         Messages+=[player.name+' purifies '+enD.name+'.']
     Total_list[n]=enD
     player.fp+=8
+
+#def bashattack():
+#    global Messages,Total_list,player
+#    atk=(player.AC-player.BAC-player.wear.AC)*ER_divide//(player.ER//(player.dex+player.str//2)+ER_divide)+(player.str+player.int)*player.wield.strm
+#    for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)):
+#        if(not un(player.x+i[0],player.y+i[1])):
+#            n=X_Y_list.index((player.x+i[0],player.y+i[1]))
+#            enD=Total_list[n]
+#            for j in range(atk//(mob.str+mob.lvl+mob.ER)+1):
+#                if un(X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1]):
 
 def Skilling():
     global Messages,player
@@ -1025,9 +1423,6 @@ def Skilling():
                         exhaustattack((dx,dy))
                         return 0
             elif inpu=='w' and player.sp>=Descriptions[inpu][1]:
-                screen(0,0,'Esc to abort.')
-                if(a==b'\x1b'):
-                    return 1
                 player.sp-=Descriptions[inpu][1]
                 healability()
                 return 0
@@ -1135,10 +1530,32 @@ def shield_recalculate():
 def controls(fatigue):
     global player,Total_list,Messages,familiar,Floor
     retry=0
-    a=getkey() if player.fp<=fatigue else b'.'
-    if(a==b'?'):
+    a=b'.' if player.fp>fatigue or player.status['poison']>P_value or player.status['hitstun'] else getkey()
+    if player.status['poison']:
+        player.status['poison']-=1
+        player.hp-=player.VIT//10
+        player.fp+=2
+    if player.status['poison']>P_value:
+        player.status['poison']//=2
+        player.sp//=2
+        player.fp+=4
+        Messages+=[player.name+' throws up.']
+    elif player.status['hitstun']:
+        player.AC=player.BAC+player.wear.AC
+        player.MR=0
+        if 'parry' in player.doping:
+            mob.doping.remove('parry')
+        if player.status['hitstun']==1:
+            shield_recalculate()
+        player.status['hitstun']-=1
+    elif(a==b'?'):
         help()
         retry=1
+    elif(a==b'j'):
+        player.status['poison']//=2
+        player.sp//=2
+        player.fp+=4
+        Messages+=[player.name+' throws up.']
     elif(a==b'!'):
         abbs()
         retry=1
@@ -1168,6 +1585,16 @@ def controls(fatigue):
             player.x,player.y=spawn_x,spawn_y
         else:
             Messages+=["Can't ascend here."]
+            retry=1
+    elif(a==b'<'):
+        if(Map[player.y*x_size+player.x]=='<'):
+            Floor+=2
+            Messages+=['Days pass as '+player.name+' descends.']
+            newstage()
+            generate()
+            player.x,player.y=spawn_x,spawn_y
+        else:
+            Messages+=["Can't descend here."]
             retry=1
     elif(a==b'z' and 'caster' in player.abilities):
         retry=casting()
@@ -1243,6 +1670,8 @@ def check(xx,yy):
         return Total_list[X_Y_list.index((xx,yy,0))].icon
     elif(y_size>yy>=0 and x_size>xx>=0 and Map[yy*x_size+xx]=='>'):
         return '>'
+    elif(y_size>yy>=0 and x_size>xx>=0 and Map[yy*x_size+xx]=='<'):
+        return '<'
     else:
         return '.'
 
@@ -1261,7 +1690,6 @@ def screen(x=0,y=0,extra=''):
     for i in show:
         for l in i:
             mobmob+=l
-        mobmob+='\n'
     Messages=Messages[-transcript*3:]
     clearchat()
     prints(mobmob,extra)
@@ -1272,18 +1700,32 @@ def prints(mobmob,extra):
         ab+=i+' '
     if(ab==''):
         ab='-'
+    st=''
+    for i,j in player.status.items():
+        if j:
+            st+=i.capitalize()+': '+str(j)+' '
+    re=''
+    for i,j in player.relics.items():
+        if j[0]:
+            re+=i.capitalize()+': '+str(j[0])+'/'+str(j[1])+' '
     print('\n'+mobmob[0:17]+' '*4+'STR:{:<6}HP:{}'.format(player.str,player.hp))
-    print(mobmob[18:35]+' '*4+'DEX:{:<6}MP:{}'.format(player.dex,player.mp))
-    print(mobmob[36:53]+' '*4+'INT:{:<6}FP:{}'.format(player.int,player.fp))
-    print(mobmob[54:71]+' '*4+'SP:{:<7}BP:{}'.format(player.sp,player.bp))
-    print(mobmob[72:89]+' '*4+'Wield:'+player.wield.name)
-    print(mobmob[90:107]+' '*4+'Wear:'+player.wear.name)
-    print(mobmob[108:125]+' '*4+'Shield:'+('-' if player.DV else player.shield.name))
-    print(mobmob[126:143]+' '*4+'Abilities:'+ab)
-    print(mobmob[144:161]+' '*4+'AC:{:<7}ER:{}'.format(player.AC,player.ER))
-    print(mobmob[162:179]+' '*4+'MR:{:<7}SM:{},{},{}'.format(player.MR,player.wield.strm if familiar[0] else '?',player.wield.dexm if familiar[1] else '?',player.wield.intm if familiar[2] else '?'))
-    print(mobmob[180:197]+' '*4+'XP:{:<7}Level:{}'.format(XP,player.lvl))
-    print(mobmob[198:],*Messages[-transcript:],sep='\n')
+    print(mobmob[17:34]+' '*4+'DEX:{:<6}MP:{}'.format(player.dex,player.mp))
+    print(mobmob[34:51]+' '*4+'INT:{:<6}FP:{}'.format(player.int,player.fp))
+    print(mobmob[51:68]+' '*4+'SP:{:<7}BP:{}'.format(player.sp,player.bp))
+    print(mobmob[68:85]+' '*4+'Wield:'+player.wield.name)
+    print(mobmob[85:102]+' '*4+'Wear:'+player.wear.name)
+    print(mobmob[102:119]+' '*4+'Shield:'+('-' if player.DV else player.shield.name))
+    print(mobmob[119:136]+' '*4+'Abilities:'+ab)
+    print(mobmob[136:153]+' '*4+'AC:{:<7}ER:{}'.format(player.AC,player.ER))
+    print(mobmob[153:170]+' '*4+'MR:{:<7}SM:{},{},{}'.format(player.MR,player.wield.strm if familiar[0] else '?',player.wield.dexm if familiar[1] else '?',player.wield.intm if familiar[2] else '?'))
+    print(mobmob[170:187]+' '*4+'XP:{:<7}Level:{}'.format(XP,player.lvl))
+    print(mobmob[187:204]+' '*4+re)
+    print(mobmob[204:221])
+    print(mobmob[221:238])
+    print(mobmob[238:255])
+    print(mobmob[255:272])
+    print(mobmob[272:]+' '*4+st)
+    print(*Messages[-transcript:],sep='\n')
     print(extra)
 
 def ignorant():
@@ -1306,7 +1748,6 @@ while(True):
     newstage()
     generate()
     player=Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y])
-
     while(True):
             alarms()
             ST_dice=d(player.dex)
@@ -1316,16 +1757,36 @@ while(True):
             PT_awares=0
             for i in range(len(Total_list)-1,-1,-1):
                 move(i)
+            if player.relics['Stakes'][0]==player.relics['Stakes'][1]:
+                if ththyhyujy==1:
+                    outro(5)
+                elif player.hp<=0:
+                    outro(4)
+                else:
+                    outro(1)
+            if player.relics['Rabbit Feet'][0]==player.relics['Rabbit Feet'][1]:
+                outro(8)
             if(player.hp<=0):
                 clearchat()
                 if ththyhyujy:
                     if ththyhyujy==1:
-                        Messages+=[player.name+', unable to move, rots alive for ages.','Dead End 2:Immortality.']
+                        Messages+=[player.name+', unable to move, rots alive for ages.',player.name+' dies.','Dead End 2: Immortality.']
                     elif ththyhyujy==2:
-                        Messages+=[player.name+"'s heart stops instantly.",'Dead End 1:Curse.']
+                        Messages+=[player.name+"'s heart stops instantly.",player.name+' dies.','Dead End 1: Curse.']
                     elif ththyhyujy==3:
-                        Messages+=[player.name+" turns to ashes.",'Dead End 3:Exorcism.']
-                Messages+=[player.name+' dies.']
+                        Messages+=[player.name+" turns to ashes.",player.name+' dies.','Dead End 3: Exorcism.']
+                    else:
+                        outro(9)
+                else:
+                    if Floor==6:
+                        Messages+=[player.name+" is always to suffer in depths of Hell.",'Dead End 4: Lost Soul.']
+                    elif Floor==5:
+                        if player.int<19:
+                            outro(6)
+                        else:
+                            outro(7)
+                    else:
+                        Messages+=[player.name+' dies.']
                 print('\n   ***{}***   \n   ***{}***   \n   ***{}***\n'.format(Messages[-3],Messages[-2],Messages[-1]))
                 a=b''
                 while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):

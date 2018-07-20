@@ -20,9 +20,9 @@ class Entity:
 
 class Item(Entity):
     def __init__(self,icon,number,name):
-        self.name=name
         self.icon=icon
         self.number=number
+        self.name=name
 
 class Weapon(Entity):
     def __init__(self,a,b,c,icon,name,dual=1,d=0,e=0,f=0,doping=[]):
@@ -88,6 +88,10 @@ class Mob(Entity):
             self.shield=Weapon(0,0,0,Shield_icon,'',2)
             self.DV=1
         self.MR=self.shield.MR
+        if leader:
+            self.inventory=[Item('?',1,'magic potion')]*(d(self.int)*(2+self.leader)//PT_divide)+[Item('?',0,'healing potion')]*(d(self.str)*(2+self.leader)//PT_divide)+[Item('?',3,'energetic potion')]*(d(self.dex)*(2+self.leader)//PT_divide)+[Food(4,'%','bread ration')]*(d(d(3*self.leader+1))-1)+[Food(8,'%','pizza')]*(d(d(self.leader))-1)
+        else:
+            self.inventory=[Food(4,'%','bread ration')]*(d(d(d(d(4))))-1)
         self.ER=self.shield.ER+self.wear.ER
         self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
         self.VIT=self.hp
@@ -96,6 +100,7 @@ class Mob(Entity):
         self.lvl=1 if self.xp<=XP_base else floor(log(self.xp/XP_base,2.0))+1
         self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)+[self.shield]*(self.shield.name!=self.wield.name and bool(self.shield.name))+[self.wield]*bool(self.wield.name)+[self.wear]*bool(self.wear.name)
         self.doping=ab[13]
+        self.status=Status_template
         if(len(ab)>17):
             self.catchphrase=ab[17][1]
 
@@ -126,3 +131,5 @@ class Me(Entity):
         self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
         self.VIT=self.hp
         self.doping=[]
+        self.status=Status_template
+        self.relics={'Stakes':[0,7],'Rabbit Feet':[0,400]}

@@ -74,18 +74,63 @@ Maps=[(
 ,39,200,200,80,10,3,(1,1,1,8,8,8,2,1,1,1)),
 (
 '#######################################'+
-'#                                     #'+
-'#                  &                  #'+
-'#                                     #'+
+'#              ###   ###              #'+
+'#              #<# & #>#              #'+
+'#              ###   ###              #'+
 '#.....................................#'*182+
 '#                                     #'*11+
 '#                  @                  #'+
 '#                                     #'+
 '#######################################'
-,39,200,100,40,9,2,(10,0,0,2,2,2,10,6,6,10,5))]
+,39,200,100,40,9,2,(10,0,0,2,2,2,10,6,6,10,5)),
+(
+'###################'+
+'#                 #'*8+
+'#        &        #'+
+'#rrrrrrrrrrrrrrrrr#'*21+
+'#                 #'*8+
+'#        @        #'+
+'#                 #'+
+'###################'
+,19,42,100,0,5,1,(10,0,0,2,2,2,10,6,6,10,5)),
+(
+'#######################################'+
+'#                                     #'*8+
+'#                  &                  #'+
+'#D   D   D   D   D   D   D   D   D   D#'+
+'#IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII#'+
+'#ddddddddddddddddddddddddddddddddddddd#'*8+
+'#                                     #'*16+
+'#                  &                  #'+
+'#D           I           I           D#'+
+'#IjjjIjjjIjjjIjjjIjjjIjjjIjjjIjjjIjjjI#'+
+'#ddddddddddddddddddddddddddddddddddddd#'*4+
+'#                                     #'*16+
+'#            I     &     I            #'+
+'#jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj#'+
+'#ddddddddddddddddddddddddddddddddddddd#'*2+
+'#                                     #'*16+
+'#                  &                  #'+
+'#jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj#'+
+'#ddddddddddddddddddddddddddddddddddddd#'*2+
+'#                                     #'*16+
+'#                  &                  #'+
+'#jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj#'+
+'#ddddddddddddddddddddddddddddddddddddd#'+
+'#                                     #'*16+
+'#                  &                  #'+
+'#ddddddddddddddddddddddddddddddddddddd#'+
+'#                                     #'*16+
+'#                                     #'+
+'#                  &                  #'+
+'#                 ddd                 #'+
+'#                                     #'*8+
+'#                  @                  #'+
+'#######################################'
+,39,149,100,40,9,2,(10,0,0,2,2,2,10,6,6,10,5))]
 '''1-x size,2-y size,3-Mob appear,4-Noob Confetti,5-Mob ungroup,6-Lead c,7-RL Mobs'''
 for i in range(len(Maps)):
     if(len(Maps[i][0])!=Maps[i][1]*Maps[i][2]):
-        print('Map size is',len(Maps[i][0]),', must be ',Maps[i][1]*Maps[i][2],' instead.')
-        Maps[i][0]='.'*(Maps[i][1]*Maps[i][2])
+        print('Map size is',len(Maps[i][0]),', must be ',Maps[i][1]*Maps[i][2],'(',Maps[i][1],'*',Maps[i][2],') instead.')
+        raise ValueError
 Presets=Mob_list

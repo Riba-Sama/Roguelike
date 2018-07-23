@@ -1326,7 +1326,7 @@ def jumpattack(dx,dy):
             else:
                 Messages+=['Stones bounce from '+enD.name+'.']
             Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]=enD
-    player.fp+=player.AC-player.BAC
+    player.fp+=player.ER*SR_divide//(SR_divide+player.str)
 
 def swapattack(dx,dy):
     global Messages,Total_list,player

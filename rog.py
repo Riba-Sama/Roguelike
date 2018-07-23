@@ -1784,8 +1784,8 @@ while(True):
                     else:
                         outro(9)
                 else:
-                    if Floor==6:
-                        Messages+=[player.name+" is always to suffer in depths of Hell.",'Dead End 4: Lost Soul.']
+                    if player.sp==0:
+                        Messages+=[player.name+" starves to death.",'Dead End 4: Hunger.']
                     elif Floor==5:
                         if player.int<19:
                             outro(6)

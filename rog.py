@@ -1606,6 +1606,7 @@ def controls(fatigue):
         retry=item_using()
     elif(a==b's'):
         player.inventory.sort(key = lambda x : x.__class__.__name__+x.name)
+        player.fp=max(player.fp,0)
         Messages+=[player.name+' sorts their inventory.']
     elif(a==b'g'):
         retry=item_grab()

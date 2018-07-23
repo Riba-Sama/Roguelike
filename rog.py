@@ -1107,6 +1107,14 @@ def change_armor(a):
     if 'illusion' in player.wield.doping:
         Messages+=[player.name+"'s armor appears blurry."]
 
+def knowledge(what):
+    global Know_list
+    if(Know_list[what]==0):
+        Know_list[what]=Titles_list[what]
+        for i in player.inventory:
+            if(i.name is Titles_list[what]):
+                i.name=Effects_list[what]
+
 def item_using():
     global player,Messages
     if(len(player.inventory)>0):
@@ -1125,12 +1133,7 @@ def item_using():
             elif(player.inventory[a].__class__.__name__=='Item'):
                 what=player.inventory[a].number
                 consume(player,what)
-                global Know_list
-                if(Know_list[what]==0):
-                    Know_list[what]=Titles_list[what]
-                    for i in player.inventory:
-                        if(i.name is Titles_list[what]):
-                            i.name=Effects_list[what]
+                knowledge(what)
                 Messages+=[player.name+' drinks '+Effects_list[what]+'.']
             else:
                 Messages+=[player.name+' uses unrecognised item.']
@@ -1174,6 +1177,8 @@ def item_grab():
             X_Y_list.pop(index)
             if(player.inventory[-1].name in Know_list):
                 player.inventory[-1].name=Effects_list[player.inventory[-1].number]
+            elif(player.inventory[-1].name in Effects_list):
+                knowledge(Effects_list.index(player.inventory[-1].name))
             Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
             return 0
         else:

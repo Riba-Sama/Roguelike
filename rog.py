@@ -668,7 +668,7 @@ def move(n):
     global Total_list,X_Y_list,Messages,XP,player,awares,PT_awares
     if(len(X_Y_list[n])==2):
         mob=Total_list[n]
-        if(mob.hp<=0):
+        if(mob.hp<=0) and (not 'wrath' in mob.doping):
             Messages+=[player.name+' kills '+mob.name+'.']
             death(n)
             levelup()

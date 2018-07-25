@@ -1267,7 +1267,7 @@ def runattack(i=(1,0)):
         ran+=1
     if not un(player.x+i[0],player.y+i[1]):
         enD=Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]
-        atk=d(player.dex*player.wield.dexm)*(player.DV+1)*(2+min(ran,4))//6//max(5,player.fp)
+        atk=d(player.dex*player.wield.dexm)*(player.DV+1)*(2+min(ran,4))//max(6,player.fp)//2
         if atk > enD.AC//4:
             enD.hp+=enD.AC//4-atk
             enD.bp+=atk*player.dex*player.wield.dexm//d(enD.AC)

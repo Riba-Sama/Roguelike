@@ -1225,7 +1225,7 @@ def DoVi():
 
 def clockattack(start=0,wise=1):
     global Messages,Total_list,player
-    atk=player.str*player.wield.strm*(player.DV+2)//5
+    atk=d(player.str*player.wield.strm)*(player.DV+2)//5
     for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0))[start-1-(wise==1):start+7-(wise==1)][::wise]:
         if(not un(player.x-i[0],player.y-i[1])):
             enD=Total_list[X_Y_list.index((player.x-i[0],player.y-i[1]))]
@@ -1259,13 +1259,15 @@ def clockattack(start=0,wise=1):
 
 def runattack(i=(1,0)):
     global Messages,Total_list,player
+    ran=0
     while un(player.x+i[0],player.y+i[1]) and d(player.fp)<player.dex:
         player.x+=i[0]
         player.y+=i[1]
         player.fp+=2
+        ran+=1
     if not un(player.x+i[0],player.y+i[1]):
         enD=Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]
-        atk=player.dex*player.wield.dexm*(player.DV+1)*3//max(5,player.fp)
+        atk=d(player.dex*player.wield.dexm)*(player.DV+1)*(2+min(ran,4))//6//max(5,player.fp)
         if atk > enD.AC//4:
             enD.hp+=enD.AC//4-atk
             enD.bp+=atk*player.dex*player.wield.dexm//d(enD.AC)
@@ -1291,7 +1293,7 @@ def runattack(i=(1,0)):
 def exhaustattack(i=(1,0)):
     global Messages,Total_list,player
     enD=Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]
-    atk=(player.int+('illusion' in player.doping)*enD.int//d(enD.int))*player.wield.intm
+    atk=d(player.int+('illusion' in player.doping)*enD.int//d(enD.int))*player.wield.intm
     Messages+=[player.name+' gestures at '+enD.name+'.']
     enD.fp+=atk*MR_divide//(enD.MR+MR_divide)
     if atk*MR_divide//(enD.MR+MR_divide)>0:

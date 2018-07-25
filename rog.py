@@ -1341,7 +1341,7 @@ def swapattack(dx,dy):
     X_Y_list[n]=(player.x,player.y)
     player.x+=dx
     player.y+=dy
-    atk=player.int*player.wield.intm*ER_divide//(ER_divide+player.ER)//4
+    atk=player.int*player.wield.intm*ER_divide//(ER_divide+player.ER)//8
     enD=Total_list[n]
     enD.hp+=enD.AC//4-atk*MR_divide//(enD.MR+MR_divide)
     enD.fp+=atk*MR_divide//(enD.MR+MR_divide)

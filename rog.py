@@ -668,11 +668,32 @@ def move(n):
     global Total_list,X_Y_list,Messages,XP,player,awares,PT_awares
     if(len(X_Y_list[n])==2):
         mob=Total_list[n]
-        if(mob.hp<=0) and (not 'wrath' in mob.doping):
-            Messages+=[player.name+' kills '+mob.name+'.']
-            death(n)
-            levelup()
-            return
+        if(mob.hp<=0):
+            if ('wrath' in mob.doping):
+                Messages+=[mob.name+' explodes!']
+                atk=mob.VIT//4
+                for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)):
+                    if(not un(X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1])):
+                        enD=Total_list[X_Y_list.index((X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1]))]
+                        enD.hp-=atk
+                        enD.bp+=atk//4
+                        enD.fp+=atk//4
+                        enD.status['hitstun']+=d(enD.fp)//(d(enD.dex)+d(enD.AC))
+                        Messages+=[enD.name+' gets caught up in explosion!']
+                        Total_list[X_Y_list.index((X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1]))]=enD
+                        if dis(xx,yy)==1:
+                            player.hp-=atk
+                            player.bp+=atk//4
+                            player.fp+=atk//4
+                            player.status['hitstun']+=d(player.fp)//(d(player.dex)+d(player.AC))
+                            death(n)
+                            levelup()
+                            return
+            else:
+                Messages+=[player.name+' kills '+mob.name+'.']
+                death(n)
+                levelup()
+                return
         elif(mob.type>=0):
             xx=X_Y_list[n][0]
             yy=X_Y_list[n][1]
@@ -821,25 +842,7 @@ def move(n):
             else:
                 mob.hp-=mob.bp
             mob.bp=mob.bp*3//2
-            if mob.hp-mob.bp<=0 and ('wrath' in mob.doping):
-                Messages+=[mob.name+' explodes!']
-                atk=mob.VIT
-                for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)):
-                    if(not un(X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1])):
-                        enD=Total_list[X_Y_list.index((X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1]))]
-                        enD.hp-=atk
-                        enD.fp+=atk//4
-                        enD.status['hitstun']+=d(enD.fp)//(d(enD.dex)+d(enD.AC))
-                        Messages+=[enD.name+' gets caught up in explosion!']
-                        Total_list[X_Y_list.index((X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1]))]=enD
-                if dis(xx,yy)==1:
-                    player.fp-=atk
-                    player.fp+=atk//4
-                    player.status['hitstun']+=d(player.fp)//(d(player.dex)+d(player.AC))
-                death(n)
-                levelup()
-                return
-            elif mob.hp-mob.bp<=0 and ('pride' in mob.doping):
+            if mob.hp-mob.bp<=0 and ('pride' in mob.doping):
                 mob.doping.remove('pride')
                 mob.hp=1
                 mob.bp=1

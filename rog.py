@@ -252,6 +252,8 @@ def outro(num):
             getkey()
 
 def consume(ent,what):
+    global Messages
+    Messages+=[ent.name+' drinks '+Effects_list[what]+'.']
     if what == 0:
         ent.hp=ent.VIT
         ent.bp=0
@@ -1138,7 +1140,6 @@ def item_using():
                 what=player.inventory[a].number
                 consume(player,what)
                 knowledge(what)
-                Messages+=[player.name+' drinks '+Effects_list[what]+'.']
             else:
                 Messages+=[player.name+' uses unrecognised item.']
             player.inventory.pop(a)

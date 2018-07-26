@@ -257,18 +257,19 @@ def consume(ent,what):
         ent.bp=0
         ent.status['poison']=0
         ent.fp=ent.fp//2
-        ent.sp+=2
+        if ent.__class__.__name__=='Me':
+            ent.sp+=4
     elif what == 1:
         ent.mp=(ent.int*ent.wield.intm*ER_divide)//(ER_divide+ent.ER)
         ent.fp=ent.fp//2
         ent.bp=ent.bp//2
-        ent.sp+=2
     elif what == 2:
         ent.status['poison']+=10
     elif what == 3:
         ent.fp=-(ent.dex+10)**2//25
-        ent.bp=ent.bp*3
-        ent.sp+=4
+        ent.bp*=3
+        if ent.__class__.__name__=='Me':
+            ent.sp-=4
     elif what == 4:
         ent=lvlup(ent)
 

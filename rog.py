@@ -667,6 +667,26 @@ def death(n):
     Total_list.pop(n)
     X_Y_list.pop(n)
 
+def find(lis,nam):
+    for i in lis:
+        if i.name==nam:
+            return True
+    return False
+
+def fcount(lis,nam):
+    c=0
+    for i in lis:
+        if i.name==nam:
+            c+=1
+    return c
+
+def destroy(lis,nam):
+    for i in range(len(lis)):
+        if lis[i].name==nam:
+            lis.pop(i)
+            return
+    raise ValueError
+
 def move(n):
     global Total_list,X_Y_list,Messages,XP,player,awares,PT_awares
     if(len(X_Y_list[n])==2):
@@ -746,27 +766,27 @@ def move(n):
             elif mob.aware==1 and dis(xx,yy) > 7 + hey + mob.VIT-mob.hp:
                 awares-=1
                 mob.aware=0
-            elif(Item('?',0,'healing potion') in mob.inventory and mob.hp-mob.bp<mob.VIT*min(16,8+mob.inventory.count(Item('?',0,'healing potion')))//16):
+            elif(find(mob.inventory,'healing potion') and mob.hp-mob.bp<mob.VIT*min(16,8+fcount(mob.inventory,'healing potion'))//16):
                 consume(mob,0)
-                mob.inventory.remove(Item('?',0,'healing potion'))
-            elif(Item('?',1,'magic potion') in mob.inventory and mob.mp<(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)*min(8,mob.inventory.count(Item('?',1,'magic potion')))//8):
+                destroy(mob.inventory,'healing potion')
+            elif(find(mob.inventory,'magic potion') and mob.mp<(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER)*min(8,fcount(mob.inventory,'magic potion'))//8):
                 consume(mob,1)
-                mob.inventory.remove(Item('?',1,'magic potion'))
-            elif(Item('?',3,'energetic potion') in mob.inventory and mob.fp>mob.dex*max(0,8-mob.inventory.count(Item('?',3,'energetic potion'))//8)):
+                destroy(mob.inventory,'magic potion')
+            elif(find(mob.inventory,'energetic potion') and mob.fp>mob.dex*max(0,8-fcount(mob.inventory,'energetic potion'))//8):
                 consume(mob,3)
-                mob.inventory.remove(Item('?',3,'energetic potion'))
+                destroy(mob.inventory,'energetic potion')
             elif ('envy' in mob.doping) and (d(mob.Aenvy)>=NV_value or d(mob.Denvy)>=NV_value):
                 if mob.Denvy>=mob.Aenvy:
                     mob.AC+=d(player.AC-player.BAC)
                     mob.VIT+=d(player.hp)
                     mob.hp=mob.VIT
-                    Messages+=[mob.name+' is envious of your defense!']
+                    Messages+=[mob.name+' is envious of '+player.name+"'s defense!"]
                     mob.Denvy-=NV_value
                 else:
                     mob.wield.strm+=d(player.wield.strm)
                     mob.wield.dexm+=d(player.wield.dexm)
                     mob.wield.intm+=d(player.wield.intm)
-                    Messages+=[mob.name+' is envious of your offense!']
+                    Messages+=[mob.name+' is envious of '+player.name+"'s offense!"]
                     mob.Aenvy-=NV_value
             elif dis(xx,yy)==1 and ('pride' in mob.doping):
                 prideattack(mob,player)
@@ -844,7 +864,7 @@ def move(n):
                 mob.hp=min(mob.VIT,mob.hp+mob.bp+player.bp)
             else:
                 mob.hp-=mob.bp
-            mob.bp=mob.bp*3//2
+            mob.bp=mob.bp*2//3
             if mob.hp-mob.bp<=0 and ('pride' in mob.doping):
                 mob.doping.remove('pride')
                 mob.hp=1
@@ -1330,7 +1350,7 @@ def jumpattack(dx,dy):
     for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)):
         if(not un(player.x+i[0],player.y+i[1])):
             enD=Total_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]
-            if enD.AC//4<atk:
+            if not 'huge' in mob.doping:
                 enD.hp-=atk
                 enD.fp+=atk//4
                 enD.status['hitstun']+=d(enD.fp)//(d(enD.dex)+d(enD.AC))
@@ -1444,7 +1464,7 @@ def Skilling():
                 dy=0
                 while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
                     if(isdir(a)):
-                        if(not un(player.x+dx+direction(a)[0],player.y+dy+direction(a)[1]) and Total_list[X_Y_list.index((player.x+dx+direction(a)[0],player.y+dy+direction(a)[1]))].type<0):
+                        if(not un(player.x+dx+direction(a)[0],player.y+dy+direction(a)[1]) and 'huge' in Total_list[X_Y_list.index((player.x+dx+direction(a)[0],player.y+dy+direction(a)[1]))].doping):
                             Messages+=["Can't jump over this."]
                         else:
                             dx+=direction(a)[0]

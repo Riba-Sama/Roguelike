@@ -29,7 +29,7 @@ class Boss(Mob):
             self.BAC=self.AC-self.wear.AC-self.shield.AC
             self.xp=5000
             self.drop=[Weapon(5,0,3,Weapon_icon,'Excalibolg',3,3,3,3)]
-            self.doping=[]
+            self.doping=['huge']
             self.status={'hitstun':0,'poison':0}
             self.catchphrase=('Despair overwhelms '+name+'.','Despair overwhelms '+name+'.')
         elif(num==2):
@@ -136,7 +136,7 @@ class Boss(Mob):
             self.shout=100
             self.icon=Boss_icon
             self.name='Dwarf Rabbit'
-            self.inventory=[]
+            self.inventory=['huge']
             self.wear=Armor(12,Armor_icon,'pearl shellmail',0,['purify'])
             self.wield=Weapon(8,1,4,Weapon_icon,'pearl cudgel',3,8,1,4,['parry'])
             self.DV=1
@@ -270,7 +270,7 @@ class Boss(Mob):
             self.BAC=self.AC-self.wear.AC-self.shield.AC
             self.xp=10**8
             self.drop=[Weapon(8,2,2,Weapon_icon,'ebony cudgel',3,6,6,6,['vampirism']),Armor(6,Armor_icon,'ebony scalemail',0,['vampirism'])]
-            self.doping=['vampirism','kai','wrath']
+            self.doping=['vampirism','kai','wrath','huge']
             self.status={'hitstun':0,'poison':0}
             self.catchphrase=('Satan screams in fury!',name+' hears a furious scream!')
         elif(num==10):
@@ -332,7 +332,7 @@ class Boss(Mob):
             self.BAC=self.AC-self.wear.AC-self.shield.AC
             self.xp=10**8
             self.drop=[Armor(2,Armor_icon,'ebony hide',-1,['vampirism'])]
-            self.doping=['vampirism','kai','gluttony']
+            self.doping=['vampirism','kai','gluttony','huge']
             self.status={'hitstun':0,'poison':0}
             self.catchphrase=("Saliva oozes from Belzebub's mouth, ears and eyes.",name+' hears some liquid dropping on the floor.')
         elif(num==12):

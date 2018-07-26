@@ -98,8 +98,8 @@ class Mob(Entity):
         self.AC=self.BAC+self.wear.AC+self.shield.AC
         self.xp=ab[12]*(2**self.leader)
         self.lvl=1 if self.xp<=XP_base else floor(log(self.xp/XP_base,2.0))+1
-        self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)+[self.shield]*(self.shield.name!=self.wield.name and bool(self.shield.name))+[self.wield]*bool(self.wield.name)+[self.wear]*bool(self.wear.name)
         self.doping=ab[13]
+        self.drop=[Food(2,Food_icon,'chunk of meat')]*(rlrange(self.lvl*2)>self.lvl)*(d(4)*('huge' in self.doping)+1)+[self.shield]*(self.shield.name!=self.wield.name and bool(self.shield.name))+[self.wield]*bool(self.wield.name)+[self.wear]*bool(self.wear.name)
         self.status={'hitstun':0,'poison':0}
         if(len(ab)>17):
             self.catchphrase=ab[17][1]

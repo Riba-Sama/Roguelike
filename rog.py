@@ -1396,7 +1396,7 @@ def Skilling():
     if player.skills:
         qyu=''
         for i in player.skills:
-            qyu+=i+'- '+Descriptions[i][0]+' SP cost: '+str(Descriptions[i][1])+'.\n'
+            qyu+=i+'- '+Descriptions[i][0]+' SP cost: '+str(Descriptions[i][1])+(', Stun: '+str(Descriptions[i][2]))*bool(Descriptions[i][2])+'.\n'
         screen(0,0,qyu)
         inpu=getcharkey()
         if (inpu in player.skills):
@@ -1413,10 +1413,12 @@ def Skilling():
                 dire=((1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1)).index(dire)
                 if inpy==b'w':
                     player.sp-=Descriptions[inpu][1]
+                    player.status['hitstun']+=Descriptions[inpu][2]
                     clockattack(dire,1)
                     return 0
                 elif inpy==b'c':
                     player.sp-=Descriptions[inpu][1]
+                    player.status['hitstun']+=Descriptions[inpu][2]
                     clockattack(dire,-1)
                     return 0
                 if inpy!=b'\x1b':Messages+=['Invalid direction.']
@@ -1426,6 +1428,7 @@ def Skilling():
                 inpy=getkey()
                 if isdir(inpy):
                     player.sp-=Descriptions[inpu][1]
+                    player.status['hitstun']+=Descriptions[inpu][2]
                     runattack(direction(inpy))
                     return 0
                 else:
@@ -1453,10 +1456,12 @@ def Skilling():
                         return 1
                     else:
                         player.sp-=Descriptions[inpu][1]
+                        player.status['hitstun']+=Descriptions[inpu][2]
                         exhaustattack((dx,dy))
                         return 0
             elif inpu=='w' and player.sp>=Descriptions[inpu][1]:
                 player.sp-=Descriptions[inpu][1]
+                player.status['hitstun']+=Descriptions[inpu][2]
                 healability()
                 return 0
             elif inpu=='z' and player.sp>=Descriptions[inpu][1]:
@@ -1484,6 +1489,7 @@ def Skilling():
                         return 1
                     else:
                         player.sp-=Descriptions[inpu][1]
+                        player.status['hitstun']+=Descriptions[inpu][2]
                         jumpattack(dx,dy)
                         return 0
             elif inpu=='d' and player.sp>=Descriptions[inpu][1]:
@@ -1508,6 +1514,7 @@ def Skilling():
                         return 1
                     else:
                         player.sp-=Descriptions[inpu][1]
+                        player.status['hitstun']+=Descriptions[inpu][2]
                         swapattack(dx,dy)
                         return 0
             elif inpu=='s' and player.sp>=Descriptions[inpu][1]:
@@ -1527,6 +1534,7 @@ def Skilling():
                     if (inpi in set(Skill_list) - player.skills):
                         player.skills=player.skills - {inpy} | {inpi}
                         player.sp-=Descriptions[inpu][1]
+                        player.status['hitstun']+=Descriptions[inpu][2]
                         return 0
                     else:
                         if inpi!='\x1b':Messages+=['Invalid ability.']

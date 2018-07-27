@@ -424,7 +424,7 @@ def move(n):
             else:
                 stepahead(mob,n)
             mob.hp-=mob.bp
-            mob.bp=mob.bp*3//2
+            mob.bp=mob.bp*2//3
             if(d(mob.VIT-mob.bp)>0 and mob.hp<mob.VIT):
                 mob.hp+=1
             if(d(mob.VIT+mob.int*mob.wield.intm-mob.mp)>mob.VIT-mob.int*mob.wield.intm and mob.mp<(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER)):

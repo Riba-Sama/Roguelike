@@ -241,7 +241,7 @@ class Boss(Mob):
             self.drop=[Weapon(1,2,3,Weapon_icon,'golden wand',3,6,0,12,['teleport']),Armor(4,Armor_icon,'golden scalemail',3)]
             self.doping=['vampirism','kai','greed','teleport']
             self.status={'hitstun':0,'poison':0}
-            self.catchphrase=('Belphegor yawns meeting '+name+"'s gaze.",name+' hears a yawn.')
+            self.catchphrase=('Mammon smiles while scanning '+name+"'s backpack.",name+' feels uncomfortable.')
         elif(num==9):
             self.leader=10
             self.hp=60
@@ -318,7 +318,7 @@ class Boss(Mob):
             self.type=0
             self.shout=1
             self.icon=Boss_icon
-            self.name='Belzebub'
+            self.name='Beelzebub'
             self.inventory=[Item('?',0,'healing potion')]*4
             self.wear=Armor(2,Armor_icon,'ebony hide',-1,['vampirism'])
             self.wield=Weapon(1,1,1,Weapon_icon,'')
@@ -334,7 +334,7 @@ class Boss(Mob):
             self.drop=[Armor(2,Armor_icon,'ebony hide',-1,['vampirism'])]
             self.doping=['vampirism','kai','gluttony','huge']
             self.status={'hitstun':0,'poison':0}
-            self.catchphrase=("Saliva oozes from Belzebub's mouth, ears and eyes.",name+' hears some liquid dropping on the floor.')
+            self.catchphrase=("Saliva oozes from Beelzebub's mouth, ears and eyes.",name+' hears some liquid dropping on the floor.')
         elif(num==12):
             self.leader=10
             self.hp=60

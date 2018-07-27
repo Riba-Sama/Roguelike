@@ -704,7 +704,7 @@ def move(n):
                         enD.status['hitstun']+=d(enD.fp)//(d(enD.dex)+d(enD.AC))
                         Messages+=[enD.name+' gets caught up in explosion!']
                         Total_list[X_Y_list.index((X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1]))]=enD
-                        if dis(xx,yy)==1:
+                        if dis(X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1])==1:
                             player.hp-=atk
                             player.bp+=atk//4
                             player.fp+=atk//4
@@ -901,6 +901,7 @@ def help():
     Messages+=['!      abbreviations in stats.']
     Messages+=['#      icons list.']
     Messages+=['*      view transcript.']
+    Messages+=['@      enemy description.']
     Messages+=['Space  toggle dual wield.']
     Messages+=['>      ascend.']
 
@@ -947,6 +948,87 @@ def xp():
     for i in range(4):
         zoo=Boss(i+1)
         Messages+=[zoo.icon+' '+zoo.name+(15-len(zoo.name))*' '+str(zoo.xp)]
+
+def answer(nam):
+    if 'Goblin' in nam:
+        a='Small, pretty agile and ugly.'
+    elif 'Kobold' in nam:
+        a='Ugly, clumsy and stupid.'
+    elif 'Gnoll' in nam:
+        a='Agile, very ugly and can attack from 2 tiles away.'
+    elif 'Orc' in nam:
+        a='Strong, ugly and can crush from 1 tile away.'
+    elif 'Lesser Imp' in nam:
+        a='Smart, unholy and can cast magic from '+str(Magic_distance)+' tiles away.'
+    elif 'Ogre' in nam:
+        a='Big, strong and can crush from 1 tile away.'
+    elif 'Crimson Demon' in nam:
+        a='Smart, unholy and can cast magic from '+str(Magic_distance)+' tiles away.'
+    elif 'Greater Imp' in nam:
+        a='Unholy, can attack from 2 tiles away and can cast magic from '+str(Magic_distance)+' tiles away.'
+    elif 'Vampire' in nam:
+        a='Stealthy, unholy and drains on successfull attacks.'
+    elif 'Phantom' in nam:
+        a='Stealthy, unholy and illusional.'
+    elif 'Imp Torturer' in nam:
+        a='Unholy, sadistic and can attack from 2 tiles away.'
+    elif 'Holy Rabbit' in nam:
+        a='Holy, very cute and illusional.'
+    elif 'Wall' in nam:
+        a='Extremely dangerous, huge and dormant.'
+    elif 'World Ender' in nam:
+        a='Huge, can crush from 1 tile away and can cast magic from '+str(Magic_distance)+' tiles away.'
+    elif 'Midorime' in nam:
+        a='Stealthy, very agile and beautiful.','Her sword can kill from one wound.'
+    elif 'Kill-Shot' in nam:
+        a='Unholy, very agile and drains on successfull attacks.','Her sword purifies unholy beings.'
+    elif 'Shounin Bat' in nam:
+        a='Unholy, uses roller-skates to move around and can crush from 1 tile away.','His bat is illusional.'
+    elif 'Dwarf Rabbit' in nam:
+        a='Very cute, can crush from 1 tile away and can cast magic from '+str(Magic_distance)+' tiles away.','His shellmail is holy.','He can use his cudgel to parry attacks.'
+    elif 'Lucifer' in nam:
+        a='Condescending, unholy and very sturdy.','All his equipment exudes dark aura.'
+    elif 'Belphegor' in nam:
+        a='Lazy, extremely unathletic  and can cast magic from '+str(Magic_distance)+' tiles away..','All his equipment exudes dark aura.','His wand is illusional.'
+    elif 'Mammon' in nam:
+        a='Greedy, drains on successfull attacks and can cast magic from '+str(Magic_distance)+' tiles away..','His wand can teleport him.'
+    elif 'Satan' in nam:
+        a='Easily angered, huge and can crush from 1 tile away.','All his equipment exudes dark aura.'
+    elif 'Leviatan' in nam:
+        a='Has inferiority complex, unholy and dirty.','All his equipment exudes dark aura.'
+    elif 'Beelzebub' in nam:
+        a='Has bottomless stomach, strong and huge.','All his equipment exudes dark aura.'
+    elif 'Asmodeus' in nam:
+        a='Disgusting, unholy and strong.','All his equipment exudes dark aura.'
+    if 'Leader' in nam:
+        a=tupple(a)+('This one looks more dangerous than others of his kind.',)
+    elif 'High Priest' in nam:
+        a=tupple(a)+('This one has numerous amulets around his neck.',)
+    elif 'Killer' in nam:
+        a=tupple(a)+("This one's eyes look scary.",)
+    return a
+
+def asking():
+    global Messages
+    a=b''
+    dx=0
+    dy=0
+    dt=-1
+    while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
+        if(isdir(a)):
+            dx+=direction(a)[0]
+            dy+=direction(a)[1]
+        if(abs(dx)>8):
+            dx=sig(dx)*8
+        if(abs(dy)>8):
+            dy=sig(dy)*8
+        screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n' if un(player.x+dx,player.y+dy) else Total_list[X_Y_list.index((player.x+dx,player.y+dy))].name)
+        a=getkey()
+    if(not a==b'\x1b'):
+        if(show[8-dy][8+dx]==Magic_icon or show[8-dy][8+dx]==Player_icon):
+            Messages+=['Invalid target.']
+        else:
+            Messages+=[answer(Total_list[X_Y_list.index((player.x+dx,player.y+dy))].name)]
 
 def direction(a):
     if a==b'r':
@@ -1627,6 +1709,9 @@ def controls(fatigue):
         else:
             Messages+=["Can't ascend here."]
             retry=1
+    elif(a==b'@'):
+        retry=1
+        asking()
     elif(a==b'<'):
         if(Map[player.y*x_size+player.x]=='<'):
             Floor+=2
@@ -1771,7 +1856,7 @@ def prints(mobmob,extra):
     print(extra)
 
 def ignorant():
-    global XP,familiar,Know_list,Titles_list
+    global XP,familiar,Know_list,Titles_list,ththyhyujy
     XP=0
     familiar=[1,1,1]
     Know_list=[0]*len(Effects_list)
@@ -1786,6 +1871,7 @@ while(True):
 
     print('Please wait while the world is being generated...')
 
+    ththyhyujy=0
     hey=0
     newstage()
     generate()

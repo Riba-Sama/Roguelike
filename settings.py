@@ -1,10 +1,9 @@
 bonus=0
 awares=0
 PT_awares=0
-transcript=18
+transcript=19
 ER_divide=2
 Floor=1
-ththyhyujy=0
 MR_divide=8
 SR_divide=4
 DV_divide_a=4
@@ -48,7 +47,7 @@ Mob_list=(
 (40,20,20,4,12,100,1,2,0,'p','Phantom',4,100000,['kai','illusion','stealth'],(3,3,3,Weapon_icon,'dagger'),(0,Armor_icon,'',0),(4,0,1,Shield_icon,'mirror shield',2,0,0,0,['illusion']),(' Killer',('You are being haunted.','You are being haunted.'))),
 (50,30,8,4,6,20,20,0,0,'d','Demon Footman',1,100000,['kai','vampirism'],(3,3,3,Weapon_icon,'ivory trident'),(6,Armor_icon,'ivory scalemail',6,['vampirism']),(6,6,6,Shield_icon,'ivory shield',2,0,0,0,['vampirism'])),
 (30,12,16,8,6,20,8,0,2,'j','Imp Torturer',1,30000,['kai'],(3,3,3,Weapon_icon,'ivory trident'),(0,Armor_icon,'',0)),
-(30,12,12,12,12,20,10,0,0,'r','Holy Rabbit',0,30000,['purify','illusion'],(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0))
+(30,12,12,12,12,20,10,0,0,'r','Holy Rabbit',0,30000,['purify','illusion','rabbit'],(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0))
 )
 Effects_list=('healing potion','magic potion','poison potion','energetic potion','experience potion')
 Titles_list=[]

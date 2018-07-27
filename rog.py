@@ -364,7 +364,7 @@ def move(n):
 				if(zz.fp<0):
 					zz.fp=0
 			zz.hp-=zz.bp
-			zz.bp=zz.bp*3//2
+			zz.bp=zz.bp*2//3
 			if(d(zz.VIT-zz.bp)>0 and zz.hp<zz.VIT):
 				zz.hp+=1
 			if(d(zz.VIT+zz.int*zz.wield.intm-zz.mp)>zz.VIT-zz.int*zz.wield.intm and zz.mp<(zz.int*zz.wield.intm*ER_divide)//(ER_divide+zz.ER)):

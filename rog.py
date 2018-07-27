@@ -57,7 +57,7 @@ except ModuleNotFoundError as err:
 try:
     from map import Maps
     def newstage():
-        global x_size,y_size,Map,spawn_x,spawn_y,Messages,Mob_appear,Noob_Confetti,Mob_ungroup,Lead_c,RL_Mobs
+        global x_size,y_size,Map,spawn_x,spawn_y,Messages,Mob_appear,Noob_Confetti,Mob_ungroup,Lead_c,RL_Mobs,ththyhyujy
         Map=Maps[Floor-1][0]
         x_size=Maps[Floor-1][1]
         y_size=Maps[Floor-1][2]

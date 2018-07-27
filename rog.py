@@ -894,6 +894,7 @@ def help():
     Messages+=['g      get item on '+player.name+"'s tile."]
     Messages+=['i      use item in '+player.name+"'s inventory."]
     Messages+=['d      destroy item in inventory.']
+    Messages+=['s      sort'+player.name+"'s inventory."]
     Messages+=['a      use ability.']
     Messages+=['Esc    exit.']
     Messages+=['?      help.']

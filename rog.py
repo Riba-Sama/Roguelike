@@ -1767,7 +1767,7 @@ def controls(fatigue):
 
 def alarms():
     global Messages
-    if(player.bp>player.VIT):
+    if(player.bp>=player.hp):
         Messages+=[player.name+' will die.']
     elif(player.bp*3>player.VIT):
         Messages+=[player.name+' bleeds severely.']

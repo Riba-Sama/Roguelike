@@ -14,7 +14,7 @@ PT_divide=20
 FP_bonus=20
 P_value=6
 NV_value=6
-Status_template={'hitstun':0,'poison':0}
+Status_template={'stun':0,'poison':0,'viper':0,'madness':0,'energy':0,'brilliance':0,'regeneration':0}
 controllers=[b'r',b't',b'y',b'h',b'n',b'b',b'v',b'f',b'g',b'i',b'd',b's',b' ',b'z',b'x',b'c',b'u',b'.']
 name='Player'
 safe=5
@@ -34,7 +34,7 @@ Boss_icon='&'
 Wall_icon='#'
 L_N=' Leader'
 Mob_list=(
-(200,1,1,1,1000,0,0,0,-1,Wall_icon,'Wall',0,0,['huge'],(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0)),
+(200,100,100,100,1000,0,0,0,-1,Wall_icon,'Wall',0,0,['huge'],(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0)),
 (10,6,6,4,1,80,6,0,0,'g','Goblin',1,400,[],(2,2,2,Weapon_icon,'dagger'),(1,Armor_icon,'robe',0)),
 (20,8,2,3,3,60,2,0,0,'k','Kobold',1,500,[],(3,2,2,Weapon_icon,'sword'),(3,Armor_icon,'leather armor',2),(2,0,0,Shield_icon,'buckler',2)),
 (30,4,8,4,4,40,10,0,2,'G','Gnoll',1,2000,[],(2,4,1,Weapon_icon,'spear'),(3,Armor_icon,'leather armor',2)),
@@ -49,9 +49,9 @@ Mob_list=(
 (30,12,16,8,6,20,8,0,2,'j','Imp Torturer',1,30000,['kai'],(3,3,3,Weapon_icon,'ivory trident'),(0,Armor_icon,'',0)),
 (30,12,12,12,12,20,10,0,0,'r','Holy Rabbit',0,30000,['purify','illusion','rabbit'],(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0))
 )
-Effects_list=('healing potion','magic potion','poison potion','energetic potion','experience potion')
+Effects_list=('healing potion','magic potion','poison potion','energetic potion','experience potion','brilliance potion','madness potion','regeneration potion','paralyze potion')
 Titles_list=[]
-RL_Potions=(6,3,5,4,2)
+RL_Potions=(6,3,5,4,2,3,3,3,1)
 Weapon_types_list=('dagger','sword','mace','spear','wand')
 Weapon_m_list=((2,2,2),(3,2,2),(5,1,1),(2,4,1),(2,1,4))
 RL_Weapons=(2,8,6,3,3)

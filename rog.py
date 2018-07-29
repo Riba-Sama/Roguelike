@@ -387,7 +387,7 @@ def attack(enA,enD):
         enD.hp+=enD.AC-atk
         enD.bp+=atk*d(enA.int*enA.wield.intm)//d(enD.AC)
         Messages+=[enA.name+' hits '+enD.name+'.']
-        if('viper' in enA.doping):
+        if(enA.status['viper']):
             enA.status['viper']-=1
             enD.status['poison']+=max(1,d(enA.dex)-d(enD.dex))
             Messages+=[enA.name+' poisons '+enD.name+'.']
@@ -443,7 +443,7 @@ def farattack(enA,enD):
         enD.hp+=enD.AC//2-atk
         enD.bp+=atk*d(enA.dex*enA.wield.dexm)//d(enD.AC)
         Messages+=[enA.name+' hits '+enD.name+' from afar.']
-        if('viper' in enA.doping):
+        if(enA.status['viper']):
             enA.status['viper']-=1
             enD.status['poison']+=max(1,d(enA.dex)-d(enD.dex))
             Messages+=[enA.name+' poisons '+enD.name+'.']
@@ -499,7 +499,7 @@ def rushattack(enA,enD):
         enD.hp+=enD.AC//2-atk
         enD.fp+=atk*d(enA.str*enA.wield.strm)//d(enD.AC)
         Messages+=[enA.name+' crushes '+enD.name+' mightily.']
-        if('viper' in enA.doping):
+        if(enA.status['viper']):
             enA.status['viper']-=1
             enD.status['poison']+=max(1,d(enA.dex)-d(enD.dex))
             Messages+=[enA.name+' poisons '+enD.name+'.']
@@ -553,6 +553,64 @@ def rushattack(enA,enD):
         if 'envy' in enA.doping:enA.Denvy+=d(atk)
     enA.fp+=8
 
+def crushattack(enA,enD):
+    global Messages,ththyhyujy
+    atk=d((enA.str+('illusion' in enA.doping)*enD.str//d(enD.int))*enA.wield.strm+d(enA.str*enA.wield.strm*d(2)))*(enA.DV+DV_divide_r)//(3*DV_divide_r)+enA.str*enA.wield.strm
+    if atk > enD.AC:
+        enD.hp+=enD.AC//2-atk
+        enD.fp+=atk*d(enA.str*enA.wield.strm)//d(enD.AC)
+        Messages+=[enA.name+' crushes '+enD.name+' mightily.']
+        if(enA.status['viper']):
+            enA.status['viper']-=1
+            enD.status['poison']+=max(1,d(enA.dex)-d(enD.dex))
+            Messages+=[enA.name+' poisons '+enD.name+'.']
+        if('vampirism' in enA.doping):
+            enA.hp=min(enA.VIT,atk-enD.AC//2)
+            Messages+=[enA.name+' drains '+enD.name+"'s life force."]
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield==Weapon(1,1,1,Weapon_icon,''))):
+                ththyhyujy=1
+                enD.doping+=['kai','vampirism']
+        if('death' in enA.doping):
+            enD.hp=-45
+            Messages+=['The curse of '+enA.wield.name+' kills '+enD.name+'.']
+            if(enD.__class__.__name__ == 'Me'):
+                ththyhyujy=2
+        elif('purify' in enA.doping and 'kai' in enD.doping):
+            enD.hp=-45
+            Messages+=[enA.name+' purifies '+enD.name+'.']
+            if enD.__class__.__name__ == 'Me':
+                ththyhyujy==3
+                if enD.__class__.__name__ == 'Me':
+                    ththyhyujy==3
+        if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC//2)
+    else:
+        if('parry' in enD.name):
+            enA.status['stun']+=4
+            Messages+=[enD.name+' parries '+enA.name+"'s hit!"]
+        else:
+            if 'gluttony' in enA.doping:
+                if enA.hp==enA.VIT:
+                    Messages+=[enA.name+' nibbles on '+enD.name+"'s armor."]
+                    enD.wear.AC-=1
+                    enD.AC-=1
+                elif enA.hp>enA.VIT//2:
+                    Messages+=[enA.name+' bites off a piece of '+enD.name+"'s armor."]
+                    enD.wear.AC-=3
+                    enD.AC-=3
+                    enA.hp=min(enA.VIT,enA.hp+3)
+                    enA.bp=0
+                else:
+                    Messages+=[enA.name+' devoires the most of '+enD.name+"'s armor."]
+                    enD.wear.AC-=5
+                    enD.AC-=5
+                    enA.hp=min(enA.VIT,enA.hp+8)
+                    enA.bp=0
+                    enA.fp=0
+            else:
+                Messages+=[enD.name+' blocks '+enA.name+"'s hit."]
+        if 'envy' in enA.doping:enA.Denvy+=d(atk)
+    enA.fp+=8
+
 def magicattack(enA,enD):
     global Messages
     atk=d((enA.int+('illusion' in enA.doping)*enD.int//d(enD.int))*enA.wield.intm+d(enA.int*enA.wield.intm*d(2)))*MR_divide//(MR_divide+enD.ER)//2
@@ -583,7 +641,7 @@ def prideattack(enA,enD):
         enD.hp+=enD.AC-atk
         enD.bp+=atk*d(enA.int)//d(enD.AC)
         Messages+=[enA.name+' hits '+enD.name+'.']
-        if('viper' in enA.doping):
+        if(enA.status['viper']):
             enA.status['viper']-=1
             enD.status['poison']+=max(1,d(enA.dex)-d(enD.dex))
             Messages+=[enA.name+' poisons '+enD.name+'.']
@@ -812,12 +870,18 @@ def move(n):
                     mob.aware=1
                     awares+=1
                     if mob.leader==1:
-                        if not 'stealth' in mob.doping:
+                        if mob.status['madness']:
+                            PT_awares+=mob.shout*(2+mob.status['madness'])
+                            Messages+=[mob.name+' roars vigorously!'] if dis(xx,yy)<9 else [player.name+' hears a vigorous roar!']
+                        elif not 'stealth' in mob.doping:
                             PT_awares+=mob.shout*2
                             Messages+=[mob.name+' shouts vigorously!'] if dis(xx,yy)<9 else [player.name+' hears a vigorous shout!']
                     elif mob.leader:
                         PT_awares+=mob.shout*(1+mob.leader)
                         Messages+=[mob.catchphrase[0]] if dis(xx,yy)<9 else [mob.catchphrase[1]]
+                    elif mob.status['madness']:
+                        PT_awares+=mob.shout*(1+mob.status['madness'])
+                        Messages+=[mob.name+' roars!'] if dis(xx,yy)<9 else [player.name+' hears a roar!']
                     elif not 'stealth' in mob.doping:
                         PT_awares+=mob.shout
                         Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
@@ -909,8 +973,12 @@ def move(n):
             elif(dis(xx,yy)==1):
                 attack(mob,player)
             elif dis(xx,yy) < safe - mob.lvl - hey - (mob.VIT-mob.hp):
-                PT_awares+=mob.shout
-                Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
+                if mob.status['madness']:
+                    PT_awares+=mob.shout*(1+mob.status['madness'])
+                    Messages+=[mob.name+' roars!'] if dis(xx,yy)<9 else [player.name+' hears a roar!']
+                else:
+                    PT_awares+=mob.shout
+                    Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
             elif not 'sloth' in mob.doping:
                 if 'rabbit' in mob.doping:
                     for i in sorted(((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)),key= lambda x: d(100)):
@@ -1419,10 +1487,10 @@ def clockattack(start=0,wise=1):
                 enD.fp+=atk//3
                 Messages+=[player.name+' hits '+enD.name+'.']
                 player.fp+=2
-                if('viper' in enA.doping):
-                    enA.status['viper']-=1
-                    enD.status['poison']+=max(1,d(enA.dex)-d(enD.dex))
-                    Messages+=[enA.name+' poisons '+enD.name+'.']
+                if(player.status['viper']):
+                    player.status['viper']-=1
+                    enD.status['poison']+=max(1,d(player.dex)-d(enD.dex))
+                    Messages+=[player.name+' poisons '+enD.name+'.']
                 if('vampirism' in player.doping):
                     player.hp=min(player.VIT,atk)
                     Messages+=[player.name+' drains '+enD.name+"'s life force."]
@@ -1436,8 +1504,8 @@ def clockattack(start=0,wise=1):
                 if('parry' in enD.name):
                     enD.fp+=atk//4
                     atk=atk//3
-                    enA.status['stun']+=2
-                    Messages+=[enD.name+' parries '+enA.name+"'s hit!"]
+                    player.status['stun']+=2
+                    Messages+=[enD.name+' parries '+player.name+"'s hit!"]
                 else:
                     enD.fp+=atk//2
                     atk=atk*3//5
@@ -1460,10 +1528,10 @@ def runattack(i=(1,0)):
             enD.hp+=enD.AC//4-atk
             enD.bp+=atk*player.dex*player.wield.dexm//d(enD.AC)
             Messages+=[player.name+' lunges at '+enD.name+'.']
-            if('viper' in enA.doping):
-                enA.status['viper']-=1
-                enD.status['poison']+=max(1,d(enA.dex)-d(enD.dex))
-                Messages+=[enA.name+' poisons '+enD.name+'.']
+            if(player.status['viper']):
+                player.status['viper']-=1
+                enD.status['poison']+=max(1,d(player.dex)-d(enD.dex))
+                Messages+=[player.name+' poisons '+enD.name+'.']
             if('vampirism' in player.doping):
                 player.hp=min(player.VIT,atk-enD.AC//4)
                 Messages+=[player.name+' drains '+enD.name+"'s life force."]
@@ -1475,8 +1543,8 @@ def runattack(i=(1,0)):
                 Messages+=[player.name+' purifies '+enD.name+'.']
         else:
             if('parry' in enD.name):
-                enA.status['stun']+=2
-                Messages+=[enD.name+' parries '+enA.name+"'s lunge!"]
+                player.status['stun']+=2
+                Messages+=[enD.name+' parries '+player.name+"'s lunge!"]
             else:
                 Messages+=[enD.name+' blocks '+player.name+"'s lunge."]
         player.fp+=4
@@ -1743,7 +1811,8 @@ def controls(fatigue):
         if not un(player.x+posx,player.y+posy):
             rushattack(player,Total_list[X_Y_list.index((player.x+posx,player.y+posy))])
             no=1
-    a=b'.' if player.fp>fatigue or player.status['poison']>P_value or player.status['stun'] else (b'no' if no else getkey())
+            a=b'u'
+    a=b'.' if player.fp>fatigue or player.status['poison']>P_value or player.status['stun'] else (a if no else getkey())
     if player.status['poison']>P_value:
         player.status['poison']//=2
         player.sp//=2
@@ -1836,8 +1905,12 @@ def controls(fatigue):
     elif(a==b'u'):
         global PT_awares
         player.fp=max(player.fp,0)
-        PT_awares+=player.str+player.dex+player.int
-        Messages+=[player.name+' shouts for attention.']
+        if player.status['madness']:
+            PT_awares+=(player.str+player.dex+player.int)*(1+player.status['madness'])
+            Messages+=[player.name+' roars!']
+        else:
+            PT_awares+=player.str+player.dex+player.int
+            Messages+=[player.name+' shouts for attention.']
     elif(a==b'*'):
         story()
         getkey()

@@ -1367,6 +1367,12 @@ def knowledge(what):
         for i in player.inventory:
             if(i.name is Titles_list[what]):
                 i.name=Effects_list[what]
+    if Know_list.count(0)==1:
+        what=Know_list.index(0)
+        Know_list[what]=Titles_list[what]
+        for i in player.inventory:
+            if(i.name is Titles_list[what]):
+                i.name=Effects_list[what]
 
 def item_using():
     global player,Messages

@@ -90,7 +90,7 @@ class Mob(Entity):
             self.shield=Weapon(0,0,0,Shield_icon,'',2)
             self.DV=1
         self.MR=self.shield.MR
-        self.inventory=[Food(4,'%','bread ration')]*(d(d(d(d(4))))-1)+[Item('?',x,Effects_list[x]) for x in [d(y)-1 for y in [9]*(d(d(d(d(self.lvl))))-1+self.leader)]]
+        self.inventory=[Food(4,'%','bread ration')]*(d(d(d(d(4))))-1)+[Item('?',x,Effects_list[x]) for x in [d(y)-1 for y in [9]*(d(d(d(d(self.lvl*(1+self.leader)))))-1)]]
         if leader:
             self.inventory+=[Item('?',1,'magic potion')]*(d(self.int)*(2+self.leader)//PT_divide)+[Item('?',0,'healing potion')]*(d(self.str)*(2+self.leader)//PT_divide)+[Item('?',3,'energetic potion')]*(d(self.dex)*(2+self.leader)//PT_divide)+[Food(8,'%','pizza')]*(d(d(2))-1)
         if leader>1:

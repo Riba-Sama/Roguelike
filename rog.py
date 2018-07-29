@@ -276,8 +276,8 @@ def consume(ent,what):
     elif what == 4:
         ent=lvlup(ent)
     elif what == 5:
-        ent.int+=ent.int
-        ent.status['brilliance']+=ent.int
+        ent.status['brilliance']+=ent.int//2
+        ent.int+=ent.int//2
     elif what == 6:
         ent.status['madness']+=ent.int-1-ent.status['brilliance']
         ent.str+=ent.int-1-ent.status['brilliance']

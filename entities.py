@@ -78,6 +78,8 @@ class Mob(Entity):
         self.name=ab[10]+((L_N if self.leader==1 else ab[17][0]) if self.leader else '')
         self.wield=Weapon(ab[14][0],ab[14][1],ab[14][2],*ab[14][3:]) if self.leader else Weapon(1,1,1,Weapon_icon,'')
         self.wear=Armor(*ab[15]) if self.leader else Armor(0,Armor_icon,'',0)
+        self.xp=ab[12]*(2**self.leader)
+        self.lvl=1 if self.xp<=XP_base else floor(log(self.xp/XP_base,2.0))+1
         if(self.wield.dual==3):
             self.shield=self.wield
             self.DV=1
@@ -88,18 +90,23 @@ class Mob(Entity):
             self.shield=Weapon(0,0,0,Shield_icon,'',2)
             self.DV=1
         self.MR=self.shield.MR
+        self.inventory=[Food(4,'%','bread ration')]*(d(d(d(d(4))))-1)+[Item('?',x,Effects_list[x]) for x in [d(y)-1 for y in [9]*(d(d(d(d(self.lvl))))-1+self.leader)]]
         if leader:
-            self.inventory=[Item('?',1,'magic potion')]*(d(self.int)*(2+self.leader)//PT_divide)+[Item('?',0,'healing potion')]*(d(self.str)*(2+self.leader)//PT_divide)+[Item('?',3,'energetic potion')]*(d(self.dex)*(2+self.leader)//PT_divide)+[Food(4,'%','bread ration')]*(d(d(3*self.leader+1))-1)+[Food(8,'%','pizza')]*(d(d(self.leader))-1)
-        else:
-            self.inventory=[Food(4,'%','bread ration')]*(d(d(d(d(4))))-1)
+            self.inventory+=[Item('?',1,'magic potion')]*(d(self.int)*(2+self.leader)//PT_divide)+[Item('?',0,'healing potion')]*(d(self.str)*(2+self.leader)//PT_divide)+[Item('?',3,'energetic potion')]*(d(self.dex)*(2+self.leader)//PT_divide)+[Food(8,'%','pizza')]*(d(d(2))-1)
+        if leader>1:
+            if self.type%2==1:
+                self.inventory+=[Item('?',5,'brilliance potion')]*(self.int*(2+self.leader)//PT_divide)
+            if self.type//2%2==1:
+                self.inventory+=[Item('?',2,'poison potion')]*(self.dex*(2+self.leader)//PT_divide)
+            if self.type//4%2==1:
+                self.inventory+=[Item('?',6,'madness potion')]*(self.str*(2+self.leader)//PT_divide)
+            self.inventory+=[Item('?',7,'regeneration potion')]*(self.hp//PT_divide)
         self.ER=self.shield.ER+self.wear.ER
         self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
         self.VIT=self.hp
         self.AC=self.BAC+self.wear.AC+self.shield.AC
-        self.xp=ab[12]*(2**self.leader)
-        self.lvl=1 if self.xp<=XP_base else floor(log(self.xp/XP_base,2.0))+1
         self.doping=ab[13]
-        self.drop=[Food(2,Food_icon,'chunk of meat')]*((rlrange(self.lvl*2)>self.lvl)+d(4)*('huge' in self.doping))+[self.shield]*(self.shield.name!=self.wield.name and bool(self.shield.name))+[self.wield]*bool(self.wield.name)+[self.wear]*bool(self.wear.name)
+        self.drop=[Food(2,Food_icon,'chunk of meat')]*((rlrange(self.lvl*2)>self.lvl)+d(4)*('huge' in self.doping))*(not 'illusion' in self.doping)+[self.shield]*(self.shield.name!=self.wield.name and bool(self.shield.name))+[self.wield]*bool(self.wield.name)+[self.wear]*bool(self.wear.name)
         self.status=Status_template.copy()
         if(len(ab)>17):
             self.catchphrase=ab[17][1]

@@ -273,16 +273,15 @@ def consume(ent,what):
             return None
     elif what == 3:
         ent.status['energy']+=10
-        ent.bp*=3
     elif what == 4:
         ent=lvlup(ent)
     elif what == 5:
         ent.int+=10
         ent.status['brilliance']+=10
     elif what == 6:
-        ent.status['madness']+=ent.int-1
-        ent.str+=ent.int-1
-        ent.int=1
+        ent.status['madness']+=ent.int-1-ent.status['brilliance']
+        ent.str+=ent.int-1-ent.status['brilliance']
+        ent.int=1+ent.status['brilliance']
         ent.mp=0
     elif what == 7:
         ent.status['regeneration']+=10
@@ -762,6 +761,7 @@ def move(n):
                 mob.fp+=2
             if mob.status['energy']:
                 mob.status['energy']-=1
+                mob.bp*=2
                 mob.fp=max(0,mob.fp-mob.dex)
             if mob.status['regeneration']:
                 mob.status['regeneration']-=1
@@ -1098,7 +1098,11 @@ def asking():
             dx=sig(dx)*8
         if(abs(dy)>8):
             dy=sig(dy)*8
-        screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n' if un(player.x+dx,player.y+dy) else (Total_list[X_Y_list.index((player.x+dx,player.y+dy))].name+'\nHP:{} STR:{} DEX:{} INT:{} AC:{}'.format(Total_list[X_Y_list.index((player.x+dx,player.y+dy))].VIT,Total_list[X_Y_list.index((player.x+dx,player.y+dy))].str,Total_list[X_Y_list.index((player.x+dx,player.y+dy))].dex,Total_list[X_Y_list.index((player.x+dx,player.y+dy))].int,Total_list[X_Y_list.index((player.x+dx,player.y+dy))].AC)))
+        if show[8-dy][8+dx] in {'.',Potion_icon,Weapon_icon,Shield_icon,Food_icon,Armor_icon,Magic_icon,Player_icon}:
+            screen(dx,dy,'    r t y\nUse f   h to navigate, Esc to abort, Enter or g to confirm target.\n    v b n')
+        else:
+            mob=Total_list[X_Y_list.index((player.x+dx,player.y+dy))]
+            screen(dx,dy,mob.name+'\nHP:{}  MP:{}  STR:{}  DEX:{}  INT:{}\nAC:{}  ER:{}  MR:{}'.format(mob.VIT,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER),mob.str,mob.dex,mob.int,mob.AC,mob.ER,mob.MR))
         a=getkey()
     if(not a==b'\x1b'):
         if(show[8-dy][8+dx]==Magic_icon or show[8-dy][8+dx]==Player_icon):
@@ -1742,7 +1746,7 @@ def controls(fatigue):
     if player.status['madness']:
         posx,posy=d(3)-2,d(3)-2
         if not un(player.x+posx,player.y+posy):
-            rushattack(player,Total_list[X_Y_list.index((xx+posx,yy+posy))])
+            rushattack(player,Total_list[X_Y_list.index((player.x+posx,player.y+posy))])
             no=1
     a=b'.' if player.fp>fatigue or player.status['poison']>P_value or player.status['stun'] else (b'no' if no else getkey())
     if player.status['poison']>P_value:
@@ -1843,6 +1847,8 @@ def controls(fatigue):
         story()
         getkey()
         retry=1
+    elif(a==b'no'):
+        retry=0
     else:
         Messages+=['Unknown command.']
         retry=1
@@ -1955,6 +1961,7 @@ def statuses():
     if player.status['energy']:
         player.status['energy']-=1
         player.fp=max(0,player.fp-player.dex)
+        player.bp*=2
         player.sp-=1
     if player.status['regeneration']:
         player.status['regeneration']-=1

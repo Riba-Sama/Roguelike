@@ -1937,7 +1937,7 @@ def prints(mobmob,extra):
     print(mobmob[119:136]+' '*4+'Abilities:'+ab)
     print(mobmob[136:153]+' '*4+'AC:{:<7}ER:{}'.format(player.AC,player.ER))
     print(mobmob[153:170]+' '*4+'MR:{:<7}SM:{},{},{}'.format(player.MR,player.wield.strm if familiar[0] else '?',player.wield.dexm if familiar[1] else '?',player.wield.intm if familiar[2] else '?'))
-    print(mobmob[170:187]+' '*4+'Level:{:<4}Level:{}'.format(player.lvl,XP))
+    print(mobmob[170:187]+' '*4+'Level:{:<4}XP:{}'.format(player.lvl,XP))
     print(mobmob[187:204]+' '*4+re)
     print(mobmob[204:221])
     print(mobmob[221:238])

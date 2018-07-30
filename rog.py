@@ -838,7 +838,14 @@ def move(n):
                 mob.mp=min(mob.mp+mob.int,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER))
             if 'wrath' in mob.doping:
                 mob.str=mob.Bstr*mob.VIT//mob.hp
-            if mob.status['poison']>P_value:
+            if mob.status['madness'] and (not un(xx+posx,yy+posy) or (xx+posx==player.x and yy+posy==player.y)):
+                if not un(xx+posx,yy+posy) and not (posx==0 and posy==0):
+                    rushattack(mob,Total_list[X_Y_list.index((xx+posx,yy+posy))])
+                if xx+posx==player.x and yy+posy==player.y:
+                    rushattack(mob,player)
+                PT_awares+=mob.shout*(1+mob.status['madness'])
+                Messages+=[mob.name+' roars!'] if dis(xx,yy)<9 else [player.name+' hears a roar!']
+            elif mob.status['poison']>P_value:
                 mob.status['poison']//=2
                 mob.fp+=4
                 Messages+=[mob.name+' throws up.']
@@ -857,11 +864,6 @@ def move(n):
                         mob.doping.remove('p')
                         mob.doping.append('parry')
                 mob.status['stun']-=1
-            elif mob.status['madness'] and (not un(xx+posx,yy+posy) or (xx+posx==player.x and yy+posy==player.y)):
-                if not un(xx+posx,yy+posy) and not (posx==0 and posy==0):
-                    rushattack(mob,Total_list[X_Y_list.index((xx+posx,yy+posy))])
-                if xx+posx==player.x and yy+posy==player.y:
-                    rushattack(mob,player)
             elif(mob.fp>d(FP_bonus+mob.dex-mob.ER*SR_divide//(SR_divide+mob.str))):
                 mob.fp=max(mob.fp-mob.dex,0)
                 if 'sloth' in mob.doping:mob.mp=min(mob.mp+mob.int,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER))
@@ -1817,9 +1819,13 @@ def controls(fatigue):
         if not un(player.x+posx,player.y+posy):
             rushattack(player,Total_list[X_Y_list.index((player.x+posx,player.y+posy))])
             no=1
-            a=b'u'
-    a=b'.' if player.fp>fatigue or player.status['poison']>P_value or player.status['stun'] else (a if no else getkey())
-    if player.status['poison']>P_value:
+            a=b'no'
+            PT_awares+=(player.str+player.dex+player.int)*(1+player.status['madness'])
+            Messages+=[player.name+' roars!']
+    a=a if no else (b'.' if player.fp>fatigue or player.status['poison']>P_value or player.status['stun'] else getkey())
+    if(a==b'no'):
+        retry=0
+    elif player.status['poison']>P_value:
         player.status['poison']//=2
         player.sp//=2
         player.fp+=4
@@ -1921,8 +1927,6 @@ def controls(fatigue):
         story()
         getkey()
         retry=1
-    elif(a==b'no'):
-        retry=0
     else:
         Messages+=['Unknown command.']
         retry=1
@@ -2075,9 +2079,9 @@ while(True):
     generate()
     player=Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y])
     while(True):
+            statuses()
             alarms()
             ST_dice=d(player.dex)
-            statuses()
             screen()
             controls(d(FP_bonus+player.dex-player.ER*SR_divide//(SR_divide+player.str)))
             hey=floor(log(awares+PT_awares+1.0,2.0))

@@ -689,16 +689,16 @@ def stepaway(mob,n):
     elif(disy(yy)>=disx(xx) and un(xx,yy-sig(player.y-yy))):
         X_Y_list[n]=xx,yy-sig(player.y-yy)
         mob.fp+=1
-    elif(disx(xx)==0 and un(xx+1,yy-sig(player.y-yy))):
+    elif(disx(xx)<disy(yy) and un(xx+1,yy-sig(player.y-yy))):
         X_Y_list[n]=xx+1,yy-sig(player.y-yy)
         mob.fp+=1
-    elif(disx(xx)==0 and un(xx-1,yy-sig(player.y-yy))):
+    elif(disx(xx)<disy(yy) and un(xx-1,yy-sig(player.y-yy))):
         X_Y_list[n]=xx-1,yy-sig(player.y-yy)
         mob.fp+=1
-    elif(disy(yy)==0 and un(xx-sig(player.x-xx),yy+1)):
+    elif(disy(yy)<disx(xx) and un(xx-sig(player.x-xx),yy+1)):
         X_Y_list[n]=xx-sig(player.x-xx),yy+1
         mob.fp+=1
-    elif(disy(yy)==0 and un(xx-sig(player.x-xx),yy-1)):
+    elif(disy(yy)<disx(xx) and un(xx-sig(player.x-xx),yy-1)):
         X_Y_list[n]=xx-sig(player.x-xx),yy-1
         mob.fp+=1
     else:
@@ -717,16 +717,16 @@ def stepahead(mob,n):
     elif(disy(yy)>=disx(xx) and un(xx,yy+sig(player.y-yy))):
         X_Y_list[n]=xx,yy+sig(player.y-yy)
         mob.fp+=1
-    elif(disx(xx)==0 and un(xx+1,yy+sig(player.y-yy))):
+    elif(disx(xx)<disy(yy) and un(xx+1,yy+sig(player.y-yy))):
         X_Y_list[n]=xx+1,yy+sig(player.y-yy)
         mob.fp+=1
-    elif(disx(xx)==0 and un(xx-1,yy+sig(player.y-yy))):
+    elif(disx(xx)<disy(yy) and un(xx-1,yy+sig(player.y-yy))):
         X_Y_list[n]=xx-1,yy+sig(player.y-yy)
         mob.fp+=1
-    elif(disy(yy)==0 and un(xx+sig(player.x-xx),yy+1)):
+    elif(disy(yy)<disx(xx) and un(xx+sig(player.x-xx),yy+1)):
         X_Y_list[n]=xx+sig(player.x-xx),yy+1
         mob.fp+=1
-    elif(disy(yy)==0 and un(xx+sig(player.x-xx),yy-1)):
+    elif(disy(yy)<disx(xx) and un(xx+sig(player.x-xx),yy-1)):
         X_Y_list[n]=xx+sig(player.x-xx),yy-1
         mob.fp+=1
     else:

@@ -394,7 +394,7 @@ def attack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield==Weapon(1,1,1,Weapon_icon,''))):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield.name=='')):
                 ththyhyujy=1
                 enD.doping+=['kai','vampirism']
         if('death' in enA.doping):
@@ -406,7 +406,7 @@ def attack(enA,enD):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
             if enD.__class__.__name__ == 'Me':
-                ththyhyujy==3
+                ththyhyujy=3
         if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC)
     else:
         if('parry' in enD.name):
@@ -462,7 +462,7 @@ def farattack(enA,enD):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
             if enD.__class__.__name__ == 'Me':
-                ththyhyujy==3
+                ththyhyujy=3
         if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC//2)
     else:
         if('parry' in enD.name):
@@ -518,9 +518,7 @@ def rushattack(enA,enD):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
             if enD.__class__.__name__ == 'Me':
-                ththyhyujy==3
-                if enD.__class__.__name__ == 'Me':
-                    ththyhyujy==3
+                ththyhyujy=3
         if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC//2)
     else:
         if(atk<=enD.AC):
@@ -579,9 +577,7 @@ def crushattack(enA,enD):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
             if enD.__class__.__name__ == 'Me':
-                ththyhyujy==3
-                if enD.__class__.__name__ == 'Me':
-                    ththyhyujy==3
+                ththyhyujy=3
         if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC//2)
     else:
         if('parry' in enD.name):
@@ -623,8 +619,7 @@ def magicattack(enA,enD):
         if('purify' in enA.doping and 'kai' in enD.doping):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
-            if enD.__class__.__name__ == 'Me':
-                ththyhyujy==3
+            ththyhyujy=3
         if 'envy' in enD.doping:enD.Aenvy+=d(atk-enD.AC//3)
     else:
         if atk > enD.AC//3:
@@ -660,7 +655,7 @@ def prideattack(enA,enD):
             enD.hp=-45
             Messages+=[enA.name+' purifies '+enD.name+'.']
             if enD.__class__.__name__ == 'Me':
-                ththyhyujy==3
+                ththyhyujy=3
     else:
         enA.hp-=atk
         enA.bp+=atk*d(enA.int)
@@ -1328,15 +1323,15 @@ def change_weapon(a):
         Messages+=[player.name+' unwields '+player.shield.name+'.']
         player.shield=player.inventory[a]
         Messages+=[player.name+' wields '+player.shield.name+'.']
-        if 'vampirism' in player.wield.doping:
+        if 'vampirism' in player.shield.doping:
             Messages+=[player.name+' feels demonic power emanating from their shield.']
-        if 'purify' in player.wield.doping:
+        if 'purify' in player.shield.doping:
             Messages+=[player.name+' feels holy power emanating from their shield.']
-        if 'death' in player.wield.doping:
+        if 'death' in player.shield.doping:
             Messages+=[player.name+' feels cursed power emanating from their shield.']
-        if 'teleport' in player.wield.doping:
+        if 'teleport' in player.shield.doping:
             Messages+=[player.name+' feels translocational power emanating from their shield.']
-        if 'illusion' in player.wield.doping:
+        if 'illusion' in player.shield.doping:
             Messages+=[player.name+"'s shield appears blurry."]
     shield_recalculate()
 

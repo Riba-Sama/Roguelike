@@ -136,7 +136,7 @@ class Boss(Mob):
             self.shout=100
             self.icon=Boss_icon
             self.name='Dwarf Rabbit'
-            self.inventory=['huge']
+            self.inventory=[]
             self.wear=Armor(12,Armor_icon,'pearl shellmail',0,['purify'])
             self.wield=Weapon(8,1,4,Weapon_icon,'pearl cudgel',3,8,1,4,['parry'])
             self.DV=1
@@ -149,7 +149,7 @@ class Boss(Mob):
             self.BAC=self.AC-self.wear.AC-self.shield.AC
             self.xp=10**9
             self.drop=[Weapon(8,1,4,Weapon_icon,'pearl cudgel',3,8,1,4,['purify']),Armor(12,Armor_icon,'pearl shellmail',0,['purify'])]
-            self.doping=['purify','parry','rabbit']
+            self.doping=['purify','parry','rabbit','huge']
             self.status=Status_template.copy()
             self.catchphrase=('Dwarf Rabbit shouts prayers!',name+' hears prayers.')
         elif(num==6):

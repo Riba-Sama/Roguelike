@@ -1811,7 +1811,7 @@ def shield_recalculate():
     player.doping=player.wield.doping+(player.shield.doping)*(1-player.DV)+player.wear.doping+['kai','vampirism']*(ththyhyujy==1)
 
 def controls(fatigue):
-    global player,Total_list,Messages,familiar,Floor
+    global player,Total_list,Messages,familiar,Floor,PT_awares
     retry=0
     no=0
     if player.status['madness']:
@@ -1915,7 +1915,6 @@ def controls(fatigue):
         xp()
         retry=1
     elif(a==b'u'):
-        global PT_awares
         player.fp=max(player.fp,0)
         if player.status['madness']:
             PT_awares+=(player.str+player.dex+player.int)*(1+player.status['madness'])

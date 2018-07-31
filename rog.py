@@ -1,20 +1,24 @@
 import sys, os
 
-def clearchat():
-  if os.name == "posix":
-    print ("\033[2J")
-  elif os.name in ("nt", "dos", "ce"):
-    os.system('CLS')
-  else:
-    print('\n' * 100)
-
-def getcharkey():
-    result = None
-    if os.name == 'nt':
-        import msvcrt
-        result = msvcrt.getwch()
-    else:
-        import termios
+if os.name == "posix":
+    def clearchat():
+        print ("\033[2J")
+elif os.name in ("nt", "dos", "ce"):
+    def clearchat():
+        os.system('CLS')
+else:
+    def clearchat():
+        print('\n' * 100)
+if os.name == 'nt':
+    import msvcrt
+    def getcharkey():
+        return msvcrt.getwch()
+    def getkey():
+        return msvcrt.getch()
+else:
+    import termios
+    def getcharkey():
+        result = None
         fd = sys.stdin.fileno()
         oldterm = termios.tcgetattr(fd)
         newattr = termios.tcgetattr(fd)
@@ -26,19 +30,14 @@ def getcharkey():
             pass
         finally:
             termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
-    return result
-
-def getkey():
-    result = None
-    if os.name == 'nt':
-        import msvcrt
-        result = msvcrt.getch()
-    else:
+        return result
+    def getkey():
+        result = None
         try:
             result = getcharkey().encode()
         except:
             result = b''
-    return result
+        return result
 
 try:
     from settings import *
@@ -1601,20 +1600,22 @@ def jumpattack(dx,dy):
 def swapattack(dx,dy):
     global Messages,Total_list,player
     n=X_Y_list.index((player.x+dx,player.y+dy))
-    X_Y_list[n]=(player.x,player.y)
-    player.x+=dx
-    player.y+=dy
     atk=player.int*player.wield.intm*ER_divide//(ER_divide+player.ER)//8
     enD=Total_list[n]
-    enD.hp+=enD.AC//4-atk*MR_divide//(enD.MR+MR_divide)
-    enD.fp+=atk*MR_divide//(enD.MR+MR_divide)
-    Messages+=[player.name+' swaps with '+enD.name+'.']
-    if('vampirism' in player.doping):
-        player.hp=min(player.VIT,atk*MR_divide//(enD.MR+MR_divide)-enD.AC//4)
-        Messages+=[player.name+' drains '+enD.name+"'s life force."]
-    if('purify' in player.doping and 'kai' in enD.doping and d(player.int)>d(enD.int)+enD.MR):
-        enD.hp=-45
-        Messages+=[player.name+' purifies '+enD.name+'.']
+    Messages+=[player.name+' gestures at '+enD.name+'.']
+    if enD.AC<atk*MR_divide//(enD.MR+MR_divide):
+        X_Y_list[n]=(player.x,player.y)
+        player.x+=dx
+        player.y+=dy
+        enD.hp+=enD.AC//4-atk*MR_divide//(enD.MR+MR_divide)
+        enD.fp+=atk*MR_divide//(enD.MR+MR_divide)
+        Messages+=[player.name+' swaps with '+enD.name+'.']
+        if('vampirism' in player.doping):
+            player.hp=min(player.VIT,atk*MR_divide//(enD.MR+MR_divide)-enD.AC//4)
+            Messages+=[player.name+' drains '+enD.name+"'s life force."]
+        if('purify' in player.doping and 'kai' in enD.doping and d(player.int)>d(enD.int)+enD.MR):
+            enD.hp=-45
+            Messages+=[player.name+' purifies '+enD.name+'.']
     Total_list[n]=enD
     player.fp+=8
 

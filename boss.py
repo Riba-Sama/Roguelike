@@ -176,6 +176,7 @@ class Boss(Mob):
             self.lvl=99
             self.mp=(self.int*self.wield.intm*ER_divide)//(ER_divide+self.ER)
             self.VIT=self.hp
+            self.Bstr=12
             self.BAC=self.AC-self.wear.AC-self.shield.AC
             self.xp=10**8
             self.drop=[Weapon(3,3,3,Weapon_icon,'ebony sword',1,0,0,0,['vampirism']),Armor(12,Armor_icon,'ebony platemail',0,['vampirism'])]

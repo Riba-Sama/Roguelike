@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, random
 
 if os.name == "posix":
     def clearchat():
@@ -393,7 +393,7 @@ def attack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield.name=='')):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and 'Vampire' in enA.name):
                 ththyhyujy=1
                 enD.doping+=['kai','vampirism']
         if('death' in enA.doping):
@@ -449,7 +449,7 @@ def farattack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC//2)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield==Weapon(1,1,1,Weapon_icon,''))):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and 'Vampire' in enA.name):
                 ththyhyujy=1
                 enD.doping+=['kai','vampirism']
         if('death' in enA.doping):
@@ -505,7 +505,7 @@ def rushattack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC//2)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield==Weapon(1,1,1,Weapon_icon,''))):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and 'Vampire' in enA.name):
                 ththyhyujy=1
                 enD.doping+=['kai','vampirism']
         if('death' in enA.doping):
@@ -564,7 +564,7 @@ def crushattack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC//2)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield==Weapon(1,1,1,Weapon_icon,''))):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and 'Vampire' in enA.name):
                 ththyhyujy=1
                 enD.doping+=['kai','vampirism']
         if('death' in enA.doping):
@@ -642,7 +642,7 @@ def prideattack(enA,enD):
         if('vampirism' in enA.doping):
             enA.hp=min(enA.VIT,atk-enD.AC)
             Messages+=[enA.name+' drains '+enD.name+"'s life force."]
-            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and (enA.wield==Weapon(1,1,1,Weapon_icon,''))):
+            if(enD.__class__.__name__ == 'Me' and not ththyhyujy and 'Vampire' in enA.name):
                 ththyhyujy=1
                 enD.doping+=['kai','vampirism']
         if('death' in enA.doping):
@@ -658,7 +658,7 @@ def prideattack(enA,enD):
     else:
         enA.hp-=atk
         enA.bp+=atk*d(enA.int)
-        Messages+=[enD.name+' blocks '+enA.name+"'s hit.",enA.name+' pride hurts.']
+        Messages+=[enD.name+' blocks '+enA.name+"'s hit.",enA.name+"'s pride hurts."]
     enA.fp+=2
 
 def steal(enA,enD):
@@ -940,27 +940,30 @@ def move(n):
                 rushattack(mob,player)
                 rol=0
             elif 'teleport' in mob.doping and mob.type%2==1 and dis(xx,yy)<Magic_distance:
-                if dis(xx,yy)<3 and (mob.fp>=TP_value or mob.hp-mob.bp<mob.VIT):
-                    for i in sorted(((j,-Magic_value) for j in range(-Magic_value,Magic_value+1))+((j,Magic_value) for j in range(-Magic_value,Magic_value+1))+((Magic_value,j) for j in range(-Magic_value,Magic_value+1))+((-Magic_value,j) for j in range(-Magic_value,Magic_value+1)),key= lambda x: d(1000)):
+                if mob.mp>=TP_value*Magic_distance and mob.hp-mob.bp<mob.VIT:
+                    for i in random.sample(((j,-Magic_distance) for j in range(-Magic_distance,Magic_distance+1))+((j,Magic_distance) for j in range(-Magic_distance,Magic_distance+1))+((Magic_distance,j) for j in range(-Magic_distance,Magic_distance+1))+((-Magic_distance,j) for j in range(-Magic_distance,Magic_distance+1)),8*Magic_distance):
                         if(un(X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1])):
-                            mob.fp+=Magic_value*TP_cost
+                            mob.mp-=Magic_distance*TP_cost
                             X_Y_list[n]=X_Y_list[n][0]+i[0],X_Y_list[n][1]+i[1]
                             Messages+=[mob.name+' teleports!']
                             break
-                elif mob.type//2%2==0:
-                    for i in sorted(((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)),key= lambda x: d(100)):
+                elif mob.type//2%2==0 and mob.mp>=TP_value*Magic_distance and dis(xx,yy)<=Magic_distance-1:
+                    for i in random.sample(((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)),8):
                         if(un(player.x+i[0],player.y+i[1])):
-                            mob.fp+=max(abs(player.x+i[0]-X_Y_list[n][0]),abs(player.y+i[1]-X_Y_list[n][1]))*TP_cost
+                            mob.mp-=max(abs(player.x+i[0]-X_Y_list[n][0]),abs(player.y+i[1]-X_Y_list[n][1]))*TP_cost
+                            X_Y_list[n]=player.x+i[0],player.y+i[1]
+                            Messages+=[mob.name+' teleports!']
+                            break
+                elif dis(xx,yy)<=Magic_distance-2 and mob.mp>=TP_value*Magic_distance:
+                    for i in random.sample(((-2,2),(-1,2),(0,2),(1,2),(2,2),(2,1),(2,0),(2,-1),(2,-2),(1,-2),(0,-2),(-1,-2),(-2,-2),(-2,-1),(-2,0),(-2,1)),16):
+                        if(un(player.x+i[0],player.y+i[1])):
+                            mob.mp-=max(abs(player.x+i[0]-X_Y_list[n][0]),abs(player.y+i[1]-X_Y_list[n][1]))*TP_cost
                             X_Y_list[n]=player.x+i[0],player.y+i[1]
                             Messages+=[mob.name+' teleports!']
                             break
                 else:
-                    for i in sorted(((-2,2),(-1,2),(0,2),(1,2),(2,2),(2,1),(2,0),(2,-1),(2,-2),(1,-2),(0,-2),(-1,-2),(-2,-2),(-2,-1),(-2,0),(-2,1)),key= lambda x: d(100)):
-                        if(un(player.x+i[0],player.y+i[1])):
-                            mob.fp+=max(abs(player.x+i[0]-X_Y_list[n][0]),abs(player.y+i[1]-X_Y_list[n][1]))*TP_cost
-                            X_Y_list[n]=player.x+i[0],player.y+i[1]
-                            Messages+=[mob.name+' teleports!']
-                            break
+                    mob.fp=max(mob.fp-mob.dex,0)
+                    if 'sloth' in mob.doping:mob.mp=min(mob.mp+mob.int,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER))
             elif((mob.fp>=mob.dex and mob.type%2==1) or (mob.fp>=d(mob.dex) and mob.type//2%2==1)):
                 mob.fp=max(mob.fp-mob.dex,0)
                 if 'sloth' in mob.doping:mob.mp=min(mob.mp+mob.int,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER))
@@ -977,7 +980,7 @@ def move(n):
                     Messages+=[mob.name+' shouts!'] if dis(xx,yy)<9 else [player.name+' hears a shout!']
             elif not 'sloth' in mob.doping:
                 if 'rabbit' in mob.doping:
-                    for i in sorted(((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)),key= lambda x: d(100)):
+                    for i in random.sample(((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)),8):
                         if(not un(player.x+i[0],player.y+i[1])):
                             X_Y_list[X_Y_list.index((player.x+i[0],player.y+i[1]))],X_Y_list[n]=X_Y_list[n],X_Y_list[X_Y_list.index((player.x+i[0],player.y+i[1]))]
                             Messages+=[mob.name+' swaps with a nearby rabbit!']
@@ -1008,7 +1011,7 @@ def move(n):
             if mob.hp-mob.bp<=0 and ('pride' in mob.doping):
                 mob.doping.remove('pride')
                 mob.hp=1
-                mob.bp=1
+                mob.bp=100
                 mob.fp=0
                 mob.shield=Weapon(0,0,0,Shield_icon,'',2)
                 mob.DV=1
@@ -1110,6 +1113,8 @@ def answer(nam):
         a='Stealthy, unholy and drains on successfull attacks.'
     elif 'Phantom' in nam:
         a='Stealthy, unholy and illusional.'
+    elif 'Demon Footman' in nam:
+        a='Unholy, ugly and strong.'
     elif 'Imp Torturer' in nam:
         a='Unholy, sadistic and can attack from 2 tiles away.'
     elif 'Holy Rabbit' in nam:
@@ -2075,7 +2080,7 @@ while(True):
     hey=0
     newstage()
     generate()
-    player=Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y])
+    player=Me([VIT,80,80,80,4,0,0,spawn_x,spawn_y])
     while(True):
             statuses()
             alarms()
@@ -2093,8 +2098,10 @@ while(True):
                     outro(4)
                 else:
                     outro(1)
+                break
             if player.relics['Rabbit Feet'][0]==player.relics['Rabbit Feet'][1]:
                 outro(8)
+                break
             if(player.hp<=0):
                 clearchat()
                 if ththyhyujy:

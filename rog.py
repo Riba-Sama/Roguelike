@@ -2051,6 +2051,9 @@ def statuses():
         player.status['brilliance']-=1
         player.int-=1
         player.mp=min(player.mp+player.int,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
+    if player.sp<=0:
+        player.hp+=player.sp
+        player.sp=0
 
 def ignorant():
     global XP,familiar,Know_list,Titles_list,ththyhyujy

@@ -2080,7 +2080,7 @@ while(True):
     hey=0
     newstage()
     generate()
-    player=Me([VIT,80,80,80,4,0,0,spawn_x,spawn_y])
+    player=Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y])
     while(True):
             statuses()
             alarms()

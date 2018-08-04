@@ -1036,7 +1036,7 @@ def help():
     Messages+=['.      rest one turn.']
     Messages+=['g      get item on '+player.name+"'s tile."]
     Messages+=['i      use item in '+player.name+"'s inventory."]
-    Messages+=['d      destroy item in inventory.']
+    Messages+=['d      drop item in inventory.']
     Messages+=['s      sort '+player.name+"'s inventory."]
     Messages+=['a      use ability.']
     Messages+=['Esc    exit.']
@@ -1168,7 +1168,13 @@ def asking():
         if(abs(dy)>8):
             dy=sig(dy)*8
         if show[8-dy][8+dx] in {'.',Potion_icon,Weapon_icon,Shield_icon,Food_icon,Armor_icon,Magic_icon,Player_icon}:
-            screen(dx,dy,'    r t y\nUse f   h to navigate, Esc, Enter or g to stop.\n    v b n')
+            if (player.x+dx,player.y+dy,0) in X_Y_list:
+                if X_Y_list.count((player.x+dx,player.y+dy,0))==1:
+                    screen(dx,dy,Total_list[X_Y_list.index((player.x+dx,player.y+dy,0))].name)
+                else:
+                    screen(dx,dy,'Pile of items.')
+            else:
+                screen(dx,dy,'    r t y\nUse f   h to navigate, Esc, Enter or g to stop.\n    v b n')
         else:
             mob=Total_list[X_Y_list.index((player.x+dx,player.y+dy))]
             screen(dx,dy,mob.name+'\nHP:{:<7}  MP:{:<7}  STR:{:<6}  DEX:{:<6}  INT:{:<6}\nAC:{:<7}  ER:{:<7}  MR:{:<7}\n'.format(mob.VIT,(mob.int*mob.wield.intm*ER_divide)//(ER_divide+mob.ER),mob.str,mob.dex,mob.int,mob.AC,mob.ER,mob.MR)+answer(mob.name))
@@ -1350,15 +1356,15 @@ def change_armor(a):
     player.ER+=player.wear.ER
     player.mp=min(player.mp,(player.int*player.wield.intm*ER_divide)//(ER_divide+player.ER))
     Messages+=[player.name+' equips '+player.wear.name+'.']
-    if 'vampirism' in player.wield.doping:
+    if 'vampirism' in player.wear.doping:
         Messages+=[player.name+' feels demonic power emanating from their armor.']
-    if 'purify' in player.wield.doping:
+    if 'purify' in player.wear.doping:
         Messages+=[player.name+' feels holy power emanating from their armor.']
-    if 'death' in player.wield.doping:
+    if 'death' in player.wear.doping:
         Messages+=[player.name+' feels cursed power emanating from their armor.']
-    if 'teleport' in player.wield.doping:
+    if 'teleport' in player.wear.doping:
         Messages+=[player.name+' feels translocational power emanating from their armor.']
-    if 'illusion' in player.wield.doping:
+    if 'illusion' in player.wear.doping:
         Messages+=[player.name+"'s armor appears blurry."]
 
 def knowledge(what):
@@ -1406,15 +1412,17 @@ def item_using():
         Messages+=[player.name+"'s inventory is empty."]
         return 1
 
-def item_destruct():
-    global player,Messages
+def item_drop():
+    global player,Messages,Total_list,X_Y_list
     if(len(player.inventory)>0):
         clearchat()
         for i in range(len(player.inventory)):
             print(chr(i+97)+" - "+player.inventory[i].name)
         a=ord(getcharkey())-97
         if(0<=a<=len(player.inventory)-1):
-            Messages+=['Player destroys '+player.inventory[a].name+'.']
+            Messages+=['Player drops '+player.inventory[a].name+'.']
+            Total_list+=[player.inventory[a]]
+            X_Y_list+=[(player.x,player.y,0)]
             player.inventory.pop(a)
             return 0
         else:
@@ -1430,16 +1438,31 @@ def item_grab():
     positioned=(player.x,player.y,0)
     if(positioned in X_Y_list):
         if(len(player.inventory)<26):
-            index=X_Y_list.index(positioned)
-            player.inventory+=[Total_list[index]]
-            Total_list.pop(index)
-            X_Y_list.pop(index)
-            if(player.inventory[-1].name in Know_list):
-                player.inventory[-1].name=Effects_list[player.inventory[-1].number]
-            elif(player.inventory[-1].name in Effects_list):
-                knowledge(Effects_list.index(player.inventory[-1].name))
-            Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
-            return 0
+            if X_Y_list.count(positioned)==1:
+                index=X_Y_list.index(positioned)
+                player.inventory+=[Total_list[index]]
+                Total_list.pop(index)
+                X_Y_list.pop(index)
+                if(player.inventory[-1].name in Know_list):
+                    player.inventory[-1].name=Effects_list[player.inventory[-1].number]
+                elif(player.inventory[-1].name in Effects_list):
+                    knowledge(Effects_list.index(player.inventory[-1].name))
+                Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
+                return 0
+            else:
+                all_here=[item_here for item_here in range(len(X_Y_list)) if X_Y_list[item_here]==positioned]
+                for i in range(len(all_here)):
+                    print(chr(i+97)+" - "+Total_list[all_here[i]].name)
+                a=ord(getcharkey())-97
+                if(0<=a<=len(all_here)-1):
+                    player.inventory+=[Total_list[all_here[a]]]
+                    Total_list.pop(all_here[a])
+                    X_Y_list.pop(all_here[a])
+                    Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
+                    return 0
+                else:
+                    if(a!=-70):Messages+=['No such item.']
+                    return 1
         else:
             Messages+=[player.name+"'s inventory is already full."]
             return 1
@@ -1911,7 +1934,7 @@ def controls(fatigue):
         else:
             retry=1
     elif(a==b'd'):
-        retry=item_destruct()
+        retry=item_drop()
     elif(a==b'\x18'):
         xp()
         retry=1

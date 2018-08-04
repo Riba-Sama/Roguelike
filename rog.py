@@ -1044,7 +1044,7 @@ def help():
     Messages+=['!      abbreviations in stats.']
     Messages+=['#      icons list.']
     Messages+=['*      view transcript.']
-    Messages+=['@      enemy description.']
+    Messages+=['@      tile description.']
     Messages+=['Space  toggle dual wield.']
     Messages+=['>      ascend.']
 
@@ -1170,7 +1170,11 @@ def asking():
         if show[8-dy][8+dx] in {'.',Potion_icon,Weapon_icon,Shield_icon,Food_icon,Armor_icon,Magic_icon,Player_icon}:
             if (player.x+dx,player.y+dy,0) in X_Y_list:
                 if X_Y_list.count((player.x+dx,player.y+dy,0))==1:
-                    screen(dx,dy,Total_list[X_Y_list.index((player.x+dx,player.y+dy,0))].name)
+                    thing=Total_list[X_Y_list.index((player.x+dx,player.y+dy,0))]
+                    if thing.__class__.__name__=='Item' and Know_list[thing.number]!=0:
+                        screen(dx,dy,Effects_list[thing.number])
+                    else:
+                        screen(dx,dy,thing.name)
                 else:
                     screen(dx,dy,'Pile of items.')
             else:

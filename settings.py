@@ -4,6 +4,7 @@ PT_awares=0
 transcript=19
 ER_divide=2
 Floor=1
+dead_end_number=0
 MR_divide=8
 SR_divide=4
 DV_divide_a=4
@@ -20,8 +21,8 @@ name='Player'
 safe=5
 Messages=['']*transcript*3
 Messages+=['Press ? to get info about controls.']
-Total_list=[]
-X_Y_list=[]
+Mob_list=[]
+Dead_list=[]
 Potion_icon='?'
 Weapon_icon='!'
 Armor_icon=']'
@@ -33,7 +34,7 @@ Target_icon='x'
 Boss_icon='&'
 Wall_icon='#'
 L_N=' Leader'
-Mob_list=(
+Mob_types=(
 (200,100,100,100,1000,0,0,0,-1,Wall_icon,'Wall',0,0,['huge'],(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0)),
 (10,6,6,4,1,80,6,0,0,'g','Goblin',1,400,[],(2,2,2,Weapon_icon,'dagger'),(1,Armor_icon,'robe',0)),
 (20,8,2,3,3,60,2,0,0,'k','Kobold',1,500,[],(3,2,2,Weapon_icon,'sword'),(3,Armor_icon,'leather armor',2),(2,0,0,Shield_icon,'buckler',2)),

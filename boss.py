@@ -1,7 +1,8 @@
 from settings import *
 from entities import *
 class Boss(Mob):
-    def __init__(self,num):
+    def __init__(self,num,x,y):
+        self.x,self.y=x,y
         if(num==1):
             self.leader=10
             self.hp=30
@@ -197,7 +198,7 @@ class Boss(Mob):
             self.shout=100
             self.icon=Boss_icon
             self.name='Belphegor'
-            self.inventory=[Item('?',1,'magic potion')]*8
+            self.inventory=[Potion('?',1,'magic potion')]*8
             self.wear=Armor(6,Armor_icon,'ebony scalemail',0,['vampirism'])
             self.wield=Weapon(1,0,6,Weapon_icon,'ebony wand',1,0,0,0,['illusion','vampirism'])
             self.DV=0
@@ -227,7 +228,7 @@ class Boss(Mob):
             self.shout=100
             self.icon=Boss_icon
             self.name='Mammon'
-            self.inventory=[Item('?',5,'brilliance potion')]*8
+            self.inventory=[Potion('?',5,'brilliance potion')]*8
             self.wear=Armor(4,Armor_icon,'golden scalemail',3)
             self.wield=Weapon(1,2,3,Weapon_icon,'golden wand',3,6,0,12,['teleport'])
             self.DV=1
@@ -247,8 +248,8 @@ class Boss(Mob):
             self.leader=10
             self.hp=60
             self.str=12
-            self.dex=24
-            self.int=1
+            self.dex=12
+            self.int=12
             self.AC=18
             self.bp=0
             self.fp=0
@@ -257,7 +258,7 @@ class Boss(Mob):
             self.shout=100
             self.icon=Boss_icon
             self.name='Satan'
-            self.inventory=[Item('?',6,'madness potion')]*8
+            self.inventory=[Potion('?',6,'madness potion')]*8
             self.wear=Armor(6,Armor_icon,'ebony scalemail',0,['vampirism'])
             self.wield=Weapon(8,2,2,Weapon_icon,'ebony cudgel',3,6,6,6,['vampirism'])
             self.DV=1
@@ -288,7 +289,7 @@ class Boss(Mob):
             self.shout=100
             self.icon=Boss_icon
             self.name='Leviatan'
-            self.inventory=[Item('?',2,'poison potion')]*8
+            self.inventory=[Potion('?',2,'poison potion')]*8
             self.wear=Armor(0,Armor_icon,'shabby rags',0,['vampirism'])
             self.wield=Weapon(1,1,1,Weapon_icon,'shabby dagger',1,0,0,0,['vampirism'])
             self.DV=1
@@ -320,7 +321,7 @@ class Boss(Mob):
             self.shout=1
             self.icon=Boss_icon
             self.name='Beelzebub'
-            self.inventory=[Item('?',0,'regeneration potion')]*8
+            self.inventory=[Potion('?',0,'regeneration potion')]*8
             self.wear=Armor(2,Armor_icon,'ebony hide',-1,['vampirism'])
             self.wield=Weapon(1,1,1,Weapon_icon,'')
             self.DV=1
@@ -346,11 +347,11 @@ class Boss(Mob):
             self.bp=0
             self.fp=0
             self.aware=0
-            self.type=0
+            self.type=2
             self.shout=100
             self.icon=Boss_icon
             self.name='Asmodeus'
-            self.inventory=[Item('?',0,'healing potion')]*8
+            self.inventory=[Potion('?',0,'healing potion')]*8
             self.wear=Armor(2,Armor_icon,'ebony hide',-1,['vampirism'])
             self.wield=Weapon(3,3,4,Weapon_icon,'ebony dagger',1,0,0,0,['vampirism'])
             self.DV=1

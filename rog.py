@@ -1465,11 +1465,16 @@ def item_grab():
             else:
                 all_here=items_at(*positioned)
                 for i in range(len(all_here)):
-                    print(chr(i+97)+" - "+Item_list[all_here[i]].name)
+                    namer=Item_list[all_here[i]].name
+                    print(chr(i+97)+" - "+(namer if not (namer in Know_list) else Effects_list[Item_list[all_here[i]].number]))
                 a=ord(getcharkey())-97
                 if(0<=a<=len(all_here)-1):
                     player.inventory+=[Item_list[all_here[a]]]
                     Item_list.pop(all_here[a])
+                    if(player.inventory[-1].name in Know_list):
+                        player.inventory[-1].name=Effects_list[player.inventory[-1].number]
+                    elif(player.inventory[-1].name in Effects_list):
+                        knowledge(Effects_list.index(player.inventory[-1].name))
                     Messages+=[player.name+' picks up '+player.inventory[-1].name+'.']
                     return 0
                 else:

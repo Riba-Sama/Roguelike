@@ -1019,7 +1019,7 @@ def help():
     Messages+=['!      abbreviations in stats.']
     Messages+=['#      icons list.']
     Messages+=['*      view transcript.']
-    Messages+=['@      tile description.']
+    Messages+=['m      tile description.']
     Messages+=['Space  toggle dual wield.']
     Messages+=['>      ascend.']
 
@@ -1901,7 +1901,7 @@ def controls(fatigue):
         else:
             Messages+=["Can't ascend here."]
             retry=1
-    elif(a==b'@'):
+    elif(a==b'm'):
         retry=1
         asking()
     elif(a==b'<'):

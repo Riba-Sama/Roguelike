@@ -800,7 +800,7 @@ def move(mob):
             Messages+=[mob.name+' explodes!']
             atk=mob.VIT//4
             for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)):
-                if(not un(mob.x+i[0],mob.y+i[1])):
+                if(mob_find(mob.x+i[0],mob.y+i[1])):
                     enD=mob_at(mob.x+i[0],mob.y+i[1])
                     enD.hp-=atk
                     enD.bp+=atk//4
@@ -826,8 +826,8 @@ def move(mob):
         check_statuses(mob)
         if 'wrath' in mob.doping:
             mob.str=mob.Bstr*mob.VIT//mob.hp
-        if mob.status['madness'] and (not un(mob.x+posx,mob.y+posy) or (mob.x+posx==player.x and mob.y+posy==player.y)):
-            if not un(mob.x+posx,mob.y+posy) and not (posx==0 and posy==0):
+        if mob.status['madness'] and (mob_find(mob.x+posx,mob.y+posy) or (mob.x+posx==player.x and mob.y+posy==player.y)):
+            if mob_find(mob.x+posx,mob.y+posy) and not (posx==0 and posy==0):
                 rushattack(mob,mob_at(mob.x+posx,mob.y+posy))
             if mob.x+posx==player.x and mob.y+posy==player.y:
                 rushattack(mob,player)
@@ -952,7 +952,7 @@ def move(mob):
         elif not 'sloth' in mob.doping:
             if 'rabbit' in mob.doping:
                 posx,posy=d(3)-2,d(3)-2
-                if(not un(player.x+posx,player.y+posy)):
+                if(mob_find(player.x+posx,player.y+posy)):
                     rabbit=mob_at(player.x+posx,player.y+posy)
                     if d(mob.lvl)>d(rabbit.lvl) and 'rabbit' in rabbit.doping:
                         mob.x,rabbit.x=rabbit.x,mob.x
@@ -1250,7 +1250,7 @@ def casting():
                     player.y+=dy
                     player.mp-=max(abs(dx),abs(dy))*TP_cost
                     Messages+=['Player teleports.']
-                    if(not un(player.x,player.y)):
+                    if(mob_find(player.x,player.y)):
                         mob_at(player.x,player.y).hp=-45
                         Messages+=[player.name+' disintegrates something.']
                     return 0
@@ -1522,12 +1522,58 @@ def DoVi():
         shield_recalculate()
         return 0
 
-def clockattack(start=0,wise=1):
+def nextclockwise(tup):
+    if tup==(-1,1):
+        return (0,1)
+    elif tup==(0,1):
+        return (1,1)
+    elif tup==(1,1):
+        return (1,0)
+    elif tup==(1,0):
+        return (1,-1)
+    elif tup==(1,-1):
+        return (0,-1)
+    elif tup==(0,-1):
+        return (-1,-1)
+    elif tup==(-1,-1):
+        return (-1,0)
+    elif tup==(-1,0):
+        return (-1,1)
+    else:
+        raise ValueError
+
+def nextcounterclockwise(tup):
+    if tup==(-1,1):
+        return (-1,0)
+    elif tup==(0,1):
+        return (-1,1)
+    elif tup==(1,1):
+        return (0,1)
+    elif tup==(1,0):
+        return (1,1)
+    elif tup==(1,-1):
+        return (1,0)
+    elif tup==(0,-1):
+        return (1,-1)
+    elif tup==(-1,-1):
+        return (0,-1)
+    elif tup==(-1,0):
+        return (-1,-1)
+    else:
+        raise ValueError
+
+def nextclock(wise,tup):
+    if wise==1:
+        return nextclockwise(tup)
+    else:
+        return nextcounterclockwise(tup)
+
+def clockattack(start=(1,0),wise=1):
     global Messages,player
     atk=d(player.str*player.wield.strm)*(player.DV+2)//5
-    for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0))[start-1-(wise==1):start+7-(wise==1)][::wise]:
-        if(not un(player.x-i[0],player.y-i[1])):
-            enD=mob_at(player.x-i[0],player.y-i[1])
+    for i in range(8):
+        if(mob_find(player.x+start[0],player.y+start[1])):
+            enD=mob_at(player.x+start[0],player.y+start[1])
             if(atk>enD.AC):
                 atk=atk-enD.AC//4
                 enD.hp-=atk
@@ -1558,6 +1604,55 @@ def clockattack(start=0,wise=1):
                     atk=atk*3//5
                     Messages+=[enD.name+' blocks '+player.name+"'s hit."]
                 player.fp+=4
+        start=nextclock(wise,start)
+    atk*=2
+    stun_afflicted=d(player.str)
+    for i in range(stun_afflicted):
+        if mob_find(player.x+(i+1)*start[0],player.y+(i+1)*start[1]):
+            player.x+=i*start[0]
+            player.y+=i*start[1]
+            player.fp+=i
+            enD=mob_at(player.x+start[0],player.y+start[1])
+            stun_afflicted=max(1,stun_afflicted-i-d(enD.str))
+            if(atk>enD.AC):
+                atk=atk-enD.AC
+                enD.hp-=atk
+                enD.fp+=atk
+                Messages+=[player.name+' uppercuts '+enD.name+'.']
+                player.fp+=4
+                for i in range(stun_afflicted):
+                    if un(enD.x+start[0],enD.y+start[1]):
+                        enD.x+=start[0]
+                        enD.y+=start[1]
+                        stun_afflicted-=1
+                    else:
+                        mob_at(enD.x+start[0],enD.y+start[1]).status['stun']+=1
+                        enD.status['stun']+=stun_afflicted
+                        Messages+=[enD.name+' lands on '+mob_at(enD.x+start[0],enD.y+start[1]).name+'.']
+                        break
+                if(player.status['viper']):
+                    player.status['viper']-=1
+                    enD.status['poison']+=max(1,d(player.dex)-d(enD.dex))
+                    Messages+=[player.name+' poisons '+enD.name+'.']
+                if('vampirism' in player.doping):
+                    player.hp=min(player.VIT,atk)
+                    Messages+=[player.name+' drains '+enD.name+"'s life force."]
+                if('death' in player.doping):
+                    enD.hp=-45
+                    Messages+=['The curse of '+player.wield.name+' kills '+enD.name+'.']
+                elif('purify' in player.doping and 'kai' in enD.doping):
+                    enD.hp=-45
+                    Messages+=[player.name+' purifies '+enD.name+'.']
+            else:
+                if('parry' in enD.name):
+                    enD.fp+=atk//4
+                    player.status['stun']+=4
+                    Messages+=[enD.name+' parries '+player.name+"'s hit!"]
+                else:
+                    enD.fp+=atk//2
+                    Messages+=[enD.name+' blocks '+player.name+"'s hit."]
+                player.fp+=8
+            break
 
 def runattack(i=(1,0)):
     global Messages,player
@@ -1567,7 +1662,7 @@ def runattack(i=(1,0)):
         player.y+=i[1]
         player.fp+=2
         ran+=1
-    if not un(player.x+i[0],player.y+i[1]):
+    if mob_find(player.x+i[0],player.y+i[1]):
         enD=mob_at(player.x+i[0],player.y+i[1])
         atk=d(player.dex*player.wield.dexm)*(player.DV+1)*(2+min(ran,4))//max(6,player.fp)//2
         if atk > enD.AC//4:
@@ -1621,13 +1716,13 @@ def jumpattack(dx,dy):
     player.x+=dx
     player.y+=dy
     atk=player.dex*player.AC*ER_divide//(ER_divide+player.ER//player.str)//6
-    if(not un(player.x,player.y)):
+    if(mob_find(player.x,player.y)):
         mob_at(player.x,player.y).hp=-45
         Messages+=[player.name+' lands on something.']
     else:
         Messages+=['As '+player.name+' lands, stones fly.']
     for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)):
-        if(not un(player.x+i[0],player.y+i[1])):
+        if(mob_find(player.x+i[0],player.y+i[1])):
             enD=mob_at(player.x+i[0],player.y+i[1])
             if not 'huge' in mob.doping:
                 enD.hp-=atk
@@ -1677,7 +1772,6 @@ def Skilling():
                     return 1
                 screen(dire[0],dire[1],'w for clockwise, c for counterclockwise, Esc to abort.')
                 inpy=getkey()
-                dire=((1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1),(0,1)).index(dire)
                 if inpy==b'w':
                     player.sp-=Descriptions[inpu][1]
                     player.status['stun']+=Descriptions[inpu][2]
@@ -1737,7 +1831,7 @@ def Skilling():
                 dy=0
                 while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'g'):
                     if(isdir(a)):
-                        if(not un(player.x+dx+direction(a)[0],player.y+dy+direction(a)[1]) and 'huge' in mob_at(player.x+dx+direction(a)[0],player.y+dy+direction(a)[1]).doping):
+                        if(mob_find(player.x+dx+direction(a)[0],player.y+dy+direction(a)[1]) and 'huge' in mob_at(player.x+dx+direction(a)[0],player.y+dy+direction(a)[1]).doping):
                             Messages+=["Can't jump over this."]
                         else:
                             dx+=direction(a)[0]
@@ -1841,7 +1935,7 @@ def controls(fatigue):
     no=0
     if player.status['madness']:
         posx,posy=d(3)-2,d(3)-2
-        if not un(player.x+posx,player.y+posy):
+        if mob_find(player.x+posx,player.y+posy):
             rushattack(player,mob_at(player.x+posx,player.y+posy))
             no=1
             a=b'no'

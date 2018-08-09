@@ -45,9 +45,9 @@ Mob_types=(
 (20,8,12,30,2,5,8,0,1,'D','Crimson Demon',1,200000,['kai'],(0,2,7,Weapon_icon,'rod',3,2,0,12),(0,Armor_icon,'archmage robe',-1)),
 (30,12,16,16,6,5,10,0,3,'I','Greater Imp',1,300000,['kai'],(1,4,4,Weapon_icon,'trident',3,4,0,4),(0,Armor_icon,'',0)),
 (30,12,24,12,8,20,4,0,0,'v','Vampire',1,400000,['kai','vampirism','stealth'],(3,3,2,Weapon_icon,'vampric dagger',1,0,0,0,['vampirism']),(1,Armor_icon,'robe',0)),
-(40,20,20,4,12,100,1,2,0,'p','Phantom',4,100000,['kai','illusion','stealth'],(3,3,3,Weapon_icon,'dagger'),(0,Armor_icon,'',0),(4,0,1,Shield_icon,'mirror shield',2,0,0,0,['illusion']),(' Killer',(name+' is being haunted.',name+' is being haunted.'))),
-(50,30,8,4,6,20,20,0,0,'d','Demon Footman',1,100000,['kai','vampirism'],(3,3,3,Weapon_icon,'ivory trident'),(6,Armor_icon,'ivory scalemail',6,['vampirism']),(6,6,6,Shield_icon,'ivory shield',2,0,0,0,['vampirism'])),
-(30,12,16,8,6,20,8,0,2,'j','Imp Torturer',1,30000,['kai'],(3,3,3,Weapon_icon,'ivory trident'),(0,Armor_icon,'',0)),
+(40,20,20,4,4,100,1,2,0,'p','Phantom',4,100000,['kai','illusion','stealth'],(3,3,3,Weapon_icon,'dagger'),(0,Armor_icon,'',0),(4,0,1,Shield_icon,'mirror shield',2,0,0,0,['illusion']),(' Killer',(name+' is being haunted.',name+' is being haunted.'))),
+(50,20,8,4,6,20,20,0,0,'d','Demon Footman',1,100000,['kai','vampirism'],(3,3,3,Weapon_icon,'ivory trident'),(6,Armor_icon,'ivory scalemail',6,['vampirism']),(6,6,6,Shield_icon,'ivory shield',2,0,0,0,['vampirism'])),
+(30,8,16,8,6,20,8,0,2,'j','Imp Torturer',1,30000,['kai'],(3,3,3,Weapon_icon,'ivory trident'),(0,Armor_icon,'',0)),
 (30,12,12,12,12,20,10,0,0,'r','Holy Rabbit',0,30000,['purify','illusion','rabbit'],(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0))
 )
 Effects_list=('healing potion','magic potion','poison potion','energetic potion','experience potion','brilliance potion','madness potion','regeneration potion','paralyze potion')
@@ -66,7 +66,7 @@ VIT=20
 Ability=('caster','lancer','berserker')
 Cool_dict={'caster':['Now '+name+' possesses legendary power of Caster! '+name+' can cast dark magic by pressing z!',0,0,5],'lancer':['Now '+name+' possesses legendary power of Lancer! '+name+' can make far-reaching lunges by pressing x!',0,5,0],'berserker':['Now '+name+' possesses legendary power of Berserker! '+name+' can crush '+name+"'s foes by pressing c!",5,0,0]}
 Skill_list=['e','x','d','a','w','z','s']
-Descriptions={'a':['Attacks all enemies around '+name+'.',4,0],'e':['Exhausts one enemy.',4,0],'x':['Run in straight line until '+name+' hits enemy or tire out.',4,0],'z':['Jump, damaging adjacent enemies.',12,0],'w':['Upgrades vitality and heals.',12,0],'d':['Swap '+name+' with selected enemy, damaging them.',12,0],'s':['Manage '+name+"'s abilities.",20,10]}
+Descriptions={'a':['Attacks all enemies around '+name+' and with a following powerful uppercut.',4,0],'e':['Exhausts one enemy.',4,0],'x':['Run in straight line until '+name+' hits enemy or tire out.',4,0],'z':['Jump, damaging adjacent enemies.',12,0],'w':['Upgrades vitality and heals.',12,0],'d':['Swap '+name+' with selected enemy, damaging them.',12,0],'s':['Manage '+name+"'s abilities.",20,10]}
 Coolness=3
 Magic_value=4
 TP_value=4

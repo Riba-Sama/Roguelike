@@ -128,7 +128,7 @@ class Me(Entity):
         self.ER=0
         self.lvl=lvl
         self.sp=self.hp
-        self.name=name
+        self.name=ab[9]
         self.inventory=[]
         self.abilities=set()
         self.skills=set()

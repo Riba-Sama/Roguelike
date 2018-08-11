@@ -185,7 +185,37 @@ def levelup():
     while XP >= XP_base*2**player.lvl:
         player=lvlup(player)
 
-def outro(num):
+def add_god_weapon():
+    global god_help
+    dual=d(2)*2-1
+    Title=''
+    for l in range(d(4)+d(4)+d(4)):
+        Title+=chr(64+d(26))
+    Title=Title.capitalize()
+    sample=random.sample((8,19,98),3)
+    if dual==1:
+        god_help+=[Weapon(sample[0],sample[1],sample[2],Treasure_icon,Title)]
+    else:
+        god_help+=[Weapon(sample[0],sample[1],sample[2],Treasure_icon,Title,3,sample[0],sample[1],sample[2])]
+
+def add_god_armor():
+    global god_help
+    Title=''
+    for l in range(d(4)+d(4)+d(4)):
+        Title+=chr(64+d(26))
+    Title=Title.capitalize()
+    sample=random.sample((8,19,98),2)
+    god_help+=[Armor(sample[0],Treasure_icon,Title,sample[1])]
+
+def add_god():
+    global god_help,name
+    god_help=[]
+    player.name='God'
+    name='God'
+    add_god_armor()
+    add_god_weapon()
+
+def outro(num,alt_list=[]):
     global Messages
     clearchat()
     print('Any key to advance epilogue')
@@ -196,9 +226,13 @@ def outro(num):
         ' and therefore was prime candidate for next inauguration.',
         'But as they were alive,',
         ' they could not be official resident of Hell.',
-        'As thus,','\choice','They decided to depart from Hell.','They decided to establish themselves as tyrant.')
+        'As thus,',
+        '\choice',
+        'They decided to depart from Hell.',
+        'They decided to establish themselves as tyrant.')
     elif num==2:
-        a=('Cerberus by the exit of Hell had eaten '+player.name+"'s soul.",'Bad End 4: Coward.')
+        a=('Cerberus by the exit of Hell had eaten '+player.name+"'s soul.",
+        'Bad End 4: Coward.')
     elif num==3:
         a=('Being feared by everyone,',
         ' '+player.name+' easily conquered Hell.',
@@ -229,7 +263,7 @@ def outro(num):
         'Good End 1: Innocent.')
     elif num==8:
         a=('After '+player.name+' killed all four hundred holy rabbits,',
-        ' Special Archangel force was dispatched,',
+        ' Special Archangel force was dispatched after them,',
         ' they were murdered in very gruesome way,',
         ' and sent to Hell afterwards.',
         'Bad End 3: Infidel.')
@@ -237,6 +271,90 @@ def outro(num):
         a=('As '+player.name+' sees walls of a cathedral,',
         ' they turn to ashes.',
         'Bad End 1: Desecrator.')
+    elif num==10:
+        a=(player.name+' ascends to a spacious adorned room.',
+        'There on a throne sits an old man.',
+        'He claps his hands a few times and starts talking.',
+        '"'+player.name+' has my congratulations on coming here."',
+        '"But, it is a little boring,',
+        ' watching '+player.name+' failing nearly all the time."',
+        '"Want some powerful weapon? Armor, perhaps?"',
+        '\choice',
+        'No, thanks.',
+        'Weapon.',
+        'Armor.')
+    elif num==11:
+        a=(player.name+' ascends to a spacious adorned room.',
+        'There on a throne sits an old man.',
+        'He claps his hands a few times and starts talking.',
+        '"'+player.name+' has my congratulations on coming here."',
+        '"But, it is a little boring,',
+        ' maybe they should conquer Hell or something?"',
+        '"Need more ammunitions?"',
+        '\choice',
+        'No, thanks.',
+        'Weapon.',
+        'Armor.')
+    elif num==12:
+        a=('"Well, whatever."',
+        player.name+"'s body shrinks to a size of throwing dice,",
+        ' and is thrown back to Floor 1.',
+        'Incidentally it rolled 1.',
+        'God End 1: Dice.')
+    elif num==13:
+        a=('"Got it,',
+        ' will be delivered to Floor 1 right away."',
+        '"Please come to incinerator room and wait there."',
+        '"'+player.name+' will go back Floor 1 too,',
+        ' in five minutes."',
+        'God End 2: Charcoal.')
+        add_god_weapon()
+    elif num==14:
+        a=('"Got it,',
+        ' will be delivered to Floor 1 right away."',
+        '"Please come to fridge room and wait there."',
+        '"'+player.name+' will go back Floor 1 too,',
+        ' in five minutes."',
+        'God End 3: Popsicle.')
+        add_god_armor()
+    elif num==15:
+        a=('"Got it,',
+        ' will be delivered to Floor 1 right away."',
+        '"Please come to incinerator room and wait there."',
+        '"'+player.name+' will go back Floor 1 too,',
+        ' in five minutes."',
+        '"No no, not allowed to go there."',
+        'God End 4: Mincemeat.')
+        add_god_weapon()
+    elif num==16:
+        a=('"Got it,',
+        ' will be delivered to Floor 1 right away."',
+        '"Please come to fridge room and wait there."',
+        '"'+player.name+' will go back Floor 1 too,',
+        ' in five minutes."',
+        '"No no, not allowed to go there."',
+        'God End 4: Mincemeat.')
+        add_god_armor()
+    elif num==17:
+        a=('"Got it,',
+        ' will be delivered to Floor 1 right away."',
+        '"Please come to incinerator room and wait there."',
+        '"'+player.name+' will go back Floor 1 too,',
+        ' in five minutes."',
+        'As he turns around after saying that,',
+        player.name+" beheads him perfectly.",
+        'True End: God Slayer.')
+        add_god()
+    elif num==18:
+        a=('"Got it,',
+        ' will be delivered to Floor 1 right away."',
+        '"Please come to fridge room and wait there."',
+        '"'+player.name+' will go back Floor 1 too,',
+        ' in five minutes."',
+        'As he turns around after saying that,',
+        player.name+" beheads him perfectly.",
+        'True End: God Slayer.')
+        add_god()
     for i in range(len(a)):
         if a[i]=='\choice':
             for j in range(len(a)-i-1):
@@ -244,7 +362,7 @@ def outro(num):
             b=-1
             while(not 0<=b<=len(a)-i-2):
                 b=ord(getcharkey())-97
-            outro(num+b+1)
+            outro(alt_list[b])
             return
         else:
             print(a[i])
@@ -954,7 +1072,7 @@ def move(mob):
                 posx,posy=d(3)-2,d(3)-2
                 if(mob_find(player.x+posx,player.y+posy)):
                     rabbit=mob_at(player.x+posx,player.y+posy)
-                    if d(mob.lvl)>d(rabbit.lvl) and 'rabbit' in rabbit.doping:
+                    if d(mob.lvl)>d(rabbit.lvl) and mob.hp>rabbit.hp and 'rabbit' in rabbit.doping:
                         mob.x,rabbit.x=rabbit.x,mob.x
                         mob.y,rabbit.y=rabbit.y,mob.y
                         Messages+=[mob.name+' swaps with a nearby rabbit!']
@@ -1249,7 +1367,7 @@ def casting():
                     player.x+=dx
                     player.y+=dy
                     player.mp-=max(abs(dx),abs(dy))*TP_cost
-                    Messages+=['Player teleports.']
+                    Messages+=[player.name+' teleports.']
                     if(mob_find(player.x,player.y)):
                         mob_at(player.x,player.y).hp=-45
                         Messages+=[player.name+' disintegrates something.']
@@ -1435,7 +1553,7 @@ def item_drop():
             print(chr(i+97)+" - "+player.inventory[i].name)
         a=ord(getcharkey())-97
         if(0<=a<=len(player.inventory)-1):
-            Messages+=['Player drops '+player.inventory[a].name+'.']
+            Messages+=[player.name+' drops '+player.inventory[a].name+'.']
             player.inventory[a].x,player.inventory[a].y=player.x,player.y
             Item_list+=[player.inventory[a]]
             player.inventory.pop(a)
@@ -1724,7 +1842,7 @@ def jumpattack(dx,dy):
     for i in ((-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0)):
         if(mob_find(player.x+i[0],player.y+i[1])):
             enD=mob_at(player.x+i[0],player.y+i[1])
-            if not 'huge' in mob.doping:
+            if not 'huge' in enD.doping:
                 enD.hp-=atk
                 enD.fp+=atk//4
                 enD.status['stun']+=d(enD.fp)//(d(enD.dex)+d(enD.AC))
@@ -1987,11 +2105,16 @@ def controls(fatigue):
         retry=Skilling()
     elif(a==b'>'):
         if(Map[player.y*x_size+player.x]=='>'):
-            Floor+=1
-            Messages+=['Ascending to Floor '+str(Floor)+'.']
-            newstage()
-            generate()
-            player.x,player.y=spawn_x,spawn_y
+            if Floor==5:
+                Floor+=8
+                player.hp=-45
+                Messages+=['Ascending to Top Floor.']
+            else:
+                Floor+=1
+                Messages+=['Ascending to Floor '+str(Floor)+'.']
+                newstage()
+                generate()
+                player.x,player.y=spawn_x,spawn_y
         else:
             Messages+=["Can't ascend here."]
             retry=1
@@ -2198,7 +2321,8 @@ while(True):
     hey=0
     newstage()
     generate()
-    player=Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y])
+    player=Me([VIT,8,8,8,4,0,0,spawn_x,spawn_y,name])
+    player.inventory=random.sample(god_help,min(26,len(god_help)))
     while(True):
             check_statuses(player)
             alarms()
@@ -2218,14 +2342,19 @@ while(True):
                 elif player.hp<=0:
                     outro(4)
                 else:
-                    outro(1)
+                    outro(1,(2,3))
                 break
             if player.relics['Rabbit Feet'][0]==player.relics['Rabbit Feet'][1]:
                 outro(8)
                 break
             if(player.hp<=0 or dead_end_number==4):
                 clearchat()
-                if dead_end_number:
+                if Floor==13:
+                    if god_help:
+                        outro(11,(12,13 if player.int<19 else (17 if 'x' in player.skills else 15),14 if player.int<19 else (18 if 'x' in player.skills else 16)))
+                    else:
+                        outro(10,(12,13 if player.int<19 else (17 if 'x' in player.skills else 15),14 if player.int<19 else (18 if 'x' in player.skills else 16)))
+                elif dead_end_number:
                     if dead_end_number==1:
                         Messages+=[player.name+', unable to move, rots alive for ages.',player.name+' dies.','Dead End 2: Immortality.']
                     elif dead_end_number==2:
@@ -2244,7 +2373,7 @@ while(True):
                             outro(7)
                     else:
                         Messages+=[player.name+' dies.']
-                print('\n   ***{}***   \n   ***{}***   \n   ***{}***\n'.format(Messages[-3],Messages[-2],Messages[-1]))
+                        print('\n   ***{}***   \n   ***{}***   \n   ***{}***\n'.format(Messages[-3],Messages[-2],Messages[-1]))
                 a=b''
                 while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):
                     print('Press Enter to continue, or Esc to exit.')

@@ -4,6 +4,7 @@ PT_awares=0
 transcript=19
 ER_divide=2
 Floor=1
+god_help=[]
 dead_end_number=0
 MR_divide=8
 SR_divide=4
@@ -33,6 +34,7 @@ Magic_icon='*'
 Target_icon='x'
 Boss_icon='&'
 Wall_icon='#'
+Treasure_icon='$'
 L_N=' Leader'
 Mob_types=(
 (200,100,100,100,1000,0,0,0,-1,Wall_icon,'Wall',0,0,['huge'],(0,0,0,Weapon_icon,''),(0,Armor_icon,'',0)),

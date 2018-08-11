@@ -2372,7 +2372,7 @@ while(True):
                         else:
                             outro(7)
                     else:
-                        Messages+=[player.name+' dies.']
+                        Messages+=[player.name+' dies.','Not End: Try Again.']
                         print('\n   ***{}***   \n   ***{}***   \n   ***{}***\n'.format(Messages[-3],Messages[-2],Messages[-1]))
                 a=b''
                 while(a!=b'\r' and a!=b'\n' and a!=b'\x1b' and a!=b'\x0f'):
